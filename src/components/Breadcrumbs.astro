@@ -1,0 +1,28 @@
+---
+// Visible breadcrumbs + BreadcrumbList JSON-LD from the same data (docs/seo-plan.md §5.2).
+// "Strona główna" is added automatically. The last item is the current page (path optional).
+//   <Breadcrumbs items={[{ name: 'Okna', path: '/okna/' }, { name: 'Okna PCV' }]} />
+import { url, withoutBase } from '../lib/url';
+import { breadcrumbs, type Crumb } from '../lib/schema';
+
+interface Props {
+  items: Crumb[];
+  /** set to false if the page already outputs its own BreadcrumbList */
+  schema?: boolean;
+}
+const { items, schema = true } = Astro.props;
+const all: Crumb[] = [{ name: 'Strona główna', path: '/' }, ...items];
+const current = withoutBase(Astro.url.pathname);
+const json = breadcrumbs(all, current);
+const last = all.length - 1;
+---
+
+<nav class="breadcrumbs" aria-label="Okruszki">
+  {all.map((c, i) => (i < last ? <a href={url(c.path ?? '/')}>{c.name}</a> : <span aria-current="page">{c.name}</span>))}
+</nav>
+{schema && <script type="application/ld+json" set:html={JSON.stringify(json)} />}
+
+<style>
+  /* separators between crumbs */
+  .breadcrumbs > :not(:last-child)::after { content: '/'; display: inline-block; margin-left: 10px; opacity: .5; text-decoration: none; }
+</style>

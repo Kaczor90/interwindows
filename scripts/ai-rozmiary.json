@@ -1,0 +1,66 @@
+{
+  "ai-drzwi-wewnetrzne-bezprzylgowe": [
+    1293,
+    1600
+  ],
+  "ai-hst-taras": [
+    1600,
+    896
+  ],
+  "ai-konfigurator-profil-probki": [
+    1600,
+    1073
+  ],
+  "ai-montaz-ekipa-dojazd": [
+    2000,
+    1120
+  ],
+  "ai-montaz-odbior": [
+    1293,
+    1600
+  ],
+  "ai-montaz-osadzanie": [
+    1600,
+    1064
+  ],
+  "ai-montaz-pomiar": [
+    1600,
+    1073
+  ],
+  "ai-montaz-poziomowanie": [
+    1286,
+    1600
+  ],
+  "ai-montaz-tasma": [
+    1600,
+    1064
+  ],
+  "ai-okna-drewniane-willa": [
+    1600,
+    1073
+  ],
+  "ai-poradnik-dom-zmierzch": [
+    1600,
+    896
+  ],
+  "ai-poradnik-okno-zima": [
+    1600,
+    896
+  ],
+  "ai-poradnik-salon-probki": [
+    1600,
+    896
+  ],
+  "ai-przeszklenia-salon": [
+    1600,
+    896
+  ],
+  "ai-rolety-zewnetrzne": [
+    1600,
+    1073
+  ],
+  "ai-zaluzje-fasadowe": [
+    1600,
+    1073
+  ]
+}

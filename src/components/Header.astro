@@ -1,0 +1,138 @@
+---
+import { url, withoutBase } from '../lib/url';
+import Icon from './Icon.astro';
+import { site, nav } from '../data/site';
+import { categories, type MenuGroup } from '../data/oferta';
+
+const path = withoutBase(Astro.url.pathname);
+const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+const offerActive = categories.some((c) => path.startsWith(`/${c.slug}/`));
+
+// dropdown columns: windows (hub + children + terrace doors) and the rest
+const byGroup = (groups: MenuGroup[]) => categories.filter((c) => groups.includes(c.menuGroup));
+const columns = [
+  { title: 'Okna i przeszklenia', items: byGroup(['okna']) },
+  { title: 'Drzwi, osłony i bramy', items: byGroup(['drzwi', 'oslony', 'bramy']) },
+];
+const label = (c: (typeof categories)[number]) => (c.slug === 'okna' ? 'Okna – przegląd' : c.title);
+---
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="logo" href={url('/')} aria-label={`${site.name} – strona główna`}>
+      <img src={url('/img/logo.png')} alt={site.name} width="347" height="104" />
+    </a>
+
+    <nav class="nav" aria-label="Menu główne">
+      <ul>
+        {nav.map((item) =>
+          item.kind === 'offer' ? (
+            <li class="nav__item">
+              <button class="nav__link" type="button" aria-haspopup="true" aria-current={offerActive ? 'page' : undefined}>
+                {item.label} <Icon name="chevron" class="" />
+              </button>
+              <div class="dropdown">
+                {columns.map((col) => (
+                  <div>
+                    <p class="dropdown__title">{col.title}</p>
+                    <ul>
+                      {col.items.map((c) => (
+                        <li>
+                          <a href={url(`/${c.slug}/`)} aria-current={path === `/${c.slug}/` ? 'page' : undefined}>
+                            <Icon name={c.slug} class="icon" />
+                            {label(c)}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+                <div class="dropdown__foot">
+                  <span>Także moskitiery, rolety wewnętrzne, pergole i parapety.</span>
+                  <a class="link-arrow" href={url('/kontakt/#wycena')}>Zapytaj doradcę <Icon name="arrow" class="" /></a>
+                </div>
+              </div>
+            </li>
+          ) : item.kind === 'cta' ? (
+            <li class="nav__item nav__item--cta">
+              <a class="nav__cta" href={url(item.href)} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                <Icon name="sliders" class="" />{item.label}
+              </a>
+            </li>
+          ) : (
+            <li class="nav__item">
+              <a class="nav__link" href={url(item.href)} aria-current={isCurrent(item.href) ? 'page' : undefined}>{item.label}</a>
+            </li>
+          ),
+        )}
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <a class="header-phone" href={site.phoneHref} aria-label={`Zadzwoń: ${site.phone}`}><Icon name="phone" class="" /><span>{site.phone}</span></a>
+      <button class="menu-toggle" type="button" aria-label="Otwórz menu" aria-expanded="false" aria-controls="mobile-menu">
+        <Icon name="menu" class="" />
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="mobile-menu__top">
+    <a class="logo" href={url('/')}><img src={url('/img/logo.png')} alt={site.name} width="347" height="104" /></a>
+    <button class="menu-toggle" type="button" aria-label="Zamknij menu" data-close>
+      <Icon name="close" class="" />
+    </button>
+  </div>
+  <div class="mobile-menu__body">
+    <ul>
+      {nav.map((item) =>
+        item.kind === 'offer' ? (
+          <li>
+            <details open={offerActive}>
+              <summary>{item.label} <Icon name="chevron" class="" /></summary>
+              <ul class="mobile-menu__sub">
+                {categories.map((c) => (
+                  <li>
+                    <a class:list={{ 'is-child': !!c.parent }} href={url(`/${c.slug}/`)}>
+                      {!c.parent && <Icon name={c.slug} class="icon" />}
+                      {label(c)}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          </li>
+        ) : (
+          <li><a href={url(item.href)}>{item.label}</a></li>
+        ),
+      )}
+    </ul>
+    <div class="mobile-menu__cta">
+      <a class="btn" href={site.phoneHref}><Icon name="phone" class="" /> Zadzwoń: {site.phone}</a>
+      <a class="btn btn--ghost" href={url('/kontakt/#wycena')}>Umów bezpłatny pomiar</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  const menu = document.getElementById('mobile-menu');
+  const openBtn = document.querySelector<HTMLButtonElement>('.header-actions .menu-toggle');
+  const closeBtn = menu?.querySelector<HTMLButtonElement>('[data-close]');
+
+  const setOpen = (open: boolean) => {
+    menu?.classList.toggle('is-open', open);
+    openBtn?.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+    document.documentElement.classList.toggle('menu-open', open);
+    if (open) closeBtn?.focus();
+    else openBtn?.focus();
+  };
+
+  openBtn?.addEventListener('click', () => setOpen(true));
+  closeBtn?.addEventListener('click', () => setOpen(false));
+  menu?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menu?.classList.contains('is-open')) setOpen(false);
+  });
+</script>

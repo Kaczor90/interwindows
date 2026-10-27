@@ -1,0 +1,164 @@
+---
+// Quote / measurement request form → public/kontakt.php (e-mail to biuro@interwindows.pl),
+// then redirect to /dziekujemy/. In preview builds (PUBLIC_PREVIEW=true) it only shows a notice.
+//   <QuoteForm />
+//   <QuoteForm title="Zapytaj o okna PCV" preselect="okna-pcv" />
+//   <QuoteForm tone="plain" id="formularz" />
+// Fields posted: name, phone*, email, town, topic, message, consent*, website (honeypot), page, t.
+// kontakt.php also accepts an optional multi-line `konfiguracja` field (used by the configurator).
+import { url, withoutBase } from '../lib/url';
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+import { categories } from '../data/oferta';
+
+interface Props {
+  title?: string;
+  eyebrow?: string;
+  lead?: string;
+  /** category slug selected in the "Czego dotyczy" field */
+  preselect?: string;
+  id?: string;
+  /** "soft" = tinted section (default), "plain" = no background */
+  tone?: 'soft' | 'plain';
+}
+const {
+  title = 'Umów bezpłatny pomiar',
+  eyebrow = 'Pomiar i wycena',
+  lead = 'Zostaw numer telefonu i napisz w kilku słowach, czego potrzebujesz. Oddzwonimy, umówimy pomiar u Ciebie i przygotujemy wycenę. Pomiar i wycena są bezpłatne i niezobowiązujące.',
+  preselect,
+  id = 'wycena',
+  tone = 'soft',
+} = Astro.props;
+const isPreview = import.meta.env.PUBLIC_PREVIEW === 'true';
+const page = withoutBase(Astro.url.pathname);
+const topics = categories.filter((c) => c.slug !== 'okna');
+---
+
+<section class:list={['section', { 'section--soft': tone === 'soft' }]} id={id}>
+  <div class="container quote">
+    <div class="quote__aside reveal">
+      <span class="eyebrow">{eyebrow}</span>
+      <h2>{title}</h2>
+      <p class="lead">{lead}</p>
+      <ul class="contact-list">
+        <li>
+          <Icon name="phone" class="" />
+          <div><small>Wolisz zadzwonić?</small><a href={site.phoneHref}>{site.phone}</a></div>
+        </li>
+        <li>
+          <Icon name="mail" class="" />
+          <div><small>Napisz</small><a href={`mailto:${site.email}`}>{site.email}</a></div>
+        </li>
+        <li>
+          <Icon name="pin" class="" />
+          <div><small>{site.address.place}</small><span>{site.address.street}, {site.address.postalCode} {site.address.city}</span></div>
+        </li>
+        {site.hours && (
+          <li>
+            <Icon name="clock" class="" />
+            <div><small>Godziny pracy biura</small><span>{site.hours}</span></div>
+          </li>
+        )}
+      </ul>
+    </div>
+
+    <div class="form-panel reveal">
+      <form
+        class="form"
+        action={url('/kontakt.php')}
+        method="post"
+        data-quote-form
+        data-thanks={url('/dziekujemy/')}
+        data-preview={isPreview ? 'true' : undefined}
+        novalidate
+      >
+        <div class="form__row">
+          <div class="field">
+            <label for={`${id}-name`}>Imię <span>(opcjonalnie)</span></label>
+            <input id={`${id}-name`} name="name" type="text" autocomplete="name" placeholder="Jak mamy się do Ciebie zwracać?" />
+          </div>
+          <div class="field">
+            <label for={`${id}-phone`}>Telefon *</label>
+            <input id={`${id}-phone`} name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="np. 600 100 200" required />
+          </div>
+        </div>
+        <div class="form__row">
+          <div class="field">
+            <label for={`${id}-email`}>E-mail <span>(opcjonalnie)</span></label>
+            <input id={`${id}-email`} name="email" type="email" autocomplete="email" placeholder="adres@email.pl" />
+          </div>
+          <div class="field">
+            <label for={`${id}-town`}>Miejscowość <span>(opcjonalnie)</span></label>
+            <input id={`${id}-town`} name="town" type="text" autocomplete="address-level2" placeholder="np. Płock, Stara Biała" />
+          </div>
+        </div>
+        <div class="field">
+          <label for={`${id}-topic`}>Czego dotyczy zapytanie?</label>
+          <select id={`${id}-topic`} name="topic">
+            <option value="">Wybierz (opcjonalnie)</option>
+            {topics.map((c) => <option selected={c.slug === preselect}>{c.title}</option>)}
+            <option>Moskitiery, rolety wewnętrzne, pergole lub parapety</option>
+            <option>Wymiana okien – kilka produktów</option>
+            <option>Nowy dom – kompleksowo</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for={`${id}-msg`}>Wiadomość</label>
+          <textarea id={`${id}-msg`} name="message" rows="4" placeholder="Np. 8 okien i drzwi tarasowe w nowym domu, stan surowy zamknięty od marca."></textarea>
+        </div>
+        <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+        <input type="hidden" name="page" value={page} />
+        <input type="hidden" name="t" value="" />
+        <label class="consent">
+          <input type="checkbox" name="consent" value="1" required />
+          <span>
+            Wyrażam zgodę na przetwarzanie moich danych przez {site.shortLegalName} w celu odpowiedzi na zapytanie.
+            Więcej w <a href={url('/polityka-prywatnosci/')}>polityce prywatności</a>.
+          </span>
+        </label>
+        <div class="btn-row">
+          <button class="btn" type="submit">Wyślij zapytanie <Icon name="arrow" class="arrow" /></button>
+          <p class="form__status" role="status" aria-live="polite"></p>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('[data-quote-form]').forEach((form) => {
+    const status = form.querySelector<HTMLParagraphElement>('.form__status')!;
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    const started = form.querySelector<HTMLInputElement>('input[name="t"]');
+    if (started) started.value = String(Date.now());
+
+    const show = (msg: string, ok: boolean) => {
+      status.textContent = msg;
+      status.className = `form__status ${ok ? 'is-ok' : 'is-error'}`;
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const phone = String(data.get('phone') || '').replace(/\D/g, '');
+      if (phone.length < 9) return show('Podaj numer telefonu (9 cyfr), żebyśmy mogli oddzwonić.', false);
+      if (!data.get('consent')) return show('Zaznacz zgodę na przetwarzanie danych.', false);
+
+      if (form.dataset.preview) {
+        return show('To podgląd strony. Formularz zacznie wysyłać wiadomości po publikacji na docelowym serwerze.', true);
+      }
+
+      button.disabled = true;
+      show('Wysyłanie…', true);
+      try {
+        const res = await fetch(form.action, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok || !json.ok) throw new Error(json.error);
+        window.location.href = form.dataset.thanks || '/dziekujemy/';
+      } catch (err) {
+        show((err as Error).message || 'Nie udało się wysłać. Zadzwoń do nas – chętnie pomożemy.', false);
+        button.disabled = false;
+      }
+    });
+  });
+</script>

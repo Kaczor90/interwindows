@@ -1,0 +1,22 @@
+---
+// On-brand stand-in for a photo we do not have yet (fine diagonal hatch, dashed inner frame,
+// small icon and a label). Fills its parent – give the parent an aspect-ratio or a height.
+//   <div style="aspect-ratio:4/5"><Placeholder label="Zdjęcie montażysty – do podmiany" icon="person" /></div>
+// Every placeholder used on the site is listed in docs/do-uzupelnienia.md.
+import Icon from './Icon.astro';
+
+interface Props {
+  label?: string;
+  icon?: 'camera' | 'person' | 'image';
+  tone?: 'light' | 'dark';
+  class?: string;
+}
+const { label = 'Zdjęcie – do podmiany', icon = 'camera', tone = 'light', class: className } = Astro.props;
+---
+
+<div class:list={['ph', { 'ph--dark': tone === 'dark' }, className]} role="img" aria-label={label}>
+  <div class="ph__inner">
+    <span class="ph__icon"><Icon name={icon} class="" /></span>
+    <span class="ph__label">{label}</span>
+  </div>
+</div>

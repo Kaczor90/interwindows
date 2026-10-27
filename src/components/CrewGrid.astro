@@ -1,0 +1,38 @@
+---
+// "Poznaj naszych montażystów" – grid of installer cards from src/data/ekipa.ts.
+// Missing photos render as placeholders. The section heading is up to the page.
+//   <CrewGrid />                                  all members
+//   <CrewGrid members={ekipa.slice(0, 2)} />      a subset
+import { url } from '../lib/url';
+import Placeholder from './Placeholder.astro';
+import { ekipa, type CrewMember } from '../data/ekipa';
+
+interface Props {
+  members?: CrewMember[];
+}
+const { members = ekipa } = Astro.props;
+---
+
+<ul class="crew" role="list">
+  {members.map((m) => (
+    <li class="crew-card reveal">
+      <div class="crew-card__photo">
+        {m.photo ? (
+          <img src={url(m.photo)} alt={`${m.name} – ${m.role}`} width="800" height="1000" loading="lazy" />
+        ) : (
+          <Placeholder icon="person" label="Zdjęcie montażysty – do podmiany" />
+        )}
+      </div>
+      <div class="crew-card__body">
+        <span class="crew-card__role">{m.role}</span>
+        <h3>{m.name}</h3>
+        <span class="crew-card__exp">{m.experience}</span>
+        {m.note && <p class="crew-card__note">{m.note}</p>}
+      </div>
+    </li>
+  ))}
+</ul>
+
+<style>
+  ul.crew { list-style: none; margin: 0; padding: 0; }
+</style>

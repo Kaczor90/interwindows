@@ -1,0 +1,66 @@
+---
+// Call-to-action band. tone "dark" (default) = ink panel with brass rings, "light" = white panel.
+//   <CtaBand title="Umów bezpłatny pomiar" text="…"
+//            primary={{ label: 'Umów pomiar', href: '/kontakt/#wycena' }}
+//            secondary={{ label: 'Zadzwoń: 697 886 093', href: 'tel:+48697886093' }} />
+// `wrap={false}` renders only the band (place it inside your own container).
+import { url } from '../lib/url';
+import Icon from './Icon.astro';
+
+interface Link {
+  label: string;
+  href: string;
+}
+interface Props {
+  title: string;
+  text?: string;
+  eyebrow?: string;
+  primary: Link;
+  secondary?: Link;
+  tone?: 'dark' | 'light';
+  wrap?: boolean;
+}
+const { title, text, eyebrow, primary, secondary, tone = 'dark', wrap = true } = Astro.props;
+const dark = tone === 'dark';
+---
+
+{wrap ? (
+  <section class="section section--tight">
+    <div class="container">
+      <div class:list={['band reveal', dark ? 'dark on-dark' : 'band--light']}>
+        <span class="band__ring band__ring--1" aria-hidden="true"></span>
+        <span class="band__ring band__ring--2" aria-hidden="true"></span>
+        <div class="band__text">
+          {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+          <h2>{title}</h2>
+          {text && <p>{text}</p>}
+        </div>
+        <div class="band__actions">
+          <a class:list={['btn', { 'btn--light': dark }]} href={url(primary.href)}><Icon name="arrow" class="arrow" /> {primary.label}</a>
+          {secondary && <a class:list={['btn', dark ? 'btn--outline-dark' : 'btn--ghost']} href={url(secondary.href)}>{secondary.label}</a>}
+        </div>
+      </div>
+    </div>
+  </section>
+) : (
+  <div class:list={['band reveal', dark ? 'dark on-dark' : 'band--light']}>
+    <span class="band__ring band__ring--1" aria-hidden="true"></span>
+    <span class="band__ring band__ring--2" aria-hidden="true"></span>
+    <div class="band__text">
+      {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+      <h2>{title}</h2>
+      {text && <p>{text}</p>}
+    </div>
+    <div class="band__actions">
+      <a class:list={['btn', { 'btn--light': dark }]} href={url(primary.href)}><Icon name="arrow" class="arrow" /> {primary.label}</a>
+      {secondary && <a class:list={['btn', dark ? 'btn--outline-dark' : 'btn--ghost']} href={url(secondary.href)}>{secondary.label}</a>}
+    </div>
+  </div>
+)}
+
+<style>
+  .band__text,
+  .band__actions {
+    position: relative;
+  }
+</style>

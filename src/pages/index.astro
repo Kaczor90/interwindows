@@ -1,0 +1,518 @@
+---
+import { url } from '../lib/url';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
+import CrewGrid from '../components/CrewGrid.astro';
+import Brands from '../components/Brands.astro';
+import QuoteForm from '../components/QuoteForm.astro';
+import { site } from '../data/site';
+import { categories } from '../data/oferta';
+import { photoByFile, photoSrc, photoSrcSmall } from '../data/realizacje-zdjecia';
+import Testimonials from '../components/Testimonials.astro';
+import { aiImage, aiSrc, aiSrcSmall } from '../data/ai-zdjecia';
+
+const tiles = categories.filter((c) => c.slug !== 'okna');
+const crewPhoto = photoByFile('montaz-szyby-minidzwig-przyssawka-01')!;
+// AI illustrations (docs/do-uzupelnienia.md – to be replaced with own photos)
+const crewBg = aiImage('ai-montaz-ekipa-dojazd');
+const crewAi = aiImage('ai-montaz-osadzanie');
+const configAi = aiImage('ai-konfigurator-profil-probki');
+const mosaic = [
+  'przeszklenie-szczytowe-zloty-dab-01',
+  'zielone-drzwi-lukowe-kamienica-01',
+  'przeszklenie-narozne-antracyt-widok-z-wnetrza',
+  'bramy-segmentowe-antracyt-elewacja-terakota-01',
+  'drzwi-zewnetrzne-orzech-wejscie-wykonczone',
+].map((f) => photoByFile(f)!);
+
+// hero slider: own realization photos (+ one AI illustration for the configurator slide)
+const realSlide = (file: string) => {
+  const p = photoByFile(file)!;
+  const k = 800 / Math.max(p.width, p.height);
+  return { src: photoSrc(p), small: photoSrcSmall(p), smallW: Math.round(p.width * k), width: p.width, height: p.height, alt: p.alt };
+};
+const slides = [
+  {
+    src: '/img/hero-dom.webp', small: '/img/hero-dom-960.webp', smallW: 960, width: 1600, height: 1338,
+    alt: 'Czarny drewniany dom z białymi oknami ze szprosami i tarasem z desek',
+    title: 'Okna dobrane do charakteru domu', href: '/okna/', link: 'Zobacz ofertę okien',
+  },
+  {
+    ...realSlide('montaz-szyby-minidzwig-przyssawka-01'),
+    title: 'Duże przeszklenia montujemy sami, ze sprzętem do ciężkich tafli', href: '/montaz-okien/', link: 'Jak montujemy',
+  },
+  {
+    ...realSlide('wnetrze-przeszklenia-narozne-widok-na-lake'),
+    title: 'Przeszklenia narożne i drzwi tarasowe', href: '/drzwi-tarasowe/', link: 'Drzwi tarasowe i przesuwne',
+  },
+  {
+    src: aiSrc(configAi), small: aiSrcSmall(configAi), smallW: 800, width: configAi.width, height: configAi.height, alt: configAi.alt,
+    title: 'Zaprojektuj okno w konfiguratorze online', href: '/konfigurator/', link: 'Otwórz konfigurator',
+  },
+  {
+    ...realSlide('zielone-drzwi-lukowe-kamienica-01'), position: 'center 30%',
+    title: 'Drzwi zewnętrzne, także do kamienic', href: '/drzwi-zewnetrzne/', link: 'Zobacz drzwi zewnętrzne',
+  },
+] as { src: string; small: string; smallW: number; width: number; height: number; alt: string; title: string; href: string; link: string; position?: string }[];
+
+const stats = [
+  { value: '20', text: 'lat doświadczenia założycieli w pracy dla producentów okien, drzwi i bram' },
+  { value: '0', text: 'podwykonawców – montuje wyłącznie nasza ekipa' },
+  { value: '1', text: 'firma odpowiada za dobór, pomiar i montaż' },
+  { value: 'DAKO', text: 'autoryzowany partner: okna, rolety, żaluzje i bramy' },
+] as { value: string; sup?: string; text: string }[];
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const guides = [
+  { title: 'Ile kosztuje wymiana okien w 2026 roku?', href: '/poradnik/ile-kosztuje-wymiana-okien/', tag: 'Koszty' },
+  { title: 'Okna aluminiowe czy PCV – co wybrać do domu?', href: '/poradnik/okna-aluminiowe-czy-pcv/', tag: 'Okna' },
+  { title: 'HST czy PSK – jakie drzwi tarasowe wybrać?', href: '/poradnik/drzwi-tarasowe-hst-czy-psk/', tag: 'Drzwi tarasowe' },
+];
+---
+
+<Base
+  title="Okna i drzwi Płock – montaż własną ekipą | Inter Windows"
+  description="Okna PCV, aluminiowe i drewniane, drzwi, rolety i bramy dla wymagających. Płock i okolice, montaż wyłącznie naszą ekipą, bez podwykonawców."
+  updated="2026-10-27"
+>
+  <!-- old one-page anchors → new subpages (docs/seo-plan.md §5.1) -->
+  <script is:inline define:vars={{ base }}>
+    var oldAnchors = { '#about': '/o-firmie/', '#services': '/okna/', '#projects': '/realizacje/', '#testimonials': '/o-firmie/#opinie', '#contact': '/kontakt/' };
+    if (oldAnchors[location.hash]) location.replace(base + oldAnchors[location.hash]);
+  </script>
+
+  <!-- HERO (layout as in Profil: text left, slider right, soft block behind) -->
+  <section class="hero">
+    <div class="container hero__grid">
+      <div>
+        <span class="eyebrow">Płock i okolice · montaż własną ekipą</span>
+        <h1>Okna i drzwi w Płocku montowane wyłącznie przez <em>naszą ekipę</em></h1>
+        <div class="hero__actions">
+          <a class="call-link" href={site.phoneHref}>
+            <span class="call-link__circle"><Icon name="phone" class="" /></span>
+            <span><small>Zadzwoń do nas</small>{site.phone}</span>
+          </a>
+          <a class="btn" href="#wycena"><Icon name="arrow" class="arrow" /> Bezpłatna wycena</a>
+        </div>
+        <div class="hero__notes">
+          <p>
+            Kompleksowo: <a href={url('/okna/')}>okna</a>, <a href={url('/drzwi-zewnetrzne/')}>drzwi</a> i <a href={url('/bramy-garazowe/')}>bramy garażowe</a>,
+            a do tego <a href={url('/rolety-zewnetrzne/')}>rolety</a> i <a href={url('/zaluzje-fasadowe/')}>żaluzje fasadowe</a>. Jesteśmy autoryzowanym partnerem DAKO.
+          </p>
+          <p>
+            Doradzamy, mierzymy i <a href={url('/montaz-okien/')}>montujemy wyłącznie naszą ekipą</a>, bez podwykonawców.
+            Projekt okna przygotujesz też w <a href={url('/konfigurator/')}>konfiguratorze</a>.
+          </p>
+        </div>
+      </div>
+
+      <div class="slider" data-slider>
+        <div class="slider__frame">
+          {slides.map((s, i) => (
+            <div class={`slider__slide ${i === 0 ? 'is-active' : ''}`} aria-hidden={i === 0 ? undefined : 'true'}>
+              <img
+                src={url(s.src)}
+                srcset={`${url(s.small)} ${s.smallW}w, ${url(s.src)} ${s.width}w`}
+                sizes="(min-width: 900px) 46vw, 100vw"
+                alt={s.alt}
+                width={s.width}
+                height={s.height}
+                style={s.position ? `object-position:${s.position}` : undefined}
+                loading={i === 0 ? 'eager' : 'lazy'}
+                fetchpriority={i === 0 ? 'high' : undefined}
+              />
+              <div class="slider__caption">
+                <strong>{s.title}</strong>
+                <a href={url(s.href)} tabindex={i === 0 ? undefined : -1}>{s.link}</a>
+              </div>
+            </div>
+          ))}
+          <div class="slider__nav">
+            <button type="button" data-prev aria-label="Poprzedni slajd"><Icon name="arrow-left" class="" /></button>
+            <button type="button" data-next aria-label="Następny slajd"><Icon name="arrow" class="" /></button>
+          </div>
+        </div>
+        <div class="slider__dots">
+          {slides.map((_, i) => <button type="button" aria-label={`Slajd ${i + 1}`} aria-current={i === 0 ? 'true' : 'false'} />)}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LICZBY -->
+  <section class="section--tight" style="padding-block:clamp(40px,5vw,72px) 0" aria-label="W skrócie">
+    <div class="container">
+      <div class="stats reveal">
+        {stats.map((s) => (
+          <div class="stat"><b>{s.value}{s.sup && <sup>{s.sup}</sup>}</b><span>{s.text}</span></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- OFERTA -->
+  <section class="section" id="oferta">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">Oferta</span>
+          <h2>Okna, drzwi i osłony dla domu na lata</h2>
+        </div>
+        <p class="muted">
+          Dobieramy produkt do budynku, stylu i sposobu użytkowania. Każdą kategorię montuje nasza ekipa, więc jedna firma odpowiada za całość.
+        </p>
+      </div>
+      <div class="tiles">
+        {tiles.map((c) => (
+          <article class="tile reveal">
+            {c.parent && <span class="tile__tag">Okna</span>}
+            <Icon name={c.slug} />
+            <h3>{c.title}</h3>
+            <p>{c.short}</p>
+            <a class="link-arrow" href={url(`/${c.slug}/`)}>Zobacz ofertę <Icon name="arrow" class="" /></a>
+          </article>
+        ))}
+      </div>
+      <div class="offer-more reveal">
+        <p>Na zamówienie także moskitiery, rolety wewnętrzne, pergole i parapety.</p>
+        <div class="btn-row">
+          <a class="link-arrow" href={url('/okna/')}>Jak wybrać okna <Icon name="arrow" class="" /></a>
+          <a class="link-arrow" href={url('/kontakt/#wycena')}>Zapytaj doradcę <Icon name="arrow" class="" /></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WŁASNE EKIPY -->
+  <section class="section dark on-dark crews-section" id="montaz">
+    <!-- background: AI illustration with an ink overlay (no grid lines over the photo) -->
+    <div class="crews-section__bg" aria-hidden="true">
+      <img src={url(aiSrc(crewBg))} srcset={`${url(aiSrcSmall(crewBg))} 800w, ${url(aiSrc(crewBg))} 2000w`} sizes="100vw" alt="" width={crewBg.width} height={crewBg.height} loading="lazy" />
+    </div>
+    <div class="container crews">
+      <div class="reveal">
+        <span class="eyebrow">Własne ekipy montażowe</span>
+        <h2>Montujemy sami. <em>Bez podwykonawców, bez wyjątków.</em></h2>
+        <p class="lead">
+          W branży okiennej montaż często trafia do ekip z zewnątrz. U nas nie. Okna, drzwi, rolety i bramy osadzają monterzy
+          Inter Windows, a za efekt odpowiada ta sama firma, która je sprzedała.
+        </p>
+        <ul class="pledges">
+          <li>
+            <Icon name="check" class="" />
+            <div><strong>Nigdy podwykonawcy</strong><span>Każdy montaż wykonuje nasz zespół, także przy bramach garażowych i dużych przeszkleniach.</span></div>
+          </li>
+          <li>
+            <Icon name="check" class="" />
+            <div><strong>Właściciele pilnują montażu osobiście</strong><span>Paweł Majchrzak i Bartosz Bezdziek od 20 lat pracują przy oknach, drzwiach i bramach i sami czuwają nad precyzją osadzenia.</span></div>
+          </li>
+          <li>
+            <Icon name="check" class="" />
+            <div><strong>Sprzęt do dużych tafli szkła</strong><span>Ciężkie przeszklenia osadzamy z minidźwigiem i przyssawką próżniową, bez dźwigania szkła na siłę.</span></div>
+          </li>
+        </ul>
+        <div class="btn-row">
+          <a class="btn btn--light" href={url('/montaz-okien/')}><Icon name="arrow" class="arrow" /> Jak montujemy</a>
+          <a class="link-arrow" href="#ekipy">Poznaj montażystów <Icon name="arrow" class="" /></a>
+        </div>
+      </div>
+      <div class="crews__media reveal">
+        <div class="photo crews__photo">
+          <img
+            src={url(aiSrcSmall(crewAi))}
+            srcset={`${url(aiSrcSmall(crewAi))} 800w, ${url(aiSrc(crewAi))} 1600w`}
+            sizes="(min-width: 960px) 45vw, 100vw"
+            alt={crewAi.alt}
+            width={crewAi.width}
+            height={crewAi.height}
+            loading="lazy"
+          />
+        </div>
+        <figure class="crews__proof" data-fab-avoid>
+          <div class="photo">
+            <img
+              src={url(photoSrcSmall(crewPhoto))}
+              alt={crewPhoto.alt}
+              width={crewPhoto.width}
+              height={crewPhoto.height}
+              loading="lazy"
+            />
+          </div>
+          <figcaption>Z naszej budowy: duża tafla szkła osadzana minidźwigiem z przyssawką próżniową.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCES -->
+  <section class="section" id="proces">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">Montaż krok po kroku</span>
+          <h2>Od pomiaru do odbioru w 5 krokach</h2>
+        </div>
+        <p class="muted">
+          Każdy etap prowadzi nasz zespół. Wiesz, kto przyjedzie, co zrobi i kto odpowiada za efekt, także po montażu.
+        </p>
+      </div>
+      <ProcessSteps />
+    </div>
+  </section>
+
+  <!-- EKIPA -->
+  <section class="section section--soft" id="ekipy">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">Ludzie</span>
+          <h2>Poznaj naszych montażystów</h2>
+        </div>
+        <p class="muted">
+          To oni przyjadą do Ciebie na montaż. Przedstawiamy ich z imienia i nazwiska, z rolą w zespole i stażem w zawodzie.
+        </p>
+      </div>
+      <CrewGrid />
+      <div class="btn-row" style="margin-top:36px">
+        <a class="btn btn--ghost" href={url('/montaz-okien/')}><Icon name="arrow" class="arrow" /> Więcej o montażu</a>
+        <a class="link-arrow" href={url('/o-firmie/')}>O firmie <Icon name="arrow" class="" /></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- KONFIGURATOR -->
+  <section class="section" id="konfigurator">
+    <div class="container">
+      <div class="configurator reveal">
+        <div>
+          <span class="eyebrow">Konfigurator okien</span>
+          <h2>Zaprojektuj swoje okna. Pomiar i montaż zostaw nam.</h2>
+          <ol class="configurator__list">
+            <li><b>01</b><span>Typ okna i wymiary, także orientacyjne</span></li>
+            <li><b>02</b><span>Podział na skrzydła i sposób otwierania</span></li>
+            <li><b>03</b><span>Kolor ramy i okleina, od środka i od zewnątrz</span></li>
+            <li><b>04</b><span>Szyby i dodatki, a potem wysyłka do doradcy</span></li>
+          </ol>
+          <div class="btn-row">
+            <a class="btn" href={url('/konfigurator/')}><Icon name="sliders" class="arrow" /> Skonfiguruj okno</a>
+            <span class="small muted">Wymiary i tak sprawdzimy na bezpłatnym pomiarze.</span>
+          </div>
+        </div>
+        <div class="configurator__visual">
+        <figure class="photo configurator__photo">
+          <img
+            src={url(aiSrcSmall(configAi))}
+            srcset={`${url(aiSrcSmall(configAi))} 800w, ${url(aiSrc(configAi))} 1600w`}
+            sizes="(min-width: 960px) 40vw, 100vw"
+            alt={configAi.alt}
+            width={configAi.width}
+            height={configAi.height}
+            loading="lazy"
+          />
+        </figure>
+        <div class="configurator__drawing" aria-hidden="true">
+          <svg viewBox="0 0 420 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g stroke="#141824" stroke-width="2">
+              <rect x="70" y="30" width="300" height="270" />
+              <rect x="82" y="42" width="134" height="246" />
+              <rect x="224" y="42" width="134" height="246" />
+            </g>
+            <g stroke="#141824" stroke-width="1" opacity=".55">
+              <rect x="94" y="54" width="110" height="222" />
+              <rect x="236" y="54" width="110" height="222" />
+            </g>
+            <g stroke="#747b8b" stroke-width="1" stroke-dasharray="5 5">
+              <path d="M236 54 346 165 236 276" />
+              <path d="M236 276 291 54 346 276" />
+            </g>
+            <rect x="228" y="150" width="5" height="26" rx="2" style="fill: var(--accent)" />
+            <g style="stroke: var(--accent)" stroke-width="1.2">
+              <path d="M70 330h300M70 322v16M370 322v16" />
+              <path d="M30 30v270M22 30h16M22 300h16" />
+            </g>
+            <g style="fill: var(--accent)" font-family="Plus Jakarta Sans Variable, sans-serif" font-size="13" font-weight="600" letter-spacing=".08em">
+              <text x="220" y="356" text-anchor="middle">1500 mm</text>
+              <text x="18" y="165" text-anchor="middle" transform="rotate(-90 18 165)">1400 mm</text>
+            </g>
+            <text x="370" y="20" text-anchor="end" fill="#747b8b" font-family="Plus Jakarta Sans Variable, sans-serif" font-size="11" letter-spacing=".14em">OKNO DWUSKRZYDŁOWE</text>
+          </svg>
+        </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REALIZACJE -->
+  <section class="section section--soft" id="realizacje">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">Realizacje</span>
+          <h2>Realizacje z Płocka i okolic</h2>
+        </div>
+        <a class="btn btn--ghost" href={url('/realizacje/')}><Icon name="arrow" class="arrow" /> Zobacz wszystkie realizacje</a>
+      </div>
+      <div class="mosaic">
+        {mosaic.map((p, i) => (
+          <a class="mosaic__item reveal" href={url('/realizacje/')}>
+            <img
+              src={url(i === 0 ? photoSrc(p) : photoSrcSmall(p))}
+              srcset={`${url(photoSrcSmall(p))} 800w, ${url(photoSrc(p))} 1600w`}
+              sizes={i === 0 ? '(min-width: 900px) 40vw, 100vw' : '(min-width: 900px) 25vw, 50vw'}
+              alt={p.alt}
+              width={p.width}
+              height={p.height}
+              loading="lazy"
+            />
+            <span class="sr-only">Zobacz realizacje</span>
+          </a>
+        ))}
+      </div>
+      <p class="source-note">Zdjęcia z montaży wykonanych przez nasze ekipy, prosto z placu budowy.</p>
+    </div>
+  </section>
+
+  <!-- OPINIE (component owned by the testimonials agent) -->
+  <Testimonials />
+
+  <Brands title="Producenci, z którymi pracujemy" />
+
+  <!-- OBSZAR -->
+  <section class="section section--soft" id="obszar">
+    <div class="container area">
+      <div class="reveal">
+        <span class="eyebrow">Obszar działania</span>
+        <h2>Gdzie pracujemy</h2>
+        <p class="lead" style="margin-top:20px">
+          Biuro mamy w Płocku przy ul. Przemysłowej 22. Mierzymy i montujemy w mieście i w okolicznych gminach, także w powiatach gostynińskim i sierpeckim.
+        </p>
+        <p class="muted">Opinie, które publikujemy, pochodzą od klientów m.in. z tych miejscowości:</p>
+        <ul class="area__towns">
+          {site.towns.map((t) => <li>{t}</li>)}
+        </ul>
+        <a class="btn btn--ghost" href={url('/obszar-dzialania/')}><Icon name="arrow" class="arrow" /> Sprawdź obszar działania</a>
+      </div>
+      <div class="area__diagram reveal" aria-hidden="true">
+        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <g stroke="#cdd2db" stroke-width="1">
+            <circle cx="200" cy="200" r="70" />
+            <circle cx="200" cy="200" r="130" stroke-dasharray="4 6" />
+            <circle cx="200" cy="200" r="188" stroke-dasharray="2 6" />
+            <path d="M200 6v28M200 366v28M6 200h28M366 200h28" />
+          </g>
+          <g stroke="#e7e9ee"><path d="M67 67l266 266M333 67 67 333" /></g>
+          <text x="200" y="26" text-anchor="middle" fill="#747b8b" font-family="Plus Jakarta Sans Variable, sans-serif" font-size="11" font-weight="600" letter-spacing=".2em">N</text>
+          <circle cx="200" cy="200" r="16" style="stroke: var(--accent)" stroke-width="1.2" fill="#fff" />
+          <circle cx="200" cy="200" r="5" style="fill: var(--accent)" />
+          <text x="200" y="244" text-anchor="middle" fill="#141824" font-family="Plus Jakarta Sans Variable, sans-serif" font-size="22" letter-spacing="-0.5">Płock</text>
+          <text x="200" y="264" text-anchor="middle" fill="#747b8b" font-family="Plus Jakarta Sans Variable, sans-serif" font-size="11" letter-spacing=".08em">ul. Przemysłowa 22</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- PORADNIK -->
+  <section class="section section--tight" id="poradnik">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">Poradnik</span>
+          <h2>Z poradnika</h2>
+        </div>
+        <a class="link-arrow" href={url('/poradnik/')}>Wszystkie artykuły <Icon name="arrow" class="" /></a>
+      </div>
+      <div class="guides">
+        {guides.map((g) => (
+          <a class="guide reveal" href={url(g.href)}>
+            <span class="card__tag">{g.tag}</span>
+            <strong>{g.title}</strong>
+            <span class="link-arrow">Czytaj <Icon name="arrow" class="" /></span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <QuoteForm />
+</Base>
+
+<script>
+  // hero slider (from the Profil project): crossfade, prev/next, dots, autoplay unless reduced motion
+  document.querySelectorAll<HTMLElement>('[data-slider]').forEach((slider) => {
+    const slides = [...slider.querySelectorAll<HTMLElement>('.slider__slide')];
+    const dots = [...slider.querySelectorAll<HTMLButtonElement>('.slider__dots button')];
+    let current = 0;
+    let timer: number | undefined;
+
+    const go = (n: number) => {
+      current = (n + slides.length) % slides.length;
+      slides.forEach((s, i) => {
+        const active = i === current;
+        s.classList.toggle('is-active', active);
+        s.toggleAttribute('aria-hidden', !active);
+        s.querySelector('a')?.setAttribute('tabindex', active ? '0' : '-1');
+      });
+      dots.forEach((d, i) => d.setAttribute('aria-current', String(i === current)));
+    };
+    const restart = () => {
+      window.clearInterval(timer);
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        timer = window.setInterval(() => go(current + 1), 6500);
+      }
+    };
+
+    slider.querySelector('[data-prev]')?.addEventListener('click', () => { go(current - 1); restart(); });
+    slider.querySelector('[data-next]')?.addEventListener('click', () => { go(current + 1); restart(); });
+    dots.forEach((d, i) => d.addEventListener('click', () => { go(i); restart(); }));
+    restart();
+  });
+</script>
+
+<style>
+  /* own crews: AI background photo under a heavy ink overlay */
+  .crews-section { position: relative; isolation: isolate; overflow: hidden; }
+  .crews-section__bg { position: absolute; inset: 0; z-index: -1; }
+  .crews-section__bg img { width: 100%; height: 100%; object-fit: cover; object-position: 70% 40%; }
+  .crews-section__bg::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--dark) 94%, transparent) 0%, color-mix(in srgb, var(--dark) 86%, transparent) 45%, color-mix(in srgb, var(--dark) 70%, transparent) 100%);
+  }
+  .crews__media { position: relative; padding-bottom: 72px; }
+  .crews__photo { aspect-ratio: 3 / 2; }
+  .crews__proof {
+    position: absolute; left: -28px; bottom: 0;
+    width: 52%; margin: 0;
+    background: var(--ink);
+    padding: 10px 10px 12px;
+    border: 1px solid color-mix(in srgb, var(--accent-on-dark) 35%, transparent);
+  }
+  .crews__proof .photo { aspect-ratio: 4 / 3; }
+  .crews__proof figcaption { margin-top: 10px; font-size: .78rem; line-height: 1.45; color: var(--accent-on-dark); }
+  @media (max-width: 959px) {
+    .crews__media { padding-bottom: 0; }
+    .crews__proof { position: relative; left: auto; width: 72%; margin: -48px 0 0 auto; }
+  }
+
+  .configurator__visual { position: relative; }
+  .configurator__photo { aspect-ratio: 4 / 3; }
+  .configurator__drawing {
+    position: absolute; left: -36px; bottom: -36px;
+    width: 46%;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    padding: 14px;
+    box-shadow: var(--shadow-sm);
+  }
+  @media (max-width: 959px) {
+    .configurator__drawing { position: relative; left: auto; bottom: auto; width: 60%; margin: -56px 0 0 auto; }
+  }
+
+  .guides { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  @media (min-width: 800px) { .guides { grid-template-columns: repeat(3, 1fr); } }
+  .guide { display: grid; gap: 14px; align-content: start; padding: clamp(24px, 3vw, 36px); background: var(--bg); transition: background .3s; }
+  .guide strong { font-weight: 400; font-size: 1.35rem; line-height: 1.3; letter-spacing: -0.025em; color: var(--ink); }
+  .guide:hover { background: var(--bg-softer); }
+  .guide:hover .link-arrow svg { transform: translateX(4px); }
+</style>

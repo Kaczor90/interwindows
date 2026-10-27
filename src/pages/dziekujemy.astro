@@ -1,0 +1,33 @@
+---
+// Thank-you page after the form (kontakt.php redirects here). noindex → also left out of sitemap.xml.
+import { url } from '../lib/url';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { site } from '../data/site';
+---
+
+<Base title="Dziękujemy za wiadomość | Inter Windows" description="Twoje zapytanie dotarło do Inter Windows." noindex footerCta={false}>
+  <section class="page-hero">
+    <div class="container">
+      <Breadcrumbs items={[{ name: 'Dziękujemy' }]} schema={false} />
+      <div class="thanks">
+        <span class="eyebrow">Wiadomość wysłana</span>
+        <h1>Dziękujemy. <em>Odezwiemy się wkrótce.</em></h1>
+        <p class="lead">
+          Twoje zapytanie dotarło do biura Inter Windows. Oddzwonimy, żeby dopytać o szczegóły i umówić termin bezpłatnego pomiaru.
+          Jeśli sprawa jest pilna, zadzwoń: <a href={site.phoneHref}>{site.phone}</a>.
+        </p>
+        <div class="btn-row" style="margin-top:32px">
+          <a class="btn" href={url('/realizacje/')}><Icon name="arrow" class="arrow" /> Zobacz nasze realizacje</a>
+          <a class="btn btn--ghost" href={url('/montaz-okien/')}>Jak montujemy</a>
+          <a class="link-arrow" href={url('/')}>Strona główna <Icon name="arrow" class="" /></a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .thanks { max-width: 760px; padding-block: clamp(16px, 4vw, 56px) clamp(24px, 6vw, 96px); }
+</style>

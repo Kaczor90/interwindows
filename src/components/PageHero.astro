@@ -1,0 +1,77 @@
+---
+// Subpage hero: breadcrumbs (+ BreadcrumbList JSON-LD), the page's only <h1>, lead, optional
+// highlights and a photo (or a placeholder). Buttons go into the default slot.
+//   <PageHero title="Montaż okien w Płocku – zawsze naszą ekipą" eyebrow="Montaż"
+//             lead="…" breadcrumbs={[{ name: 'Montaż okien' }]}
+//             image={{ src: '/img/realizacje/x.webp', srcSmall: '/img/realizacje/x-800.webp', alt: '…', width: 1200, height: 1600 }}>
+//     <a class="btn" href="#wycena">Umów pomiar</a>
+//   </PageHero>
+// `lead` accepts the rich() markup ([label](/path/), **bold**). `media={false}` = text-only hero.
+import { url } from '../lib/url';
+import { rich } from '../lib/rich';
+import Breadcrumbs from './Breadcrumbs.astro';
+import Placeholder from './Placeholder.astro';
+import Icon from './Icon.astro';
+import type { Crumb } from '../lib/schema';
+
+interface Props {
+  title: string;
+  eyebrow?: string;
+  lead?: string;
+  breadcrumbs: Crumb[];
+  image?: { src: string; alt: string; width?: number; height?: number; srcSmall?: string };
+  /** label of the placeholder shown when there is no image */
+  placeholderLabel?: string;
+  media?: boolean;
+  highlights?: string[];
+}
+const {
+  title,
+  eyebrow,
+  lead,
+  breadcrumbs,
+  image,
+  placeholderLabel = 'Zdjęcie z realizacji – do podmiany',
+  media = true,
+  highlights,
+} = Astro.props;
+const hasSlot = Astro.slots.has('default');
+---
+
+<section class:list={['page-hero', { 'page-hero--plain': !media }]}>
+  <div class="container">
+    <Breadcrumbs items={breadcrumbs} />
+    <div class:list={[{ 'page-hero__grid': media }]}>
+      <div>
+        {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+        <h1>{title}</h1>
+        {lead && <p class="lead rich" set:html={rich(lead)} />}
+        {hasSlot && <div class="page-hero__actions"><slot /></div>}
+        {highlights && highlights.length > 0 && (
+          <ul class="highlights">
+            {highlights.map((h) => <li><Icon name="check" class="" /><span>{h}</span></li>)}
+          </ul>
+        )}
+      </div>
+      {media && (
+        <div class="page-hero__media">
+          <div class="page-hero__img">
+            {image ? (
+              <img
+                src={url(image.src)}
+                srcset={image.srcSmall ? `${url(image.srcSmall)} 800w, ${url(image.src)} 1600w` : undefined}
+                sizes={image.srcSmall ? '(min-width: 960px) 50vw, 100vw' : undefined}
+                alt={image.alt}
+                width={image.width ?? 1200}
+                height={image.height ?? 1600}
+                fetchpriority="high"
+              />
+            ) : (
+              <Placeholder label={placeholderLabel} />
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+</section>

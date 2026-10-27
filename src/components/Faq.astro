@@ -1,0 +1,57 @@
+---
+// FAQ accordion + FAQPage JSON-LD (only for questions that are visible on the page – SEO §5.3).
+//   <Faq items={[{ q: 'Czy pomiar jest bezpłatny?', a: 'Tak. …' }]} />
+//   <Faq items={…} title="Pytania o montaż" eyebrow="Montaż" />
+//   <Faq items={…} bare />            just the accordion (no section, heading or container)
+// Answers accept the rich() markup ([label](/path/), **bold**).
+import { rich } from '../lib/rich';
+import { faq } from '../lib/schema';
+
+interface Props {
+  items: { q: string; a: string }[];
+  title?: string;
+  eyebrow?: string;
+  /** rich */
+  intro?: string;
+  id?: string;
+  schema?: boolean;
+  bare?: boolean;
+  /** extra classes for the <section>, e.g. "section--soft" */
+  class?: string;
+}
+const { items, title = 'Najczęstsze pytania', eyebrow = 'FAQ', intro, id = 'faq', schema = true, bare = false, class: className } = Astro.props;
+const num = (i: number) => String(i + 1).padStart(2, '0');
+---
+
+{items.length > 0 && !bare && (
+  <section class:list={['section', className]} id={id}>
+    <div class="container faq">
+      <div class="reveal">
+        <span class="eyebrow">{eyebrow}</span>
+        <h2>{title}</h2>
+        {intro && <p class="muted rich" style="margin-top:20px" set:html={rich(intro)} />}
+      </div>
+      <div class="faq__panel reveal">
+        <div class="accordion">
+          {items.map((f, i) => (
+            <details open={i === 0}>
+              <summary><span class="num" aria-hidden="true">{num(i)}</span>{f.q}<span class="plus" aria-hidden="true"></span></summary>
+              <div class="accordion__body rich"><p set:html={rich(f.a)} /></div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+)}
+{items.length > 0 && bare && (
+  <div class="accordion">
+    {items.map((f, i) => (
+      <details open={i === 0}>
+        <summary><span class="num" aria-hidden="true">{num(i)}</span>{f.q}<span class="plus" aria-hidden="true"></span></summary>
+        <div class="accordion__body rich"><p set:html={rich(f.a)} /></div>
+      </details>
+    ))}
+  </div>
+)}
+{items.length > 0 && schema && <script type="application/ld+json" set:html={JSON.stringify(faq(items))} />}

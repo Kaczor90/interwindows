@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.astro/
+# local Claude Code settings – only the shared dev-server config is versioned
+.claude/*
+!.claude/launch.json
+
+# source material (≈110 MB of photos, logo sources, AI originals); optimised files live in public/img
+_tresci/

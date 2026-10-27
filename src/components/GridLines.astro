@@ -1,0 +1,15 @@
+---
+// Architectural background lines. Base.astro renders the global layer (fixed, behind all content).
+// Full-width DARK sections render a local copy so the lines continue there:
+//   <section class="dark has-lines"><GridLines local tone="dark" /> …content… </section>
+// (the section needs class "has-lines"; the lines stay below every element inside it).
+interface Props {
+  local?: boolean;
+  tone?: 'light' | 'dark';
+}
+const { local = false, tone = 'light' } = Astro.props;
+---
+
+<div class:list={['grid-lines', { 'grid-lines--local': local, 'grid-lines--dark': tone === 'dark' }]} aria-hidden="true">
+  <div class="container"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+</div>

@@ -1,0 +1,106 @@
+---
+import { url } from '../lib/url';
+import Icon from './Icon.astro';
+import GridLines from './GridLines.astro';
+import { site, social } from '../data/site';
+import { categories } from '../data/oferta';
+
+interface Props {
+  /** hide the CTA row above the footer columns (e.g. on /kontakt/ or /dziekujemy/) */
+  cta?: boolean;
+}
+const { cta = true } = Astro.props;
+const year = new Date().getFullYear();
+
+const services = [
+  { label: 'Montaż okien', href: '/montaz-okien/' },
+  { label: 'Wymiana okien', href: '/wymiana-okien/' },
+  { label: 'Ciepły montaż okien', href: '/cieply-montaz-okien/' },
+  { label: 'Konfigurator okien', href: '/konfigurator/' },
+  { label: 'Realizacje', href: '/realizacje/' },
+  { label: 'Poradnik', href: '/poradnik/' },
+  { label: 'Obszar działania: Płock i okolice', href: '/obszar-dzialania/' },
+];
+const company = [
+  { label: 'O firmie', href: '/o-firmie/' },
+  { label: 'Nasi montażyści', href: '/o-firmie/#ekipy' },
+  { label: 'Opinie klientów', href: '/o-firmie/#opinie' },
+  { label: 'Kontakt', href: '/kontakt/' },
+];
+---
+
+<footer class="site-footer has-lines on-dark">
+  <GridLines local tone="dark" />
+  <span class="footer-ring" aria-hidden="true"></span>
+  <div class="container">
+    {cta && (
+      <div class="footer-cta">
+        <div>
+          <span class="eyebrow">Pomiar i wycena bez zobowiązań</span>
+          <h2>Porozmawiajmy o oknach do Twojego domu</h2>
+        </div>
+        <div class="btn-row">
+          <a class="btn btn--light" href={url('/kontakt/#wycena')}><Icon name="arrow" class="arrow" /> Umów bezpłatny pomiar</a>
+          <a class="btn btn--outline-dark" href={site.phoneHref}><Icon name="phone" class="" /> {site.phone}</a>
+        </div>
+      </div>
+    )}
+
+    <div class="footer-top">
+      <div>
+        <a class="footer-logo" href={url('/')} aria-label={`${site.name} – strona główna`}>
+          <img src={url('/img/logo-white.png')} alt={site.name} width="280" height="271" loading="lazy" />
+        </a>
+        <p class="footer-slogan">{site.slogan}</p>
+        <p>{site.footerAbout}</p>
+        <div class="footer-social">
+          {social.map((s) => (
+            <a class="social-link" href={s.href} target="_blank" rel="noopener" aria-label={`${site.name} na ${s.label === 'Instagram' ? 'Instagramie' : 'Facebooku'}`}>
+              <Icon name={s.icon} class="" />
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <nav aria-label="Oferta">
+        <h3>Oferta</h3>
+        <ul>
+          {categories.map((c) => <li><a href={url(`/${c.slug}/`)}>{c.title}</a></li>)}
+        </ul>
+      </nav>
+
+      <nav aria-label="Usługi">
+        <h3>Usługi</h3>
+        <ul>
+          {services.map((s) => <li><a href={url(s.href)}>{s.label}</a></li>)}
+        </ul>
+      </nav>
+
+      <nav aria-label="Firma">
+        <h3>Firma</h3>
+        <ul>
+          {company.map((s) => <li><a href={url(s.href)}>{s.label}</a></li>)}
+        </ul>
+      </nav>
+
+      <div>
+        <h3>Kontakt</h3>
+        <address>
+          <span><strong>{site.name}</strong><br />{site.address.street}<br />{site.address.postalCode} {site.address.city}</span>
+          <span>tel. <a href={site.phoneHref}>{site.phone}</a></span>
+          <span><a href={`mailto:${site.email}`}>{site.email}</a></span>
+          {site.hoursRows.length > 0 && <span>{site.hoursRows.map((h) => <>{h.label}: {h.value}<br /></>)}</span>}
+        </address>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© {year} {site.shortLegalName} · NIP {site.nip}</span>
+      <span>Zdjęcia z realizacji pochodzą z naszych montaży; część ilustracji ma charakter poglądowy.</span>
+      <nav aria-label="Informacje prawne">
+        <a href={url('/polityka-prywatnosci/')}>Polityka prywatności</a>
+        <a href={url('/kontakt/#dane-firmy')}>Dane firmy</a>
+      </nav>
+    </div>
+  </div>
+</footer>

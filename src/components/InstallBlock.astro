@@ -1,0 +1,48 @@
+---
+// Short "own crew" installation block used at the end of every offer page (docs/seo-plan.md §4.1:
+// "blok Dlaczego własna ekipa, krótki, z linkiem do /montaz-okien/").
+//   <InstallBlock product="okna PCV" />
+//   <InstallBlock product="bramy garażowe" title="Bramę montuje nasza ekipa" />
+import { url } from '../lib/url';
+import Icon from './Icon.astro';
+import { photoByFile, photoSrcSmall, photoSrc } from '../data/realizacje-zdjecia';
+
+interface Props {
+  /** what is being installed, in the accusative-friendly form used in the text, e.g. "okna PCV" */
+  product?: string;
+  title?: string;
+  /** set to false on a tinted page section to drop the section wrapper */
+  wrap?: boolean;
+}
+const { product = 'okna i drzwi', title = 'Montuje nasza ekipa. Nigdy podwykonawcy.', wrap = true } = Astro.props;
+const photos = [photoByFile('montaz-szyby-minidzwig-przyssawka-01')!, photoByFile('okno-narozne-antracyt-podbitka')!];
+---
+
+<section class:list={[{ 'section section--soft': wrap }]} id="montaz">
+  <div class:list={[{ container: wrap }, 'install']}>
+    <div class="reveal">
+      <span class="eyebrow">Montaż własną ekipą</span>
+      <h2>{title}</h2>
+      <p class="lead" style="margin-top:20px">
+        Nawet najlepszy produkt traci swoje parametry, jeśli zostanie źle osadzony. Dlatego {product} montują u nas wyłącznie
+        monterzy z naszego zespołu. Nie przekazujemy montażu podwykonawcom.
+      </p>
+      <ul class="install__points">
+        <li><Icon name="check" class="" /><span>Bezpłatny pomiar na miejscu i dobór sposobu osadzenia</span></li>
+        <li><Icon name="check" class="" /><span>Montaż wykonuje wyłącznie zespół Inter Windows</span></li>
+        <li><Icon name="check" class="" /><span>Jedna firma odpowiada za produkt i za montaż</span></li>
+      </ul>
+      <div class="btn-row">
+        <a class="btn" href={url('/montaz-okien/')}><Icon name="arrow" class="arrow" /> Jak montujemy</a>
+        <a class="link-arrow" href={url('/o-firmie/#ekipy')}>Poznaj naszych montażystów <Icon name="arrow" class="" /></a>
+      </div>
+    </div>
+    <div class="install__media">
+      {photos.map((p) => (
+        <figure class="photo reveal">
+          <img src={url(photoSrcSmall(p))} srcset={`${url(photoSrcSmall(p))} 800w, ${url(photoSrc(p))} 1600w`} sizes="(min-width: 960px) 25vw, 50vw" alt={p.alt} width={p.width} height={p.height} loading="lazy" />
+        </figure>
+      ))}
+    </div>
+  </div>
+</section>

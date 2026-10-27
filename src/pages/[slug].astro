@@ -1,0 +1,264 @@
+---
+// Offer category pages generated from src/data/oferta.ts (one page per category, /<slug>/).
+// Layout: hero → (hub: sub-categories) → content sections (H2 plan from SEO §4.3) → realizations
+// → own-crew installation block → FAQ → CTA → quote form → related pages.
+import { url } from '../lib/url';
+import { rich } from '../lib/rich';
+import { slug as toSlug } from '../lib/slug';
+import { service } from '../lib/schema';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import PageHero from '../components/PageHero.astro';
+import PhotoStrip from '../components/PhotoStrip.astro';
+import InstallBlock from '../components/InstallBlock.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import QuoteForm from '../components/QuoteForm.astro';
+import { categories, categoryBySlug, childrenOf, type Category } from '../data/oferta';
+import { photoByFile, photoSrcSmall, type PhotoTag } from '../data/realizacje-zdjecia';
+import { aiImages, aiSrc, aiSrcSmall } from '../data/ai-zdjecia';
+import { site } from '../data/site';
+
+export function getStaticPaths() {
+  return categories.map((category) => ({ params: { slug: category.slug }, props: { category } }));
+}
+
+const { category: c } = Astro.props as { category: Category };
+const path = `/${c.slug}/`;
+const parent = c.parent ? categoryBySlug(c.parent) : undefined;
+const children = childrenOf(c.slug);
+const hubItems = c.slug === 'okna' ? [...children, categoryBySlug('drzwi-tarasowe')!] : children;
+
+const crumbs = [...(parent ? [{ name: parent.title, path: `/${parent.slug}/` }] : []), { name: c.title }];
+
+// hero: own realization photo (/img/realizacje/…) or AI illustration (/img/ai/…) – sizes from the manifests
+const heroFile = c.heroImage?.match(/realizacje\/(.+)\.webp$/)?.[1];
+const heroPhoto = heroFile ? photoByFile(heroFile) : undefined;
+const heroAi = aiImages.find((a) => c.heroImage === aiSrc(a));
+const heroMeta = heroPhoto ?? heroAi;
+const heroImage = c.heroImage
+  ? {
+      src: c.heroImage,
+      srcSmall: heroPhoto ? photoSrcSmall(heroPhoto) : heroAi ? aiSrcSmall(heroAi) : undefined,
+      alt: c.heroAlt ?? c.title,
+      width: heroMeta?.width ?? 1200,
+      height: heroMeta?.height ?? 1600,
+    }
+  : undefined;
+/** every image in public/img has an -800 variant next to it */
+const smallOf = (src: string) => src.replace(/\.webp$/, '-800.webp');
+
+const sectionId = (s: Category['sections'][number]) => s.id ?? toSlug(s.h2);
+const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
+const productName = lowerFirst(c.title);
+
+// labels for related links that are not categories
+const pageLabels: Record<string, string> = {
+  '/montaz-okien/': 'Montaż okien',
+  '/wymiana-okien/': 'Wymiana okien',
+  '/cieply-montaz-okien/': 'Ciepły montaż okien',
+  '/konfigurator/': 'Konfigurator okien',
+  '/realizacje/': 'Realizacje',
+  '/kontakt/': 'Kontakt i pomiar',
+  '/obszar-dzialania/': 'Obszar działania',
+  '/poradnik/okna-aluminiowe-czy-pcv/': 'Poradnik: okna aluminiowe czy PCV',
+  '/poradnik/ile-kosztuje-wymiana-okien/': 'Poradnik: ile kosztuje wymiana okien',
+  '/poradnik/drzwi-tarasowe-hst-czy-psk/': 'Poradnik: HST czy PSK',
+  '/poradnik/zaluzje-fasadowe-czy-rolety-zewnetrzne/': 'Poradnik: żaluzje czy rolety',
+};
+const pageIcons: Record<string, string> = {
+  '/montaz-okien/': 'montaz',
+  '/wymiana-okien/': 'demontaz',
+  '/cieply-montaz-okien/': 'montaz',
+  '/konfigurator/': 'konfigurator',
+  '/kontakt/': 'doradztwo',
+};
+const related = c.related.map((r) => {
+  if (r.startsWith('/')) return { href: r, label: pageLabels[r] ?? r, icon: pageIcons[r] ?? 'doradztwo' };
+  const rc = categoryBySlug(r);
+  return rc ? { href: `/${rc.slug}/`, label: rc.title, icon: rc.slug } : null;
+}).filter((x): x is { href: string; label: string; icon: string } => !!x);
+
+const ctas = {
+  konfigurator: { primary: { label: 'Skonfiguruj okno', href: '/konfigurator/' }, secondary: { label: 'Umów bezpłatny pomiar', href: '#wycena' } },
+  pomiar: { primary: { label: 'Umów bezpłatny pomiar', href: '#wycena' }, secondary: { label: `Zadzwoń: ${site.phone}`, href: site.phoneHref } },
+  konsultacja: { primary: { label: 'Umów konsultację', href: '#wycena' }, secondary: { label: `Zadzwoń: ${site.phone}`, href: site.phoneHref } },
+}[c.cta];
+
+const schema = service({
+  name: c.seo.h1,
+  serviceType: c.serviceType,
+  path,
+  description: c.seo.description,
+});
+const photoTags = (c.photoTags ?? []) as PhotoTag[];
+---
+
+<Base title={c.seo.title} description={c.seo.description} updated={c.updated} schema={schema}>
+  <PageHero
+    title={c.seo.h1}
+    eyebrow={parent ? parent.title : 'Oferta'}
+    lead={c.lead}
+    breadcrumbs={crumbs}
+    image={heroImage}
+    highlights={c.highlights}
+  >
+    <a class="btn" href={url(ctas.primary.href)}><Icon name={c.cta === 'konfigurator' ? 'sliders' : 'arrow'} class="arrow" /> {ctas.primary.label}</a>
+    <a class="btn btn--ghost" href={url(ctas.secondary.href)}>{ctas.secondary.label}</a>
+  </PageHero>
+
+  {hubItems.length > 0 && (
+    <section class="section section--tight pt-0">
+      <div class="container">
+        <div class="tiles">
+          {hubItems.map((h) => (
+            <article class="tile reveal">
+              <Icon name={h.slug} />
+              <h2 class="h3-like">{h.title}</h2>
+              <p>{h.short}</p>
+              <a class="link-arrow" href={url(`/${h.slug}/`)}>Poznaj {lowerFirst(h.title)} <Icon name="arrow" class="" /></a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section section--soft">
+    <div class="container">
+      <div class="page-index reveal">
+        <div>
+          <span class="page-index__label">Na tej stronie</span>
+          <nav class="toc" aria-label="Spis treści">
+            {c.sections.map((s) => <a class="chip" href={`#${sectionId(s)}`}>{s.h2}</a>)}
+            {c.faq && c.faq.length > 0 && <a class="chip" href="#faq">Pytania i odpowiedzi</a>}
+          </nav>
+        </div>
+        {c.brands && c.brands.length > 0 && (
+          <div>
+            <span class="page-index__label">Producenci</span>
+            <ul class="brands-inline">
+              {c.brands.map((b) => <li class:list={{ 'is-key': b === 'DAKO' }}>{b}</li>)}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      <div class="content">
+        {c.sections.map((s) => (
+          <section class="content-section" id={sectionId(s)}>
+            <div class="content-section__head reveal">
+              {s.eyebrow && <span class="eyebrow">{s.eyebrow}</span>}
+              <h2>{s.h2}</h2>
+            </div>
+            <div class="content-section__body rich reveal">
+              {s.body?.map((p) => <p set:html={rich(p)} />)}
+              {s.items && (
+                <div class="cards">
+                  {s.items.map((it) => (
+                    <div class="card">
+                      {it.tag && <span class="card__tag">{it.tag}</span>}
+                      <h3>{it.title}</h3>
+                      <p>{it.text}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {s.table && (
+                <div class="table-wrap">
+                  <table>
+                    {s.table.caption && <caption>{s.table.caption}</caption>}
+                    <thead><tr>{s.table.head.map((h) => <th scope="col">{h}</th>)}</tr></thead>
+                    <tbody>
+                      {s.table.rows.map((row) => (
+                        <tr>{row.map((cell, i) => (i === 0 ? <th scope="row">{cell}</th> : <td>{cell}</td>))}</tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+              {s.bullets && <ul class="bullets">{s.bullets.map((b) => <li set:html={rich(b)} />)}</ul>}
+              {s.image && (
+                <figure class="photo content-section__img">
+                  <img
+                    src={url(smallOf(s.image.src))}
+                    srcset={`${url(smallOf(s.image.src))} 800w, ${url(s.image.src)} 1600w`}
+                    sizes="(min-width: 960px) 55vw, 100vw"
+                    alt={s.image.alt}
+                    width={s.image.width}
+                    height={s.image.height}
+                    loading="lazy"
+                  />
+                </figure>
+              )}
+              {s.links && s.links.length > 0 && (
+                <div class="content-section__links">
+                  {s.links.map((l) => <a class="link-arrow" href={url(l.href)}>{l.label} <Icon name="arrow" class="" /></a>)}
+                </div>
+              )}
+            </div>
+          </section>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight" id="realizacje">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">Z naszych montaży</span>
+          <h2>Realizacje w Płocku i okolicach</h2>
+        </div>
+        <a class="link-arrow" href={url('/realizacje/')}>Wszystkie realizacje <Icon name="arrow" class="" /></a>
+      </div>
+      <PhotoStrip tags={photoTags} exclude={heroFile ? [heroFile] : []} />
+    </div>
+  </section>
+
+  <InstallBlock product={productName} />
+
+  {c.faq && <Faq items={c.faq} title={`Pytania o ${productName}`} eyebrow="FAQ" />}
+
+  {c.cta === 'konfigurator' && (
+    <CtaBand
+      eyebrow="Konfigurator okien"
+      title="Zaprojektuj okna online. Pomiar i montaż zostaw nam."
+      text="Wybierz typ, wymiary, podział, kolor i szyby. Projekt trafi do doradcy, który przygotuje wycenę i umówi bezpłatny pomiar."
+      primary={{ label: 'Otwórz konfigurator', href: '/konfigurator/' }}
+      secondary={{ label: 'Wolę rozmowę z doradcą', href: '#wycena' }}
+    />
+  )}
+
+  <QuoteForm title={`Zapytaj o ${productName}`} preselect={c.slug} />
+
+  <section class="section section--tight">
+    <div class="container">
+      <div class="section-head"><span class="eyebrow">Zobacz też</span><h2>Powiązane strony</h2></div>
+      <div class="related">
+        {related.map((r) => (
+          <a href={url(r.href)}><Icon name={r.icon} class="icon" />{r.label}</a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .h3-like { font-family: var(--font); font-size: 1.12rem; font-weight: 600; line-height: 1.3; letter-spacing: -0.01em; }
+  .page-index {
+    display: grid; gap: 24px 48px;
+    padding: 26px 28px;
+    margin-bottom: clamp(48px, 6vw, 80px);
+    background: var(--bg);
+    border: 1px solid var(--line);
+  }
+  @media (min-width: 960px) { .page-index { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); } }
+  .page-index__label {
+    display: block; margin-bottom: 12px;
+    font-size: .8rem; font-weight: 600; color: var(--muted);
+  }
+  .content-section { border-top-color: var(--line-strong); }
+  .content-section__img { margin: 8px 0 24px; aspect-ratio: 16 / 9; }
+  .content-section__img img { width: 100%; height: 100%; object-fit: cover; }
+</style>

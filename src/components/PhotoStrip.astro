@@ -1,0 +1,40 @@
+---
+// Row of realization photos (from src/data/realizacje-zdjecia.ts). Fills up to `count` slots and
+// shows on-brand placeholders when there are fewer photos (e.g. categories without own photos yet).
+//   <PhotoStrip tags={['bramy-garazowe']} />
+//   <PhotoStrip photos={[photoByFile('...')!]} count={3} />
+import { url } from '../lib/url';
+import Placeholder from './Placeholder.astro';
+import { photosByTag, photoSrc, photoSrcSmall, type PhotoTag, type RealizacjaZdjecie } from '../data/realizacje-zdjecia';
+
+interface Props {
+  tags?: PhotoTag[];
+  photos?: RealizacjaZdjecie[];
+  count?: 3 | 4;
+  /** files to leave out (e.g. the photo already used in the page hero) */
+  exclude?: string[];
+  placeholderLabel?: string;
+}
+const { tags = [], photos, count = 4, exclude = [], placeholderLabel = 'Zdjęcie z realizacji – do uzupełnienia' } = Astro.props;
+const list = (photos ?? photosByTag(tags, count + exclude.length)).filter((p) => !exclude.includes(p.file)).slice(0, count);
+const missing = Math.max(0, count - list.length);
+---
+
+<div class:list={['strip', { 'strip--3': count === 3 }]}>
+  {list.map((p) => (
+    <figure class="photo reveal">
+      <img
+        src={url(photoSrcSmall(p))}
+        srcset={`${url(photoSrcSmall(p))} 800w, ${url(photoSrc(p))} 1600w`}
+        sizes="(min-width: 900px) 25vw, 50vw"
+        alt={p.alt}
+        width={p.width}
+        height={p.height}
+        loading="lazy"
+      />
+    </figure>
+  ))}
+  {Array.from({ length: missing }).map(() => (
+    <div class="reveal"><Placeholder label={placeholderLabel} /></div>
+  ))}
+</div>

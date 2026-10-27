@@ -1,0 +1,202 @@
+---
+import { url } from '../lib/url';
+import { webPage, abs, BUSINESS_ID } from '../lib/schema';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import PageHero from '../components/PageHero.astro';
+import Placeholder from '../components/Placeholder.astro';
+import CrewGrid from '../components/CrewGrid.astro';
+import Brands from '../components/Brands.astro';
+import QuoteForm from '../components/QuoteForm.astro';
+import { site } from '../data/site';
+import { photoByFile, photoSrc, photoSrcSmall } from '../data/realizacje-zdjecia';
+import Testimonials from '../components/Testimonials.astro';
+
+const hero = photoByFile('przeszklenie-szczytowe-wnetrze-wiezba')!;
+const owners = site.founders;
+
+const values = [
+  {
+    icon: 'doradztwo',
+    title: 'Najpierw doradztwo',
+    text: 'Pomagamy przejść przez parametry techniczne i dobrać okna, drzwi i bramy do potrzeb, budżetu i stylu budynku. Sprzedaż jest dopiero kolejnym krokiem.',
+  },
+  {
+    icon: 'partner',
+    title: 'Sprawdzone komponenty',
+    text: 'Pracujemy na systemach renomowanych producentów, między innymi DAKO, VEKA i Aluprof. Każdy produkt dobieramy pod konkretny budynek, a nie pod magazyn.',
+  },
+  {
+    icon: 'montaz',
+    title: 'Jedna odpowiedzialność',
+    text: 'Montaż wykonuje wyłącznie nasz zespół, więc za produkt i za jakość osadzenia odpowiada ta sama firma. Nie ma przerzucania winy na podwykonawcę.',
+  },
+];
+
+const schema = [
+  webPage('AboutPage', '/o-firmie/', 'O firmie Inter Windows'),
+  ...owners.map((name) => ({
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name,
+    jobTitle: 'Współwłaściciel',
+    worksFor: { '@id': BUSINESS_ID },
+    url: abs('/o-firmie/'),
+  })),
+];
+---
+
+<Base
+  title="O nas – 20 lat w oknach, własne ekipy | Inter Windows"
+  description="Dwóch ekspertów z 20-letnim doświadczeniem i własne ekipy montażowe. Autoryzowany partner DAKO w Płocku. Poznaj ludzi, którzy przyjadą do Ciebie."
+  updated="2026-10-27"
+  schema={schema}
+>
+  <PageHero
+    title="Inter Windows – doradztwo i montaż w jednych rękach"
+    eyebrow="O firmie"
+    lead="Firmę prowadzą Paweł Majchrzak i Bartosz Bezdziek, którzy przez 20 lat pracowali dla czołowych producentów okien, drzwi i bram. Dziś doradzają, mierzą i montują pod własnym szyldem, z własnym zespołem montażowym."
+    breadcrumbs={[{ name: 'O firmie' }]}
+    image={{ src: photoSrc(hero), srcSmall: photoSrcSmall(hero), alt: hero.alt, width: hero.width, height: hero.height }}
+  >
+    <a class="btn" href="#ekipy"><Icon name="arrow" class="arrow" /> Poznaj nasz zespół</a>
+    <a class="btn btn--ghost" href={url('/kontakt/')}>Kontakt</a>
+  </PageHero>
+
+  <!-- HISTORIA -->
+  <section class="section section--soft" id="historia">
+    <div class="container split" style="align-items:start">
+      <div class="reveal">
+        <span class="eyebrow">Nasza historia</span>
+        <h2>Młoda firma, 20 lat doświadczenia</h2>
+      </div>
+      <div class="prose reveal">
+        <p>
+          Inter Windows jako firma działa od niedawna: pierwsze realizacje pokazujemy z przełomu 2024 i 2025 roku. Doświadczenie ludzi, którzy ją
+          prowadzą, liczy jednak 20 lat. Tyle czasu założyciele spędzili, pracując dla czołowych producentów okien, drzwi i bram.
+        </p>
+        <p>
+          Własną firmę założyli z prostego powodu: chcieli pracować wyłącznie na sprawdzonych komponentach od renomowanych producentów i odpowiadać
+          za całą drogę, od pierwszej rozmowy po montaż. Dlatego jesteśmy <strong>autoryzowanym partnerem DAKO</strong>, a montaż wykonuje u nas
+          wyłącznie nasz zespół.
+        </p>
+        <p>
+          Pracujemy dla właścicieli domów, mieszkań i lokali usługowych w Płocku i okolicach. Większość klientów trafia do nas z polecenia.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WŁAŚCICIELE -->
+  <section class="section" id="wlasciciele">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">Właściciele</span>
+          <h2>Dwóch właścicieli: doradztwo i montaż pod osobistą kontrolą</h2>
+        </div>
+        <p class="muted">Każdy z nas pilnuje innego etapu Twojej inwestycji. Razem odpowiadamy za całość.</p>
+      </div>
+      <div class="owners">
+        {owners.map((name) => (
+          <article class="owner reveal">
+            <div class="owner__photo"><Placeholder icon="person" label="Zdjęcie właściciela – do podmiany" /></div>
+            <div class="owner__body">
+              <span class="crew-card__role">Współwłaściciel</span>
+              <h3>{name}</h3>
+            </div>
+          </article>
+        ))}
+        <div class="owner-roles reveal">
+          <div class="card">
+            <span class="card__tag">Doradztwo</span>
+            <h3>Dobór szyty na miarę</h3>
+            <p>Jeden z nas to specjalista od technologii i estetyki. Pomaga przebrnąć przez parametry techniczne i dobrać produkty, które pasują do potrzeb, budżetu i stylu budynku.</p>
+          </div>
+          <div class="card">
+            <span class="card__tag">Montaż</span>
+            <h3>Precyzja osadzenia</h3>
+            <p>Drugi to praktyk, dla którego montaż nie ma tajemnic. Nawet najlepsze okno nie spełni swojej funkcji, jeśli zostanie źle osadzone, dlatego osobiście czuwamy nad szczelnością i trwałością.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EKIPY -->
+  <section class="section section--soft" id="ekipy">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">Nasze ekipy</span>
+          <h2>Montują nasi ludzie. Zawsze.</h2>
+        </div>
+        <p class="muted">
+          Nie zlecamy montażu podwykonawcom. Poniżej przedstawiamy monterów, którzy przyjadą do Ciebie, z imienia i ze stażem.
+        </p>
+      </div>
+      <CrewGrid />
+      <div class="btn-row" style="margin-top:36px">
+        <a class="btn btn--ghost" href={url('/montaz-okien/')}><Icon name="arrow" class="arrow" /> Jak montujemy</a>
+        <a class="link-arrow" href={url('/realizacje/')}>Realizacje <Icon name="arrow" class="" /></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- WARTOŚCI -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Jak pracujemy</span>
+        <h2>Na czym nam zależy</h2>
+      </div>
+      <div class="values">
+        {values.map((v) => (
+          <div class="value reveal">
+            <Icon name={v.icon} />
+            <h3>{v.title}</h3>
+            <p>{v.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <Brands eyebrow="Partnerzy" title="Partnerzy i producenci" />
+
+  <!-- OPINIE (component owned by the testimonials agent) -->
+  <div id="opinie"><Testimonials /></div>
+
+  <!-- DANE FIRMY -->
+  <section class="section section--tight" id="dane-firmy">
+    <div class="container split" style="align-items:start">
+      <div>
+        <span class="eyebrow">Formalności</span>
+        <h2>Dane firmy</h2>
+      </div>
+      <dl class="company-data">
+        <div><dt>Nazwa</dt><dd>{site.legalName}</dd></div>
+        <div><dt>Adres</dt><dd>{site.address.street}, {site.address.postalCode} {site.address.city}</dd></div>
+        <div><dt>NIP</dt><dd>{site.nip}</dd></div>
+        <div><dt>REGON</dt><dd>{site.regon}</dd></div>
+        <div><dt>Telefon</dt><dd><a href={site.phoneHref}>{site.phone}</a></dd></div>
+        <div><dt>E-mail</dt><dd><a href={`mailto:${site.email}`}>{site.email}</a></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <QuoteForm title="Poznajmy się: umów spotkanie" eyebrow="Spotkanie" lead="Zostaw numer telefonu. Oddzwonimy i umówimy spotkanie w biurze albo pomiar u Ciebie, na budowie lub w domu. Pomiar i wycena są bezpłatne." />
+</Base>
+
+<style>
+  .owners { display: grid; gap: 20px; }
+  @media (min-width: 640px) { .owners { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1000px) { .owners { grid-template-columns: minmax(0, 3fr) minmax(0, 3fr) minmax(0, 5fr); align-items: stretch; } }
+  .owner { background: var(--bg); border: 1px solid var(--line); display: flex; flex-direction: column; }
+  .owner__photo { aspect-ratio: 4 / 5; }
+  .owner__body { padding: 18px 20px 22px; display: grid; gap: 4px; }
+  .owner h3 { font-weight: 400; font-size: 1.5rem; line-height: 1.2; letter-spacing: -0.03em; }
+  .owner-roles { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); align-content: stretch; }
+  @media (min-width: 640px) and (max-width: 999px) { .owner-roles { grid-column: 1 / -1; grid-template-columns: 1fr 1fr; } }
+  .owner-roles .card { padding: 26px 28px; }
+</style>

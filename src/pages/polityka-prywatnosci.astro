@@ -1,0 +1,86 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import { site } from '../data/site';
+---
+
+<Base
+  title="Polityka prywatności | Inter Windows"
+  description="Zasady przetwarzania danych osobowych w serwisie interwindows.pl: formularz kontaktowy, konfigurator, mapa Google i linki do mediów społecznościowych."
+  updated="2026-10-27"
+>
+  <PageHero
+    title="Polityka prywatności"
+    lead="Opisujemy tu, jakie dane przetwarzamy w serwisie interwindows.pl, w jakim celu i jakie masz prawa."
+    breadcrumbs={[{ name: 'Polityka prywatności' }]}
+    media={false}
+  />
+
+  <section class="section pt-0">
+    <div class="container">
+      <div class="prose">
+        <h2>1. Administrator danych</h2>
+        <p>
+          Administratorem danych osobowych są wspólnicy spółki cywilnej {site.legalName}, {site.address.street}, {site.address.postalCode} {site.address.city},
+          NIP {site.nip}, REGON {site.regon} (dalej: „Inter Windows”, „my”).
+          Kontakt w sprawach danych osobowych: <a href={`mailto:${site.email}`}>{site.email}</a>, tel. <a href={site.phoneHref}>{site.phone}</a>,
+          albo listownie na adres siedziby.
+        </p>
+
+        <h2>2. Jakie dane i w jakim celu</h2>
+        <p>
+          Przetwarzamy dane, które podajesz dobrowolnie w formularzu zapytania lub w konfiguratorze okien: imię, numer telefonu, adres e-mail,
+          miejscowość, treść wiadomości oraz opis konfiguracji (np. wymiary, kolory, liczbę okien). Robimy to wyłącznie po to, aby:
+        </p>
+        <ul>
+          <li>odpowiedzieć na zapytanie, umówić pomiar i przygotować wycenę (art. 6 ust. 1 lit. b RODO – działania przed zawarciem umowy na Twoje żądanie),</li>
+          <li>skontaktować się z Tobą w sprawie, o którą pytasz, na podstawie Twojej zgody (art. 6 ust. 1 lit. a RODO),</li>
+          <li>w razie potrzeby ustalić, dochodzić lub bronić roszczeń (art. 6 ust. 1 lit. f RODO – prawnie uzasadniony interes).</li>
+        </ul>
+        <p>Podanie danych jest dobrowolne, ale bez numeru telefonu nie będziemy mogli oddzwonić.</p>
+        <p>Jeśli dzwonisz lub piszesz do nas e-mailem, przetwarzamy dane, które sam przekazujesz, w tych samych celach.</p>
+
+        <h2>3. Jak długo przechowujemy dane</h2>
+        <p>
+          Dane z zapytań przechowujemy przez czas potrzebny do obsługi sprawy, a jeśli nie dojdzie do zawarcia umowy, nie dłużej niż 12 miesięcy od ostatniego kontaktu.
+          Jeśli zawrzemy umowę, dane przechowujemy przez okres wymagany przepisami (np. podatkowymi i rachunkowymi) oraz przez okres przedawnienia roszczeń.
+        </p>
+
+        <h2>4. Odbiorcy danych</h2>
+        <p>
+          Dane mogą być powierzone firmie hostingowej, która utrzymuje serwis i skrzynkę e-mail, wyłącznie w zakresie niezbędnym do działania strony i poczty.
+          Nie sprzedajemy danych i nie przekazujemy ich do celów marketingowych innych firm. Nie przekazujemy danych poza Europejski Obszar Gospodarczy.
+        </p>
+
+        <h2>5. Twoje prawa</h2>
+        <p>
+          Masz prawo żądać dostępu do swoich danych, ich sprostowania, usunięcia, ograniczenia przetwarzania i przeniesienia, a także wnieść sprzeciw.
+          Zgodę możesz w każdej chwili cofnąć, bez wpływu na zgodność z prawem przetwarzania przed jej cofnięciem. Wystarczy wiadomość na adres
+          <a href={`mailto:${site.email}`}>{site.email}</a>. Przysługuje Ci też skarga do Prezesa Urzędu Ochrony Danych Osobowych, ul. Stawki 2, 00-193 Warszawa.
+        </p>
+
+        <h2>6. Pliki cookies i usługi zewnętrzne</h2>
+        <p>
+          Serwis nie używa plików cookies do śledzenia ani do statystyk i nie osadza map Google. Linki „Wyznacz trasę” i „Opinie w Google”
+          otwierają serwis Google Maps, który stosuje własne zasady opisane w
+          <a href="https://policies.google.com/privacy?hl=pl" target="_blank" rel="noopener">polityce prywatności Google</a>.
+        </p>
+        <p>
+          Linki do naszych profili na Instagramie i Facebooku prowadzą do serwisów zewnętrznych, które stosują własne zasady prywatności.
+          Na naszej stronie nie osadzamy ich wtyczek.
+        </p>
+
+        <h2>7. Logi serwera</h2>
+        <p>
+          Serwer, na którym działa strona, może automatycznie zapisywać podstawowe informacje o połączeniu (m.in. adres IP, czas, typ przeglądarki).
+          Służą one wyłącznie do administrowania serwisem i zapewnienia bezpieczeństwa.
+        </p>
+
+        <h2>8. Zmiany polityki</h2>
+        <p>
+          Jeśli zmienimy zasady przetwarzania danych, na przykład dodamy narzędzia statystyczne, zaktualizujemy tę stronę. Wersja z 27 października 2026 r.
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>
