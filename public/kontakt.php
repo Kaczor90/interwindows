@@ -6,7 +6,8 @@
 //   {"ok": true, "redirect": "/dziekujemy/"} albo {"ok": false, "error": "…"}.
 // - Zwykłe wysłanie formularza (bez JavaScriptu) kończy się przekierowaniem 303 na /dziekujemy/.
 // - Pola: name, phone (wymagany), email, town, topic, message, consent (wymagana), page,
-//   website (pułapka na boty), t (czas otwarcia formularza w ms, opcjonalnie),
+//   website (pułapka na boty), t (ile ms minęło od otwarcia strony do wysłania – liczone w przeglądarce,
+//   więc niezależne od zegara urządzenia; opcjonalnie),
 //   konfiguracja (opcjonalnie, tekst wielowierszowy – np. zestawienie z konfiguratora),
 //   subject (opcjonalnie, dopisek do tematu wiadomości, np. "Konfigurator").
 
@@ -15,6 +16,15 @@ const FROM      = 'formularz@interwindows.pl'; // adres w domenie strony – zmn
 const THANKS    = '/dziekujemy/';
 
 header('X-Robots-Tag: noindex, nofollow');
+date_default_timezone_set('Europe/Warsaw');
+
+// przycinanie tekstu do N znaków (UTF-8); działa także bez rozszerzenia mbstring
+function cut(string $s, int $max): string {
+    if (function_exists('mb_substr')) {
+        return mb_substr($s, 0, $max, 'UTF-8');
+    }
+    return preg_match('/^.{0,' . $max . '}/su', $s, $m) ? $m[0] : substr($s, 0, $max);
+}
 
 $wantsJson = stripos($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') !== false;
 
@@ -48,20 +58,21 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
 if (!empty($_POST['website'])) {
     respond(true);
 }
-// formularz wysłany szybciej niż 3 s od otwarcia strony – bot (sprawdzane tylko, gdy pole t jest podane)
-$started = (int)($_POST['t'] ?? 0);
-if ($started > 0 && (microtime(true) * 1000 - $started) < 3000) {
+// formularz wysłany szybciej niż 3 s od otwarcia strony – bot (sprawdzane tylko, gdy pole t jest podane).
+// t to czas, który upłynął (ms), a nie znacznik czasu, więc różnica zegarów telefonu i serwera nie blokuje klientów.
+$elapsed = (int)($_POST['t'] ?? 0);
+if ($elapsed > 0 && $elapsed < 3000) {
     respond(true);
 }
 
 // jednowierszowe pola: bez znaków nowej linii (ochrona przed wstrzykiwaniem nagłówków)
 $clean = static fn(string $key, int $max = 200): string =>
-    trim(mb_substr(str_replace(["\r", "\n"], ' ', (string)($_POST[$key] ?? '')), 0, $max));
+    trim(cut(str_replace(["\r", "\n"], ' ', (string)($_POST[$key] ?? '')), $max));
 // pola wielowierszowe: ujednolicone końce linii, bez znaków sterujących
 $multiline = static function (string $key, int $max): string {
     $v = str_replace(["\r\n", "\r"], "\n", (string)($_POST[$key] ?? ''));
     $v = preg_replace('/[^\P{C}\n\t]/u', '', $v) ?? '';
-    return trim(mb_substr($v, 0, $max));
+    return trim(cut($v, $max));
 };
 
 $name     = $clean('name', 100);

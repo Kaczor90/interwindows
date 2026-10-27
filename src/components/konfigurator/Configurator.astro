@@ -8,7 +8,7 @@ import Icon from '../Icon.astro';
 import OptionGroup from './OptionGroup.astro';
 import RequestForm from './RequestForm.astro';
 import { drawItem } from './rysunek';
-import { site } from '../../data/site';
+import { site, features } from '../../data/site';
 import {
   steps,
   productTypes,
@@ -56,7 +56,7 @@ const countOpts = Array.from({ length: BARS_MAX + 1 }, (_, i) => i);
 const stepHead = (i: number) => ({ id: `kf-h-${steps[i].id}`, n: `Krok ${num(i)} z ${total}`, title: steps[i].title });
 ---
 
-<div class="kf" data-kf data-step="typ">
+<div class="kf" data-kf data-step="typ" data-fab-avoid data-ctabar-avoid>
   <noscript>
     <p class="kf-noscript">
       Konfigurator działa w przeglądarce z włączonym JavaScriptem. Możesz też zadzwonić:
@@ -336,7 +336,7 @@ const stepHead = (i: number) => ({ id: `kf-h-${steps[i].id}`, n: `Krok ${num(i)}
           attrs={{ 'data-kf-removal': '' }}
           options={[{ value: removal.id, label: removal.label, tbc: removal.tbc, k: '@demontaz' }]}
         />
-        <p class="kf-hint">Więcej o warstwowym uszczelnieniu okna: <a href={url('/cieply-montaz-okien/')}>ciepły montaż okien</a>.</p>
+        {features.cieplyMontaz && <p class="kf-hint">Więcej o warstwowym uszczelnieniu okna: <a href={url('/cieply-montaz-okien/')}>ciepły montaż okien</a>.</p>}
       </section>
 
       <!-- 10. projekt -->

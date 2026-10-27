@@ -1,7 +1,8 @@
 ---
 // Slim sticky contact bar for phones (< 900 px): "Zadzwoń | Bezpłatna wycena".
-// Shown after the visitor scrolls past the page hero; hidden while the quote form (#wycena) or the
-// footer is in view and while the mobile menu is open. On phones it replaces the floating call button.
+// Shown after the visitor scrolls past the page hero; hidden while the quote form (#wycena), the
+// footer or an element marked [data-ctabar-avoid] (e.g. the configurator with its own sticky
+// Wstecz | Dalej bar) is in view, and while the mobile menu is open. On phones it replaces the floating call button.
 // Rendered once by Base.astro.
 import { url } from '../lib/url';
 import Icon from './Icon.astro';
@@ -62,14 +63,14 @@ import { site } from '../data/site';
       onScroll();
     }
 
-    // hide near the form and the footer
+    // hide near the form, the footer and elements with their own sticky bar
     const near = new Map<Element, boolean>();
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => near.set(e.target, e.isIntersecting));
       state.formOrFooter = [...near.values()].some(Boolean);
       update();
     });
-    document.querySelectorAll('#wycena, .site-footer').forEach((el) => io.observe(el));
+    document.querySelectorAll('#wycena, .site-footer, [data-ctabar-avoid]').forEach((el) => io.observe(el));
 
     mobile.addEventListener('change', update);
     new MutationObserver(update).observe(root, { attributes: true, attributeFilter: ['class'] });

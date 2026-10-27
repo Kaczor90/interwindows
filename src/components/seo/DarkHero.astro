@@ -8,6 +8,7 @@
 //   </DarkHero>
 import { url } from '../../lib/url';
 import { rich } from '../../lib/rich';
+import { srcsetOf } from '../../lib/img';
 import type { Crumb } from '../../lib/schema';
 import Breadcrumbs from '../Breadcrumbs.astro';
 import Icon from '../Icon.astro';
@@ -40,7 +41,7 @@ const { title, titleEm, eyebrow, lead, breadcrumbs, pledges = [], bg, photo, pro
   <div class="dark-hero__bg" aria-hidden="true">
     <img
       src={url(bg.src)}
-      srcset={bg.srcSmall ? `${url(bg.srcSmall)} 800w, ${url(bg.src)} ${bg.width}w` : undefined}
+      srcset={srcsetOf(bg.src, bg.width, bg.height, bg.srcSmall)}
       sizes="100vw"
       alt=""
       width={bg.width}
@@ -71,7 +72,7 @@ const { title, titleEm, eyebrow, lead, breadcrumbs, pledges = [], bg, photo, pro
         <div class="photo dark-hero__photo">
           <img
             src={url(photo.srcSmall ?? photo.src)}
-            srcset={photo.srcSmall ? `${url(photo.srcSmall)} 800w, ${url(photo.src)} 1600w` : undefined}
+            srcset={srcsetOf(photo.src, photo.width, photo.height, photo.srcSmall)}
             sizes="(min-width: 960px) 45vw, 100vw"
             alt={photo.alt}
             width={photo.width}

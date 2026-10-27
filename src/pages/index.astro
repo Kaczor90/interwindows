@@ -1,5 +1,6 @@
 ---
 import { url } from '../lib/url';
+import { srcsetOf } from '../lib/img';
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import ProcessSteps from '../components/ProcessSteps.astro';
@@ -11,6 +12,9 @@ import { site } from '../data/site';
 import { categories } from '../data/oferta';
 import { photoByFile, photoSrc, photoSrcSmall } from '../data/realizacje-zdjecia';
 import Testimonials from '../components/Testimonials.astro';
+import ProjectCard from '../components/realizacje/ProjectCard.astro';
+import { realizacje, realizacjaBySlug } from '../data/realizacje';
+import { plural } from '../lib/plural';
 import { aiImage, aiSrc, aiSrcSmall } from '../data/ai-zdjecia';
 
 const tiles = categories.filter((c) => c.slug !== 'okna');
@@ -19,13 +23,11 @@ const crewPhoto = photoByFile('montaz-szyby-minidzwig-przyssawka-01')!;
 const crewBg = aiImage('ai-montaz-ekipa-dojazd');
 const crewAi = aiImage('ai-montaz-osadzanie');
 const configAi = aiImage('ai-konfigurator-profil-probki');
-const mosaic = [
-  'przeszklenie-szczytowe-zloty-dab-01',
-  'zielone-drzwi-lukowe-kamienica-01',
-  'przeszklenie-narozne-antracyt-widok-z-wnetrza',
-  'bramy-segmentowe-antracyt-elewacja-terakota-01',
-  'drzwi-zewnetrzne-orzech-wejscie-wykonczone',
-].map((f) => photoByFile(f)!);
+// realizations teaser: three described projects with different products (fallback: first three on the hub)
+const featured = ['okna-dako-hst-dom-parterowy', 'drzwi-drewniane-kamienica-plock', 'okna-drewnopodobne-zaluzje-fasadowe']
+  .map((slug) => realizacjaBySlug(slug))
+  .filter((r): r is NonNullable<typeof r> => !!r);
+if (featured.length < 3) featured.splice(0, featured.length, ...realizacje.slice(0, 3));
 
 // hero slider: own realization photos (+ one AI illustration for the configurator slide)
 const realSlide = (file: string) => {
@@ -52,8 +54,11 @@ const slides = [
     title: 'Zaprojektuj okno w konfiguratorze online', href: '/konfigurator/', link: 'Otwórz konfigurator',
   },
   {
-    ...realSlide('zielone-drzwi-lukowe-kamienica-01'), position: 'center 30%',
-    title: 'Drzwi zewnętrzne, także do kamienic', href: '/drzwi-zewnetrzne/', link: 'Zobacz drzwi zewnętrzne',
+    // privacy-blurred copy of IMG_4279 (a person is visible through the transom glass in the original)
+    src: '/img/realizacje/projekty/drzwi-drewniane-kamienica-plock-01.webp',
+    small: '/img/realizacje/projekty/drzwi-drewniane-kamienica-plock-01-800.webp', smallW: 600, width: 1200, height: 1600,
+    alt: 'Zielone łukowe drzwi dwuskrzydłowe z naświetlem w ponad stuletniej kamienicy w Płocku', position: 'center 30%',
+    title: 'Drzwi zewnętrzne, także do kamienic', href: '/realizacje/drzwi-drewniane-kamienica-plock/', link: 'Zobacz tę realizację',
   },
 ] as { src: string; small: string; smallW: number; width: number; height: number; alt: string; title: string; href: string; link: string; position?: string }[];
 
@@ -84,7 +89,7 @@ const guides = [
     if (oldAnchors[location.hash]) location.replace(base + oldAnchors[location.hash]);
   </script>
 
-  <!-- HERO (layout as in Profil: text left, slider right, soft block behind) -->
+  <!-- HERO: text left, slider right, soft block behind -->
   <section class="hero">
     <div class="container hero__grid">
       <div>
@@ -196,7 +201,7 @@ const guides = [
   <section class="section dark on-dark crews-section" id="montaz">
     <!-- background: AI illustration with an ink overlay (no grid lines over the photo) -->
     <div class="crews-section__bg" aria-hidden="true">
-      <img src={url(aiSrc(crewBg))} srcset={`${url(aiSrcSmall(crewBg))} 800w, ${url(aiSrc(crewBg))} 2000w`} sizes="100vw" alt="" width={crewBg.width} height={crewBg.height} loading="lazy" />
+      <img src={url(aiSrc(crewBg))} srcset={srcsetOf(aiSrc(crewBg), crewBg.width, crewBg.height, aiSrcSmall(crewBg))} sizes="100vw" alt="" width={crewBg.width} height={crewBg.height} loading="lazy" />
     </div>
     <div class="container crews">
       <div class="reveal">
@@ -229,7 +234,7 @@ const guides = [
         <div class="photo crews__photo">
           <img
             src={url(aiSrcSmall(crewAi))}
-            srcset={`${url(aiSrcSmall(crewAi))} 800w, ${url(aiSrc(crewAi))} 1600w`}
+            srcset={srcsetOf(aiSrc(crewAi), crewAi.width, crewAi.height, aiSrcSmall(crewAi))}
             sizes="(min-width: 960px) 45vw, 100vw"
             alt={crewAi.alt}
             width={crewAi.width}
@@ -318,7 +323,7 @@ const guides = [
         <figure class="photo configurator__photo">
           <img
             src={url(aiSrcSmall(configAi))}
-            srcset={`${url(aiSrcSmall(configAi))} 800w, ${url(aiSrc(configAi))} 1600w`}
+            srcset={srcsetOf(aiSrc(configAi), configAi.width, configAi.height, aiSrcSmall(configAi))}
             sizes="(min-width: 960px) 40vw, 100vw"
             alt={configAi.alt}
             width={configAi.width}
@@ -358,7 +363,7 @@ const guides = [
     </div>
   </section>
 
-  <!-- REALIZACJE -->
+  <!-- REALIZACJE: three described projects from src/data/realizacje.ts -->
   <section class="section section--soft" id="realizacje">
     <div class="container">
       <div class="section-head section-head--split">
@@ -366,25 +371,19 @@ const guides = [
           <span class="eyebrow">Realizacje</span>
           <h2>Realizacje z Płocka i okolic</h2>
         </div>
-        <a class="btn btn--ghost" href={url('/realizacje/')} data-cta="realizacje-wszystkie"><Icon name="arrow" class="arrow" /> Zobacz wszystkie realizacje</a>
+        <p class="muted">
+          Opisane krok po kroku: co montowaliśmy, z jakich systemów i z czym trzeba było sobie poradzić. Zdjęcia pochodzą z naszych budów.
+        </p>
       </div>
-      <div class="mosaic">
-        {mosaic.map((p, i) => (
-          <a class="mosaic__item reveal" href={url('/realizacje/')}>
-            <img
-              src={url(i === 0 ? photoSrc(p) : photoSrcSmall(p))}
-              srcset={`${url(photoSrcSmall(p))} 800w, ${url(photoSrc(p))} 1600w`}
-              sizes={i === 0 ? '(min-width: 900px) 40vw, 100vw' : '(min-width: 900px) 25vw, 50vw'}
-              alt={p.alt}
-              width={p.width}
-              height={p.height}
-              loading="lazy"
-            />
-            <span class="sr-only">Zobacz realizacje</span>
-          </a>
+      <ul class="home-projects">
+        {featured.map((r) => (
+          <li class="reveal"><ProjectCard r={r} /></li>
         ))}
+      </ul>
+      <div class="home-projects__more">
+        <a class="btn btn--ghost" href={url('/realizacje/')} data-cta="realizacje-wszystkie"><Icon name="arrow" class="arrow" /> Wszystkie realizacje</a>
+        <span class="small muted">{realizacje.length} {plural(realizacje.length, 'opisana realizacja', 'opisane realizacje', 'opisanych realizacji')} i album zdjęć z montaży</span>
       </div>
-      <p class="source-note">Zdjęcia z montaży wykonanych przez nasze ekipy, prosto z placu budowy.</p>
       <div class="cta-inline reveal">
         <p>Chcesz taki efekt u siebie? <span>Przyjedziemy, zmierzymy i przygotujemy wycenę.</span></p>
         <div class="btn-row">
@@ -469,7 +468,7 @@ const guides = [
 </Base>
 
 <script>
-  // hero slider (from the Profil project): crossfade, prev/next, dots, autoplay unless reduced motion
+  // hero slider: crossfade, prev/next, dots, autoplay unless reduced motion
   document.querySelectorAll<HTMLElement>('[data-slider]').forEach((slider) => {
     const slides = [...slider.querySelectorAll<HTMLElement>('.slider__slide')];
     const dots = [...slider.querySelectorAll<HTMLButtonElement>('.slider__dots button')];
@@ -539,6 +538,13 @@ const guides = [
   @media (max-width: 959px) {
     .configurator__drawing { position: relative; left: auto; bottom: auto; width: 60%; margin: -56px 0 0 auto; }
   }
+
+  .home-projects { list-style: none; margin: 0; padding: 0; display: grid; gap: 20px; }
+  @media (min-width: 640px) { .home-projects { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 960px) { .home-projects { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  /* two columns: show two cards, not 2 + 1 orphan */
+  @media (min-width: 640px) and (max-width: 959px) { .home-projects li:nth-child(3) { display: none; } }
+  .home-projects__more { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 28px; }
 
   .guides { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
   @media (min-width: 800px) { .guides { grid-template-columns: repeat(3, 1fr); } }

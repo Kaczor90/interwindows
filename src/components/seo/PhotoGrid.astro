@@ -4,6 +4,7 @@
 // Never pass AI illustrations here.
 //   <PhotoGrid files={['montaz-szyby-minidzwig-przyssawka-01', 'dostawa-przeszklen-samochod']} />
 import { url } from '../../lib/url';
+import { srcsetOf } from '../../lib/img';
 import { photoByFile, photoSrc, photoSrcSmall } from '../../data/realizacje-zdjecia';
 
 interface Props {
@@ -28,7 +29,7 @@ const month = (iso: string) => new Date(`${iso}T12:00:00`).toLocaleDateString('p
         <div class="photo pgrid__img">
           <img
             src={url(photoSrcSmall(p))}
-            srcset={`${url(photoSrcSmall(p))} 800w, ${url(photoSrc(p))} 1600w`}
+            srcset={srcsetOf(photoSrc(p), p.width, p.height, photoSrcSmall(p))}
             sizes={`(min-width: 900px) ${columns === 4 ? 25 : 33}vw, (min-width: 560px) 50vw, 100vw`}
             alt={p.alt}
             width={p.width}

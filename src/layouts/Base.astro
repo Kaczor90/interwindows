@@ -55,7 +55,8 @@ const canonical = new URL(path, site.productionUrl).toString();
 // og:image from the site actually being served, so shared preview links get a thumbnail too
 const ogImage = new URL(url(image), Astro.site).toString();
 const isPreview = import.meta.env.PUBLIC_PREVIEW === 'true';
-// palette switcher (Profil | Mono) only in dev and preview builds; production uses `theme` from site.ts
+// palette switcher (Granat | Mono) only in dev and preview builds; production uses `theme` from site.ts.
+// Rail variant here (≥ 1280 px); the inline variant sits in the mobile menu and in the footer.
 const themeSwitch = import.meta.env.DEV || isPreview;
 const robots = isPreview ? 'noindex, nofollow' : noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large';
 const extraSchema = schema ? (Array.isArray(schema) ? schema : [schema]) : [];

@@ -16,6 +16,7 @@ import Faq from '../components/Faq.astro';
 import CtaBand from '../components/CtaBand.astro';
 import QuoteForm from '../components/QuoteForm.astro';
 import type { Step } from '../data/montaz';
+import { features, isLinked } from '../data/site';
 import { photoByFile, photoSrc, photoSrcSmall } from '../data/realizacje-zdjecia';
 
 const path = '/wymiana-okien/';
@@ -143,7 +144,7 @@ const related = [
   { href: '/okna-pcv/', label: 'Okna PCV', icon: 'okna-pcv' },
   { href: '/konfigurator/', label: 'Konfigurator okien', icon: 'konfigurator' },
   { href: '/obszar-dzialania/', label: 'Obszar działania', icon: 'mapa' },
-];
+].filter((r) => isLinked(r.href));
 
 const schema = service({ name: seo.h1, serviceType: 'Wymiana okien', path, description: seo.description });
 ---
@@ -240,7 +241,7 @@ const schema = service({ name: seo.h1, serviceType: 'Wymiana okien', path, descr
             </p>
             <p>
               Najważniejsze pytanie to ocieplenie. Jeśli elewacja ma być docieplona, okna warto wymienić wcześniej i osadzić tak, żeby nowa warstwa izolacji mogła nachodzić
-              na ramę. Wtedy dobrze sprawdza się <a href={url('/cieply-montaz-okien/')}>ciepły montaż</a>, a przy grubym ociepleniu także montaż w warstwie ocieplenia.
+              na ramę. Wtedy dobrze sprawdza się {features.cieplyMontaz ? <a href={url('/cieply-montaz-okien/')}>ciepły montaż</a> : 'ciepły montaż'}, a przy grubym ociepleniu także montaż w warstwie ocieplenia.
               Okno osadzone w starym miejscu muru, bez planu na elewację, po dociepleniu znajdzie się w głębokiej, zimnej wnęce.
             </p>
             <p>

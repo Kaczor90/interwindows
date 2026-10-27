@@ -5,23 +5,26 @@
 export interface Brand {
   name: string;
   logo?: string;
+  /** pixel size of the logo file (for width/height attributes) */
+  w?: number;
+  h?: number;
   /** what we offer from this producer (short, verified) */
   scope: string;
 }
 
 /** DAKO – authorised partner, shown separately and highlighted */
-export const dako: Brand = { name: 'DAKO', logo: '/img/marki/dako.png', scope: 'okna PCV, aluminiowe i drewniane, rolety, żaluzje fasadowe, bramy garażowe' };
+export const dako: Brand = { name: 'DAKO', logo: '/img/marki/dako.png', w: 360, h: 60, scope: 'okna PCV, aluminiowe i drewniane, rolety, żaluzje fasadowe, bramy garażowe' };
 
 /** producers with a logo file */
 export const brandLogos: Brand[] = [
-  { name: 'Sonarol', logo: '/img/marki/sonarol.png', scope: 'okna' },
-  { name: 'All Windows Group', logo: '/img/marki/all-windows.png', scope: 'okna' },
-  { name: 'Wikęd', logo: '/img/marki/wiked.png', scope: 'drzwi zewnętrzne' },
-  { name: 'DRE', logo: '/img/marki/dre.png', scope: 'drzwi wewnętrzne' },
-  { name: 'Lagrus', logo: '/img/marki/lagrus.png', scope: 'drzwi wewnętrzne' },
-  { name: 'Barański', logo: '/img/marki/baranski.png', scope: 'drzwi zewnętrzne i wewnętrzne' },
-  { name: 'Fill', logo: '/img/marki/fill.png', scope: 'rolety, żaluzje, pergole, parapety' },
-  { name: 'Doorsystem', logo: '/img/marki/doorsystem.png', scope: 'drzwi zewnętrzne' },
+  { name: 'Sonarol', logo: '/img/marki/sonarol.png', w: 360, h: 80, scope: 'okna' },
+  { name: 'All Windows Group', logo: '/img/marki/all-windows.png', w: 360, h: 108, scope: 'okna' },
+  { name: 'Wikęd', logo: '/img/marki/wiked.png', w: 350, h: 96, scope: 'drzwi zewnętrzne' },
+  { name: 'DRE', logo: '/img/marki/dre.png', w: 302, h: 120, scope: 'drzwi wewnętrzne' },
+  { name: 'Lagrus', logo: '/img/marki/lagrus.png', w: 360, h: 82, scope: 'drzwi wewnętrzne' },
+  { name: 'Barański', logo: '/img/marki/baranski.png', w: 260, h: 96, scope: 'drzwi zewnętrzne i wewnętrzne' },
+  { name: 'Fill', logo: '/img/marki/fill.png', w: 250, h: 120, scope: 'rolety, żaluzje, pergole, parapety' },
+  { name: 'Doorsystem', logo: '/img/marki/doorsystem.png', w: 142, h: 92, scope: 'drzwi zewnętrzne' },
 ];
 
 /** producers named on the current site without a logo file (shown as text) */

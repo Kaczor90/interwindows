@@ -250,9 +250,12 @@ const raw: Raw[] = [
   },
   {
     file: 'zielone-drzwi-lukowe-kamienica-01', source: 'IMG_4279.jpg', albumNo: 339, date: '2025-12-23', width: 1200, height: 1600,
-    description: 'Zielone, łukowe drzwi dwuskrzydłowe z przeszklonym naświetlem w zabytkowej kamienicy.',
+    // PRIVACY: a person's face is visible through the transom glass. Never publish this file – use the
+    // blurred copy /img/realizacje/projekty/drzwi-drewniane-kamienica-plock-01.webp (scripts/realizacje-projekty.mjs).
+    // scripts/images.mjs does not output it (PRIVATE set).
+    description: 'Zielone, łukowe drzwi dwuskrzydłowe z przeszklonym naświetlem w zabytkowej kamienicy. Widoczna twarz osoby za szybą – tylko rozmyta kopia.',
     alt: 'Zielone łukowe drzwi dwuskrzydłowe z naświetlem w zabytkowej kamienicy',
-    stage: 'wykonczone', tags: ['drzwi-zewnetrzne', 'kamienica'], rating: 'TAK', publish: true,
+    stage: 'wykonczone', tags: ['drzwi-zewnetrzne', 'kamienica'], rating: 'TAK', publish: false,
   },
   {
     file: 'zielone-drzwi-lukowe-kamienica-02', source: 'IMG_4282.jpg', albumNo: 341, date: '2025-12-23', width: 1200, height: 1600,

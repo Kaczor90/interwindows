@@ -3,8 +3,22 @@
 // Empty strings/arrays = not known yet: such fields are not rendered (see docs/do-uzupelnienia.md).
 
 /** Colour theme of the whole site – THE one place to switch palettes (see src/styles/global.css):
- *  'profil' = Profil palette (ink, navy, burgundy accent) · 'mono' = black & white like the logo. */
+ *  'profil' = navy palette, UI label „Granat” (ink, navy, burgundy accent) · 'mono' = black & white like the logo. */
 export const theme: 'profil' | 'mono' = 'profil';
+
+/** Features that wait for the client's confirmation (docs/do-uzupelnienia.md). */
+export const features = {
+  /** Warm (layered) installation done by the crews – NOT confirmed yet.
+   *  false: /cieply-montaz-okien/ is built with noindex (so it is left out of sitemap.xml) and is NOT linked from
+   *  the menu, footer, related-link lists or texts (rich() renders such links as plain text).
+   *  true:  the page is indexed and linked everywhere. Also restore its meta description (see the page file). */
+  cieplyMontaz: false,
+};
+
+/** Pages that exist but must not be linked while their feature flag is off. */
+export const unlinkedPaths: string[] = features.cieplyMontaz ? [] : ['/cieply-montaz-okien/'];
+/** false for internal links to a page from `unlinkedPaths` (anchors and query strings ignored). */
+export const isLinked = (href: string) => !unlinkedPaths.includes(href.split(/[#?]/)[0]);
 
 export const site = {
   /** name used in NAP, schema and texts */
@@ -113,4 +127,4 @@ export const servicePages = [
   { label: 'Wymiana okien', href: '/wymiana-okien/' },
   { label: 'Ciepły montaż okien', href: '/cieply-montaz-okien/' },
   { label: 'Konfigurator okien', href: '/konfigurator/' },
-];
+].filter((p) => isLinked(p.href));

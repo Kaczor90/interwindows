@@ -10,6 +10,7 @@
 // `wrap={false}` renders only the panel (place it inside your own container; ignored with `image`).
 // `cta` values end up in data-cta attributes (for analytics later).
 import { url } from '../lib/url';
+import { srcsetOf } from '../lib/img';
 import Icon from './Icon.astro';
 
 interface Link {
@@ -28,7 +29,8 @@ interface Props {
   secondary?: Link;
   tone?: 'dark' | 'light';
   wrap?: boolean;
-  image?: { src: string; srcSmall?: string; position?: string };
+  /** decorative background; width/height of the big file, smallWidth of srcSmall (default: hero-dom, 1600×1338 + 960 px) */
+  image?: { src: string; srcSmall?: string; position?: string; width?: number; height?: number; smallWidth?: number };
 }
 const { title, text, eyebrow, primary, secondary, tone = 'dark', wrap = true, image } = Astro.props;
 const dark = tone === 'dark' || !!image;
@@ -40,9 +42,11 @@ const primaryIcon = primary.icon ?? 'arrow';
     <div class="band-photo__bg" aria-hidden="true">
       <img
         src={url(image.src)}
-        srcset={image.srcSmall ? `${url(image.srcSmall)} 960w, ${url(image.src)} 1600w` : undefined}
+        srcset={srcsetOf(image.src, image.width ?? 1600, image.height ?? 1338, image.srcSmall, image.smallWidth ?? 960)}
         sizes="100vw"
         alt=""
+        width={image.width ?? 1600}
+        height={image.height ?? 1338}
         loading="lazy"
         style={image.position ? `object-position:${image.position}` : undefined}
       />

@@ -76,8 +76,13 @@ export const REALIZACJE = {
   'IMG_4774.jpg': 'przeszklenie-narozne-pod-okapem',
 };
 
+// Photos showing a private person's face: NOT written to public/ (a blurred copy is made by
+// scripts/realizacje-projekty.mjs instead). Keep in sync with src/data/realizacje-zdjecia.ts (publish: false).
+const PRIVATE = new Set(['IMG_4279.jpg']);
+
 const sizes = {};
 for (const [src, name] of Object.entries(REALIZACJE)) {
+  if (PRIVATE.has(src)) continue;
   const file = join(SRC, 'realizacje', src);
   if (!existsSync(file)) {
     console.warn(`Brak pliku: ${file}`);

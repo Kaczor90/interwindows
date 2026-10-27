@@ -22,7 +22,7 @@ const { eyebrow = 'Partnerzy', title = 'Sprawdzeni producenci, z którymi pracuj
     </div>
     <div class="brands">
       <div class="brand-feature on-dark reveal">
-        <div class="brand-feature__logo"><img src={url(dako.logo!)} alt="DAKO" width="240" height="72" loading="lazy" /></div>
+        <div class="brand-feature__logo"><img src={url(dako.logo!)} alt="DAKO" width={dako.w} height={dako.h} loading="lazy" /></div>
         <div>
           <span class="eyebrow">Autoryzowany partner</span>
           <strong>Autoryzowany partner DAKO</strong>
@@ -31,7 +31,7 @@ const { eyebrow = 'Partnerzy', title = 'Sprawdzeni producenci, z którymi pracuj
       </div>
       <div class="brand-grid reveal">
         {brandLogos.map((b) => (
-          <div class="brand-cell" title={`${b.name} – ${b.scope}`}><img src={url(b.logo!)} alt={b.name} loading="lazy" /></div>
+          <div class="brand-cell" title={`${b.name} – ${b.scope}`}><img src={url(b.logo!)} alt={b.name} width={b.w} height={b.h} loading="lazy" /></div>
         ))}
         <p class="brand-names"><b>Także:</b>{brandNames.map((n) => <span>{n}</span>)}</p>
       </div>

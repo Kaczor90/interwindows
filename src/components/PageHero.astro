@@ -9,6 +9,7 @@
 // `lead` accepts the rich() markup ([label](/path/), **bold**). `media={false}` = text-only hero.
 import { url } from '../lib/url';
 import { rich } from '../lib/rich';
+import { srcsetOf } from '../lib/img';
 import Breadcrumbs from './Breadcrumbs.astro';
 import Placeholder from './Placeholder.astro';
 import Icon from './Icon.astro';
@@ -59,7 +60,7 @@ const hasSlot = Astro.slots.has('default');
             {image ? (
               <img
                 src={url(image.src)}
-                srcset={image.srcSmall ? `${url(image.srcSmall)} 800w, ${url(image.src)} 1600w` : undefined}
+                srcset={srcsetOf(image.src, image.width ?? 1200, image.height ?? 1600, image.srcSmall)}
                 sizes={image.srcSmall ? '(min-width: 960px) 50vw, 100vw' : undefined}
                 alt={image.alt}
                 width={image.width ?? 1200}

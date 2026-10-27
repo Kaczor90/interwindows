@@ -1,5 +1,5 @@
 # public/.htaccess – production version for www.interwindows.pl (Apache / LiteSpeed).
-# Do not upload to a preview host. Rules: docs/seo-plan.md §5.1 + caching from the Profil project.
+# Do not upload to a preview host. Rules: docs/seo-plan.md §5.1 + caching rules.
 
 RewriteEngine On
 

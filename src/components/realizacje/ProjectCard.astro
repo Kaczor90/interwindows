@@ -6,6 +6,7 @@
 // The whole card is one link; the image is decorative (alt="") because the title says what it shows.
 import { url } from '../../lib/url';
 import Icon from '../Icon.astro';
+import { count as countOf } from '../../lib/plural';
 import { filters, nbsp, small, smallSizeOf, workMonth, type Realizacja } from '../../data/realizacje';
 
 interface Props {
@@ -36,7 +37,7 @@ const hasPair = r.photos.some((ph) => ph.pair);
         decoding="async"
         style={c.position ? `object-position:${c.position}` : undefined}
       />
-      <span class="pcard__count">{count} zdjęć{hasPair ? ' · przed i po' : ''}</span>
+      <span class="pcard__count">{countOf(count, 'zdjęcie', 'zdjęcia', 'zdjęć')}{hasPair ? ' · przed i po' : ''}</span>
     </div>
     <div class="pcard__body">
       <p class="pcard__meta">

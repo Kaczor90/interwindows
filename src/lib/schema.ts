@@ -107,7 +107,9 @@ export const article = (o: {
   image: string;
   datePublished: string;
   dateModified?: string;
-  author: { name: string; url?: string };
+  /** 'organization' = the company itself (reference to the business entity, default);
+   *  a person: { name, url? } – url is a root path (e.g. '/o-firmie/') */
+  author?: 'organization' | { name: string; url?: string };
   description?: string;
 }) => ({
   '@context': 'https://schema.org',
@@ -119,7 +121,10 @@ export const article = (o: {
   datePublished: o.datePublished,
   dateModified: o.dateModified ?? o.datePublished,
   ...(o.description ? { description: o.description } : {}),
-  author: { '@type': 'Person', name: o.author.name, ...(o.author.url ? { url: abs(o.author.url) } : {}) },
+  author:
+    !o.author || o.author === 'organization'
+      ? { '@type': 'Organization', '@id': BUSINESS_ID, name: site.name, url: abs('/') }
+      : { '@type': 'Person', name: o.author.name, ...(o.author.url ? { url: abs(o.author.url) } : {}) },
   publisher: { '@id': BUSINESS_ID },
   inLanguage: 'pl-PL',
 });

@@ -1,11 +1,12 @@
 ---
 // /cieply-montaz-okien/ – educational page about layered ("warm") installation (docs/seo-plan.md §4.2–4.3).
-// P1*: rendered with `noindex` (and therefore left out of sitemap.xml) until the client confirms that
-// the crews do layered installation. Then: remove `noindex`, restore the plan's meta description,
+// P1*: rendered with `noindex` (and therefore left out of sitemap.xml) and not linked from other pages until the
+// client confirms that the crews do layered installation. Then: set features.cieplyMontaz = true in src/data/site.ts, restore the plan's meta description,
 // fill in the materials section (docs/do-uzupelnienia.md, "Podstrony SEO i poradnik").
 // The copy explains the method; it does not claim which systems the crews use.
 import { url } from '../lib/url';
 import { rich } from '../lib/rich';
+import { srcsetOf } from '../lib/img';
 import { service } from '../lib/schema';
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
@@ -15,8 +16,10 @@ import Faq from '../components/Faq.astro';
 import CtaBand from '../components/CtaBand.astro';
 import QuoteForm from '../components/QuoteForm.astro';
 import { aiImage, aiSrc, aiSrcSmall } from '../data/ai-zdjecia';
+import { features } from '../data/site';
 
-const NOINDEX = true; // → false after the client confirms layered installation
+// one switch for the whole site: features.cieplyMontaz in src/data/site.ts (noindex + sitemap + all links)
+const NOINDEX = !features.cieplyMontaz;
 
 const path = '/cieply-montaz-okien/';
 const seo = {
@@ -201,7 +204,7 @@ const schema = service({ name: seo.h1, serviceType: 'Ciepły montaż okien', pat
             <figure class="photo side-img">
               <img
                 src={url(aiSrcSmall(levelAi))}
-                srcset={`${url(aiSrcSmall(levelAi))} 800w, ${url(aiSrc(levelAi))} 1600w`}
+                srcset={srcsetOf(aiSrc(levelAi), levelAi.width, levelAi.height, aiSrcSmall(levelAi))}
                 sizes="(min-width: 960px) 280px, 100vw"
                 alt={levelAi.alt}
                 width={levelAi.width}

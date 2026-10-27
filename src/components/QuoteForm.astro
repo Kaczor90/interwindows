@@ -129,8 +129,8 @@ const topics = categories.filter((c) => c.slug !== 'okna');
   document.querySelectorAll<HTMLFormElement>('[data-quote-form]').forEach((form) => {
     const status = form.querySelector<HTMLParagraphElement>('.form__status')!;
     const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
-    const started = form.querySelector<HTMLInputElement>('input[name="t"]');
-    if (started) started.value = String(Date.now());
+    // anti-bot timing: elapsed ms since the page opened (kontakt.php ignores posts faster than 3 s)
+    const startedAt = Date.now();
 
     const show = (msg: string, ok: boolean) => {
       status.textContent = msg;
@@ -140,6 +140,7 @@ const topics = categories.filter((c) => c.slug !== 'okna');
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const data = new FormData(form);
+      data.set('t', String(Date.now() - startedAt));
       const phone = String(data.get('phone') || '').replace(/\D/g, '');
       if (phone.length < 9) return show('Podaj numer telefonu (9 cyfr), żebyśmy mogli oddzwonić.', false);
       if (!data.get('consent')) return show('Zaznacz zgodę na przetwarzanie danych.', false);

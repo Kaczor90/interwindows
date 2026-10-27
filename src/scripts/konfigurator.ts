@@ -702,8 +702,8 @@ async function init(root: HTMLElement) {
   // ---------------------------------------------------------------- request form
   const formStatus = form.querySelector<HTMLParagraphElement>('.form__status')!;
   const submitBtn = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
-  const started = form.querySelector<HTMLInputElement>('input[name="t"]');
-  if (started) started.value = String(Date.now());
+  // anti-bot timing: elapsed ms since the page opened (kontakt.php ignores posts faster than 3 s)
+  const startedAt = Date.now();
   const show = (msg: string, ok: boolean, focus?: HTMLElement | null) => {
     formStatus.textContent = msg;
     formStatus.className = `form__status ${ok ? 'is-ok' : 'is-error'}`;
@@ -727,6 +727,7 @@ async function init(root: HTMLElement) {
     data.set('konfiguracja', projectText(project, { contactTime, link: await projectLink() }));
     data.set('topic', `Konfigurator: ${positionsLabel(project.items.length)}, ${totalQty(project)} szt.`);
     data.set('subject', 'Konfigurator');
+    data.set('t', String(Date.now() - startedAt));
     emit('submit', { items: project.items.length, qty: totalQty(project) });
     if (import.meta.env.DEV) {
       (window as any).__kfPayload = Object.fromEntries(data);

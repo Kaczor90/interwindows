@@ -2,9 +2,9 @@
 
 /* =========================================================================
    Inter Windows – design tokens
-   Client decisions 27.10.2026 (docs/marka.md): layout and typography as in the Profil project,
+   Client decisions 27.10.2026 (docs/marka.md): layout and typography from the approved base layout,
    Plus Jakarta Sans only. Colours come in TWO switchable themes:
-     data-theme="profil" – Profil's palette (ink, navy brand, small burgundy accent)
+     data-theme="profil" – navy palette, UI label „Granat” (ink, navy brand, small burgundy accent)
      data-theme="mono"   – black & white like the logo (no colour accent, inverted blocks)
    The active theme is set in ONE place: `theme` in src/data/site.ts (rendered on <html data-theme>).
    For a quick comparison in the browser: ?motyw=mono or ?motyw=profil (not persisted).
@@ -25,7 +25,7 @@
   --navy: #1e3466;         /* brand colour: links, CTA in the header, hover states */
   --navy-700: #182a52;
   --text: #3e4453;
-  --muted: #666d7d;        /* Profil #747b8b darkened slightly: 4.7:1 also on --bg-soft (AA) */
+  --muted: #666d7d;        /* #747b8b darkened slightly: 4.7:1 also on --bg-soft (AA) */
   --line: #e7e9ee;
   --line-strong: #cdd2db;
   --bg: #ffffff;
@@ -94,7 +94,7 @@
   --accent-line: color-mix(in srgb, var(--accent) 60%, transparent);
   --brand: var(--navy);
   --brand-700: var(--navy-700);
-  --red: var(--accent);                                          /* Profil alias */
+  --red: var(--accent);                                          /* legacy alias */
   --muted-on-dark: rgba(255, 255, 255, .64);
   --grid-line-dark: rgba(255, 255, 255, .055);
 
@@ -201,7 +201,7 @@ p { margin: 0 0 1em; }
 .pb-0 { padding-bottom: 0 !important; }
 
 /* ---------- background grid lines ----------
-   Thin vertical lines as in architectural drawings. Unlike the Profil project they sit on the
+   Thin vertical lines as in architectural drawings. Unlike the base layout they sit on the
    bottom layer (z-index:-1), behind all content: anything with a background (photos, cards,
    buttons, inputs, the header, dark sections) covers them. Tinted sections use translucent
    backgrounds (--tint-*) so the lines stay visible there. Full-width dark sections can render
@@ -234,7 +234,7 @@ p { margin: 0 0 1em; }
 
 /* ---------- typography helpers ---------- */
 
-/* eyebrow on light backgrounds: Profil style – small accent ring + muted text */
+/* eyebrow on light backgrounds: small accent ring + muted text */
 .eyebrow {
   display: inline-flex;
   align-items: center;
@@ -575,13 +575,14 @@ p { margin: 0 0 1em; }
 .mobile-menu__sub .icon { width: 28px; height: 28px; }
 .mobile-menu__sub .is-child { padding-left: 40px; font-size: .94rem; }
 .mobile-menu__cta { display: grid; gap: 12px; margin-top: 28px; }
+.mobile-menu__theme { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
 
 /* ---------- icons ---------- */
 
 .icon { width: 56px; height: 56px; color: var(--ink); }
 .icon .accent { color: var(--accent); }
 
-/* ---------- home hero (as in Profil: text left, slider right, soft block behind) ---------- */
+/* ---------- home hero (text left, slider right, soft block behind) ---------- */
 
 .hero {
   position: relative;
@@ -709,6 +710,9 @@ p { margin: 0 0 1em; }
 }
 @media (min-width: 600px) { .tiles { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 960px) { .tiles { grid-template-columns: repeat(3, 1fr); } }
+/* 4 (or 8) tiles: 2 or 4 columns, never a half-empty last row */
+@media (min-width: 960px) { .tiles--4 { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1200px) { .tiles--4 { grid-template-columns: repeat(4, 1fr); } }
 .tile {
   position: relative;
   display: flex; flex-direction: column; gap: 8px;
@@ -962,7 +966,7 @@ a.photo:hover img, a:hover > .photo img { transform: scale(1.03); }
 .brand-grid { grid-auto-rows: minmax(92px, 1fr); }
 .brand-cell { display: grid; place-items: center; padding: 18px 22px; background: #fff; }
 .brand-cell img {
-  max-height: 42px; max-width: 100%; width: auto; object-fit: contain;
+  max-height: 42px; max-width: 100%; width: auto; height: auto; object-fit: contain;
   filter: grayscale(1) contrast(1.1); opacity: .6;
   transition: filter .35s, opacity .35s;
 }
@@ -1115,7 +1119,7 @@ a.photo:hover img, a:hover > .photo img { transform: scale(1.03); }
 .form__status.is-error { color: #9b2c33; }
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 
-/* ---------- page hero (subpages, as in Profil: soft block behind) ---------- */
+/* ---------- page hero (subpages, soft block behind) ---------- */
 
 .page-hero {
   position: relative;
@@ -1168,6 +1172,8 @@ a.photo:hover img, a:hover > .photo img { transform: scale(1.03); }
 
 .content-section {
   display: grid;
+  /* minmax(0, …): a wide table (.table-wrap scrolls) must not stretch the column past the viewport */
+  grid-template-columns: minmax(0, 1fr);
   gap: clamp(20px, 3vw, 40px);
   padding-block: clamp(44px, 6vw, 72px);
   border-top: 1px solid var(--line);

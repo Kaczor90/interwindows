@@ -6,6 +6,7 @@
 // do not match the checked radio (`:has()`); browsers without `:has()` simply show everything. A tiny script
 // only announces the result for screen readers. No URL changes, so no indexable filter pages (SEO §3.1).
 import { url } from '../../lib/url';
+import { count as countOf } from '../../lib/plural';
 import { abs, BUSINESS_ID, WEBSITE_ID } from '../../lib/schema';
 import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
@@ -76,8 +77,8 @@ const schema = {
     breadcrumbs={[{ name: 'Realizacje' }]}
     media={false}
     highlights={[
-      `${realizacje.length} realizacji opisanych krok po kroku`,
-      `${totalPhotos} zdjęć z naszych montaży`,
+      `${countOf(realizacje.length, 'realizacja opisana', 'realizacje opisane', 'realizacji opisanych')} krok po kroku`,
+      `${countOf(totalPhotos, 'zdjęcie', 'zdjęcia', 'zdjęć')} z naszych montaży`,
       'Montaż wyłącznie naszą ekipą, bez podwykonawców',
       'Zdjęcia przed i po tam, gdzie je mamy',
     ]}

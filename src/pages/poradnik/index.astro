@@ -2,6 +2,7 @@
 // /poradnik/ – guide hub (docs/seo-plan.md §4.2–4.3). Articles come from src/data/poradnik.ts.
 import { url } from '../../lib/url';
 import { rich } from '../../lib/rich';
+import { srcsetOf } from '../../lib/img';
 import { abs, WEBSITE_ID } from '../../lib/schema';
 import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
@@ -58,7 +59,7 @@ const schema = {
               <div class="photo article-card__img">
                 <img
                   src={url(aiSrcSmall(a.img))}
-                  srcset={`${url(aiSrcSmall(a.img))} 800w, ${url(aiSrc(a.img))} 1600w`}
+                  srcset={srcsetOf(aiSrc(a.img), a.img.width, a.img.height, aiSrcSmall(a.img))}
                   sizes={i === 0 ? '(min-width: 960px) 55vw, 100vw' : '(min-width: 960px) 33vw, 100vw'}
                   alt={a.img.alt}
                   width={a.img.width}

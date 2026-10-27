@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config';
 import sitemap from './integrations/sitemap.mjs';
+import typografia from './integrations/typografia.mjs';
 
 // Production URL with www (docs/seo-plan.md §5.1). Used for canonical links, sitemap and schema.
 const PRODUCTION_URL = 'https://www.interwindows.pl';
@@ -12,6 +13,6 @@ export default defineConfig({
   base: process.env.BASE_PATH || '/',
   trailingSlash: 'always',
   build: { format: 'directory' },
-  integrations: [sitemap({ origin: PRODUCTION_URL })],
+  integrations: [typografia(), sitemap({ origin: PRODUCTION_URL })],
   devToolbar: { enabled: false },
 });

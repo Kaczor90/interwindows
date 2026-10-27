@@ -17,6 +17,7 @@ import QuoteForm from '../components/QuoteForm.astro';
 import Testimonials from '../components/Testimonials.astro';
 import { aiImage, aiSrc, aiSrcSmall } from '../data/ai-zdjecia';
 import { photoByFile, photoSrc, photoSrcSmall } from '../data/realizacje-zdjecia';
+import { features, isLinked } from '../data/site';
 
 const path = '/montaz-okien/';
 const seo = {
@@ -140,7 +141,7 @@ const related = [
   { href: '/obszar-dzialania/', label: 'Obszar działania', icon: 'mapa' },
   { href: '/o-firmie/', label: 'O firmie', icon: 'partner' },
   { href: '/poradnik/', label: 'Poradnik', icon: 'doc' },
-];
+].filter((r) => isLinked(r.href));
 
 const schema = service({
   name: 'Montaż okien w Płocku – zawsze naszą ekipą',
@@ -280,7 +281,7 @@ const schema = service({
         Którą metodę wybrać w Twoim domu, omawiamy na pomiarze. Zastosowane materiały zapisujemy w ofercie.
         <span class="tbc" title="Treść czeka na potwierdzenie przez Inter Windows">do potwierdzenia</span>
       </p>
-      <a class="link-arrow reveal" href={url('/cieply-montaz-okien/')}>Na czym polega ciepły montaż okien <Icon name="arrow" class="" /></a>
+      {features.cieplyMontaz && <a class="link-arrow reveal" href={url('/cieply-montaz-okien/')}>Na czym polega ciepły montaż okien <Icon name="arrow" class="" /></a>}
     </div>
   </section>
 

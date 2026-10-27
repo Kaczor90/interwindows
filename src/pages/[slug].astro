@@ -4,6 +4,7 @@
 // → own-crew installation block → FAQ → CTA → quote form → related pages.
 import { url } from '../lib/url';
 import { rich } from '../lib/rich';
+import { srcsetOf } from '../lib/img';
 import { slug as toSlug } from '../lib/slug';
 import { service } from '../lib/schema';
 import Base from '../layouts/Base.astro';
@@ -17,7 +18,7 @@ import QuoteForm from '../components/QuoteForm.astro';
 import { categories, categoryBySlug, childrenOf, type Category } from '../data/oferta';
 import { photoByFile, photoSrcSmall, type PhotoTag } from '../data/realizacje-zdjecia';
 import { aiImages, aiSrc, aiSrcSmall } from '../data/ai-zdjecia';
-import { site } from '../data/site';
+import { site, isLinked } from '../data/site';
 
 export function getStaticPaths() {
   return categories.map((category) => ({ params: { slug: category.slug }, props: { category } }));
@@ -73,7 +74,7 @@ const pageIcons: Record<string, string> = {
   '/konfigurator/': 'konfigurator',
   '/kontakt/': 'doradztwo',
 };
-const related = c.related.map((r) => {
+const related = c.related.filter((r) => !r.startsWith('/') || isLinked(r)).map((r) => {
   if (r.startsWith('/')) return { href: r, label: pageLabels[r] ?? r, icon: pageIcons[r] ?? 'doradztwo' };
   const rc = categoryBySlug(r);
   return rc ? { href: `/${rc.slug}/`, label: rc.title, icon: rc.slug } : null;
@@ -110,7 +111,7 @@ const photoTags = (c.photoTags ?? []) as PhotoTag[];
   {hubItems.length > 0 && (
     <section class="section section--tight pt-0">
       <div class="container">
-        <div class="tiles">
+        <div class:list={["tiles", { "tiles--4": hubItems.length % 3 !== 0 && hubItems.length % 2 === 0 }]}>
           {hubItems.map((h) => (
             <article class="tile reveal">
               <Icon name={h.slug} />
@@ -182,7 +183,7 @@ const photoTags = (c.photoTags ?? []) as PhotoTag[];
                 <figure class="photo content-section__img">
                   <img
                     src={url(smallOf(s.image.src))}
-                    srcset={`${url(smallOf(s.image.src))} 800w, ${url(s.image.src)} 1600w`}
+                    srcset={srcsetOf(s.image.src, s.image.width, s.image.height, smallOf(s.image.src))}
                     sizes="(min-width: 960px) 55vw, 100vw"
                     alt={s.image.alt}
                     width={s.image.width}

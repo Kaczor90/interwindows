@@ -3,7 +3,8 @@
 // JSON-LD: BlogPosting (author = the organisation, as agreed for launch) + BreadcrumbList (Breadcrumbs).
 import { url } from '../../lib/url';
 import { rich } from '../../lib/rich';
-import { article as articleSchema, abs, BUSINESS_ID } from '../../lib/schema';
+import { srcsetOf } from '../../lib/img';
+import { article as articleSchema, abs } from '../../lib/schema';
 import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
@@ -32,10 +33,9 @@ const schema = {
     datePublished: a.published,
     dateModified: a.updated,
     description: a.seo.description,
-    author: { name: site.name },
+    // signed by the company until a named author is agreed (docs/do-uzupelnienia.md)
+    author: 'organization',
   }),
-  // the guide is signed by the company (no named author yet – docs/do-uzupelnienia.md)
-  author: { '@type': 'Organization', '@id': BUSINESS_ID, name: site.name, url: abs('/') },
   articleSection: a.tag,
   wordCount: wordCount(a),
   isPartOf: { '@type': 'Blog', name: 'Poradnik Inter Windows', url: abs('/poradnik/') },
@@ -73,7 +73,7 @@ const photoOf = (file: string) => {
         <figure class="photo post-cover">
           <img
             src={url(aiSrc(img))}
-            srcset={`${url(aiSrcSmall(img))} 800w, ${url(aiSrc(img))} 1600w`}
+            srcset={srcsetOf(aiSrc(img), img.width, img.height, aiSrcSmall(img))}
             sizes="(min-width: 1300px) 1240px, 100vw"
             alt={img.alt}
             width={img.width}
@@ -128,7 +128,7 @@ const photoOf = (file: string) => {
                     <div class="photo">
                       <img
                         src={url(photoSrcSmall(p))}
-                        srcset={`${url(photoSrcSmall(p))} 800w, ${url(photoSrc(p))} 1600w`}
+                        srcset={srcsetOf(photoSrc(p), p.width, p.height, photoSrcSmall(p))}
                         sizes="(min-width: 960px) 720px, 100vw"
                         alt={p.alt}
                         width={p.width}

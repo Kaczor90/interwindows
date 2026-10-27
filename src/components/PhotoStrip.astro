@@ -4,6 +4,7 @@
 //   <PhotoStrip tags={['bramy-garazowe']} />
 //   <PhotoStrip photos={[photoByFile('...')!]} count={3} />
 import { url } from '../lib/url';
+import { srcsetOf } from '../lib/img';
 import Placeholder from './Placeholder.astro';
 import { photosByTag, photoSrc, photoSrcSmall, type PhotoTag, type RealizacjaZdjecie } from '../data/realizacje-zdjecia';
 
@@ -25,7 +26,7 @@ const missing = Math.max(0, count - list.length);
     <figure class="photo reveal">
       <img
         src={url(photoSrcSmall(p))}
-        srcset={`${url(photoSrcSmall(p))} 800w, ${url(photoSrc(p))} 1600w`}
+        srcset={srcsetOf(photoSrc(p), p.width, p.height, photoSrcSmall(p))}
         sizes="(min-width: 900px) 25vw, 50vw"
         alt={p.alt}
         width={p.width}

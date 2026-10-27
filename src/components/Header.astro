@@ -1,6 +1,7 @@
 ---
 import { url, withoutBase } from '../lib/url';
 import Icon from './Icon.astro';
+import ThemeSwitch from './ThemeSwitch.astro';
 import { site, nav } from '../data/site';
 import { categories, type MenuGroup } from '../data/oferta';
 
@@ -15,6 +16,8 @@ const columns = [
   { title: 'Drzwi, osłony i bramy', items: byGroup(['drzwi', 'oslony', 'bramy']) },
 ];
 const label = (c: (typeof categories)[number]) => (c.slug === 'okna' ? 'Okna – przegląd' : c.title);
+// palette switcher (dev and preview builds only) – also in the mobile menu, never floating over content
+const themeSwitch = import.meta.env.DEV || import.meta.env.PUBLIC_PREVIEW === 'true';
 ---
 
 <header class="site-header">
@@ -116,6 +119,7 @@ const label = (c: (typeof categories)[number]) => (c.slug === 'okna' ? 'Okna –
       <a class="btn" href={site.phoneHref} data-cta="menu-telefon"><Icon name="phone" class="" /> Zadzwoń: {site.phone}</a>
       <a class="btn btn--ghost" href={url('/kontakt/#wycena')} data-quote-link data-cta="menu-wycena">Bezpłatna wycena</a>
     </div>
+    {themeSwitch && <div class="mobile-menu__theme"><ThemeSwitch variant="inline" /></div>}
   </div>
 </div>
 
