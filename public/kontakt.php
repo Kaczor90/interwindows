@@ -72,7 +72,7 @@ $topic    = $clean('topic', 120);
 $page     = $clean('page', 200);
 $subjectX = $clean('subject', 80);
 $message  = $multiline('message', 3000);
-$config   = $multiline('konfiguracja', 20000);
+$config   = $multiline('konfiguracja', 60000); // konfigurator: do 30 pozycji + linia JSON
 $consent  = !empty($_POST['consent']);
 
 if (strlen(preg_replace('/\D/', '', $phone)) < 9) {

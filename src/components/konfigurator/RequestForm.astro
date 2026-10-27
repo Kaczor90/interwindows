@@ -1,0 +1,69 @@
+---
+// "Umów konsultację i pomiar" – contact form of the configurator's last step.
+// Posts to public/kontakt.php (same contract as QuoteForm: name, phone*, email, town, topic, message,
+// consent*, website = honeypot, page, t) plus `konfiguracja` (plain-text project + JSON line) and
+// `subject` = "Konfigurator". Both are added by src/scripts/konfigurator.ts on submit.
+// Preview builds (PUBLIC_PREVIEW=true) only show a notice, like QuoteForm.
+import { url, withoutBase } from '../../lib/url';
+import Icon from '../Icon.astro';
+import { site } from '../../data/site';
+import { contactTimes } from '../../data/konfigurator';
+
+const isPreview = import.meta.env.PUBLIC_PREVIEW === 'true';
+const page = withoutBase(Astro.url.pathname);
+---
+
+<form
+  class="form kf-request"
+  action={url('/kontakt.php')}
+  method="post"
+  data-kf-request
+  data-thanks={url('/dziekujemy/')}
+  data-preview={isPreview ? 'true' : undefined}
+  novalidate
+>
+  <div class="form__row">
+    <div class="field">
+      <label for="kf-f-name">Imię *</label>
+      <input id="kf-f-name" name="name" type="text" autocomplete="name" placeholder="Jak mamy się do Ciebie zwracać?" required />
+    </div>
+    <div class="field">
+      <label for="kf-f-phone">Telefon *</label>
+      <input id="kf-f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="np. 600 100 200" required />
+    </div>
+  </div>
+  <div class="form__row">
+    <div class="field">
+      <label for="kf-f-email">E-mail <span>(opcjonalnie)</span></label>
+      <input id="kf-f-email" name="email" type="email" autocomplete="email" placeholder="adres@email.pl" />
+    </div>
+    <div class="field">
+      <label for="kf-f-town">Miejscowość <span>(opcjonalnie)</span></label>
+      <input id="kf-f-town" name="town" type="text" autocomplete="address-level2" placeholder="np. Płock, Gostynin" />
+    </div>
+  </div>
+  <div class="field">
+    <label for="kf-f-time">Kiedy najlepiej zadzwonić?</label>
+    <select id="kf-f-time" name="kontakt_pora">
+      {contactTimes.map((t) => <option>{t}</option>)}
+    </select>
+  </div>
+  <div class="field">
+    <label for="kf-f-msg">Wiadomość <span>(opcjonalnie)</span></label>
+    <textarea id="kf-f-msg" name="message" rows="3" placeholder="Np. stan surowy od marca, okna w salonie od południa, pytanie o rolety."></textarea>
+  </div>
+  <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+  <input type="hidden" name="page" value={page} />
+  <input type="hidden" name="t" value="" />
+  <label class="consent">
+    <input type="checkbox" name="consent" value="1" required />
+    <span>
+      Wyrażam zgodę na przetwarzanie moich danych i projektu przez {site.shortLegalName} w celu odpowiedzi na zapytanie
+      i umówienia pomiaru. Więcej w <a href={url('/polityka-prywatnosci/')}>polityce prywatności</a>.
+    </span>
+  </label>
+  <div class="btn-row">
+    <button class="btn" type="submit">Umów konsultację i pomiar <Icon name="arrow" class="arrow" /></button>
+    <p class="form__status" role="status" aria-live="polite"></p>
+  </div>
+</form>

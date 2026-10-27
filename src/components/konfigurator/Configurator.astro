@@ -1,0 +1,698 @@
+---
+// Window configurator (prototype). Static markup for every step and option (rendered from
+// src/data/konfigurator.ts), enhanced by src/scripts/konfigurator.ts: state, stepper, live SVG
+// preview (./rysunek.ts), project list, summary and the request form (./RequestForm.astro).
+// Elements created by the script are styled with :global() under the component's own classes.
+import { url } from '../../lib/url';
+import Icon from '../Icon.astro';
+import OptionGroup from './OptionGroup.astro';
+import RequestForm from './RequestForm.astro';
+import { drawItem } from './rysunek';
+import { site } from '../../data/site';
+import {
+  steps,
+  productTypes,
+  contexts,
+  templates,
+  systems,
+  finishes,
+  panes,
+  glassToggles,
+  safetyGlass,
+  barKinds,
+  BARS_MAX,
+  hinges,
+  handles,
+  security,
+  shadings,
+  drives,
+  screens,
+  sills,
+  mountings,
+  removal,
+  OWN_CREW_NOTE,
+  defaultItem,
+  type Item,
+} from '../../data/konfigurator';
+
+const num = (i: number) => String(i + 1).padStart(2, '0');
+const total = steps.length;
+const thumbs: Record<string, string> = Object.fromEntries(
+  templates.map((t) => {
+    const it: Item = { ...defaultItem(t.type), template: t.id, openings: [...t.openings] };
+    return [t.id, drawItem(it, { view: 'in', mode: 'thumb', id: `th-${t.id}`, neutral: true })];
+  }),
+);
+// first paint (before the script runs): default item
+const firstDrawing = drawItem(defaultItem(), { view: 'in', mode: 'full', id: 'kfp' });
+const finishOpts = finishes.map((f) => ({
+  value: f.id,
+  label: f.label,
+  desc: f.code ?? (f.kind === 'okleina' ? 'okleina' : f.kind === 'lakier' ? 'drewno' : undefined),
+  swatch: { hex: f.hex, grain: f.grain },
+  attrs: { 'data-systems': f.systems.join(' ') },
+}));
+const countOpts = Array.from({ length: BARS_MAX + 1 }, (_, i) => i);
+const stepHead = (i: number) => ({ id: `kf-h-${steps[i].id}`, n: `Krok ${num(i)} z ${total}`, title: steps[i].title });
+---
+
+<div class="kf" data-kf data-step="typ">
+  <noscript>
+    <p class="kf-noscript">
+      Konfigurator działa w przeglądarce z włączonym JavaScriptem. Możesz też zadzwonić:
+      <a href={site.phoneHref}>{site.phone}</a> albo wysłać <a href={url('/kontakt/#wycena')}>formularz kontaktowy</a>.
+    </p>
+  </noscript>
+
+  <nav class="kf-steps" aria-label="Kroki konfiguratora">
+    <ol class="kf-steps__list">
+      {steps.map((s, i) => (
+        <li>
+          <button type="button" class="kf-steps__btn" data-goto={i} aria-current={i === 0 ? 'step' : undefined}>
+            <span class="kf-steps__num" aria-hidden="true">{num(i)}</span>
+            <span class="kf-steps__label"><span class="sr-only">Krok {i + 1}: </span>{s.label}</span>
+          </button>
+        </li>
+      ))}
+    </ol>
+  </nav>
+
+  <div class="kf-layout">
+    <!-- preview + summary (sticky) -->
+    <div class="kf-aside" data-kf-aside>
+      <figure class="kf-preview">
+        <div class="kf-preview__bar">
+          <p class="kf-preview__pos" data-kf-pos>Pozycja 1 z 1</p>
+          <fieldset class="kf-seg">
+            <legend class="sr-only">Widok rysunku</legend>
+            <label><input type="radio" name="kf-view" value="in" data-kf-view checked /><span>Od wewnątrz</span></label>
+            <label><input type="radio" name="kf-view" value="out" data-kf-view /><span>Z zewnątrz</span></label>
+          </fieldset>
+        </div>
+        <div class="kf-preview__draw" data-kf-draw set:html={firstDrawing} />
+        <figcaption class="kf-preview__cap">
+          <p class="kf-preview__desc" data-kf-desc aria-live="polite"></p>
+          <details class="kf-legend">
+            <summary>Jak czytać rysunek</summary>
+            <ul>
+              <li>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 3 4 12l16 9" /></svg>
+                <span>Wierzchołek trójkąta wskazuje stronę zawiasów (skrzydło rozwierne).</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4l9 16 9-16" /></svg>
+                <span>Linie zbiegające się u dołu: uchył.</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15V12h14M15 8l4 4-4 4" /></svg>
+                <span>Strzałka: skrzydło przesuwne (HST). F: szyba stała.</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8h18" /><path d="M3 16h18" stroke-dasharray="3 3" /></svg>
+                <span>Linia ciągła: skrzydło otwiera się do patrzącego (widok od wewnątrz). Przerywana: od patrzącego.</span>
+              </li>
+            </ul>
+            <p>Klamkę i zawiasy widać od wewnątrz. Roletę, moskitierę i parapet zewnętrzny – z zewnątrz. Kolory i szerokości profili są poglądowe.</p>
+          </details>
+        </figcaption>
+      </figure>
+
+      <section class="kf-sum" aria-labelledby="kf-sum-title">
+        <h2 class="kf-sum__title" id="kf-sum-title">Twoja konfiguracja</h2>
+        <dl class="kf-sum__list" data-kf-sum></dl>
+        <p class="kf-sum__note">Projekt wstępny – dokładne wymiary i wycenę przygotuje doradca po pomiarze.</p>
+      </section>
+    </div>
+
+    <!-- steps -->
+    <div class="kf-main" data-kf-main>
+      <!-- 1. typ -->
+      <section class="kf-step" data-step="typ" aria-labelledby={stepHead(0).id}>
+        <header class="kf-step__head">
+          <span class="kf-step__num">{stepHead(0).n}</span>
+          <h2 id={stepHead(0).id} tabindex="-1">{stepHead(0).title}</h2>
+        </header>
+        <OptionGroup
+          legend="Rodzaj"
+          name="kf-type"
+          k="type"
+          options={productTypes.map((p) => ({ value: p.id, label: p.label, desc: p.desc, tbc: p.tbc }))}
+        />
+        <OptionGroup
+          legend="Inwestycja (dotyczy całego projektu)"
+          name="kf-context"
+          k="@context"
+          variant="compact"
+          options={contexts.map((c) => ({ value: c.id, label: c.label, desc: c.desc }))}
+        />
+        <div class="field kf-name">
+          <label for="kf-name">Nazwa pozycji <span>(opcjonalnie)</span></label>
+          <input id="kf-name" type="text" data-k="name" maxlength="40" autocomplete="off" placeholder="np. Salon, Sypialnia 1, Kuchnia" />
+        </div>
+      </section>
+
+      <!-- 2. kształt -->
+      <section class="kf-step" data-step="ksztalt" hidden aria-labelledby={stepHead(1).id}>
+        <header class="kf-step__head">
+          <span class="kf-step__num">{stepHead(1).n}</span>
+          <h2 id={stepHead(1).id} tabindex="-1">{stepHead(1).title}</h2>
+        </header>
+        <OptionGroup
+          legend="Szablon"
+          name="kf-template"
+          k="template"
+          variant="thumbs"
+          options={templates.map((t) => ({ value: t.id, label: t.label, thumb: thumbs[t.id], tbc: t.tbc, attrs: { 'data-types': t.type } }))}
+        />
+        <fieldset class="kf-group">
+          <legend class="kf-group__legend">Sposób otwierania <span class="tbc">nazewnictwo L/P do potwierdzenia</span></legend>
+          <p class="kf-hint">
+            Kliknij skrzydło na rysunku, żeby zmienić sposób otwierania, albo wybierz go z listy. Numeracja i strony (lewe, prawe)
+            – patrząc od wewnątrz.
+          </p>
+          <div class="kf-openings" data-kf-openings></div>
+        </fieldset>
+      </section>
+
+      <!-- 3. wymiary -->
+      <section class="kf-step" data-step="wymiary" hidden aria-labelledby={stepHead(2).id}>
+        <header class="kf-step__head">
+          <span class="kf-step__num">{stepHead(2).n}</span>
+          <h2 id={stepHead(2).id} tabindex="-1">{stepHead(2).title}</h2>
+        </header>
+        <OptionGroup
+          legend="Wymiary okna"
+          name="kf-size"
+          k="sizeMode"
+          options={[
+            { value: 'pomiar', label: 'Wymiary poda nasz technik przy pomiarze', desc: 'Najprostsza droga. Pomiar jest bezpłatny i niezobowiązujący.' },
+            { value: 'wlasne', label: 'Znam orientacyjne wymiary', desc: 'Rysunek pokaże proporcje. Ostateczne wymiary i tak ustala technik.' },
+          ]}
+        />
+        <div class="kf-dims" data-kf-dims hidden>
+          <div class="kf-dims__row">
+            <div class="field">
+              <label for="kf-w">Szerokość (mm)</label>
+              <input id="kf-w" type="number" inputmode="numeric" step="10" data-k="w" aria-describedby="kf-dims-hint kf-dims-err" />
+            </div>
+            <span class="kf-dims__x" aria-hidden="true">×</span>
+            <div class="field">
+              <label for="kf-h">Wysokość (mm)</label>
+              <input id="kf-h" type="number" inputmode="numeric" step="10" data-k="h" aria-describedby="kf-dims-hint kf-dims-err" />
+            </div>
+          </div>
+          <p class="kf-hint" id="kf-dims-hint" data-kf-limits></p>
+          <p class="kf-error" id="kf-dims-err" data-kf-dims-err aria-live="polite"></p>
+        </div>
+      </section>
+
+      <!-- 4. system -->
+      <section class="kf-step" data-step="system" hidden aria-labelledby={stepHead(3).id}>
+        <header class="kf-step__head">
+          <span class="kf-step__num">{stepHead(3).n}</span>
+          <h2 id={stepHead(3).id} tabindex="-1">{stepHead(3).title}</h2>
+        </header>
+        <OptionGroup
+          legend="System"
+          name="kf-system"
+          k="system"
+          hint="Parametry konkretnego zestawu (Uw, pakiet szyb, wymiary graniczne) podamy w ofercie, na podstawie kart producenta."
+          options={systems.map((s) => ({ value: s.id, label: s.label, sub: `${s.name} · ${s.line}`, desc: s.desc, points: s.points }))}
+        />
+        <p class="kf-hint kf-hst-note" data-kf-hst-note hidden>
+          Drzwi HST: system i wymiary graniczne dobierzemy do otworu. <span class="tbc">dostępność do potwierdzenia</span>
+        </p>
+      </section>
+
+      <!-- 5. kolor -->
+      <section class="kf-step" data-step="kolor" hidden aria-labelledby={stepHead(4).id}>
+        <header class="kf-step__head">
+          <span class="kf-step__num">{stepHead(4).n}</span>
+          <h2 id={stepHead(4).id} tabindex="-1">{stepHead(4).title}</h2>
+        </header>
+        <OptionGroup legend="Kolor od zewnątrz" name="kf-color-out" k="colorOut" variant="swatch" tbc="lista do potwierdzenia dla systemu" options={finishOpts} />
+        <OptionGroup legend="Kolor od wewnątrz" name="kf-color-in" k="colorIn" variant="swatch" options={finishOpts} />
+        <div class="kf-row">
+          <button type="button" class="btn btn--ghost btn--sm" data-kf-samecolor>Ten sam kolor od wewnątrz</button>
+          <p class="kf-hint">Kolory na ekranie są przybliżone. Próbki pokażemy przy pomiarze.</p>
+        </div>
+      </section>
+
+      <!-- 6. szyby -->
+      <section class="kf-step" data-step="szyby" hidden aria-labelledby={stepHead(5).id}>
+        <header class="kf-step__head">
+          <span class="kf-step__num">{stepHead(5).n}</span>
+          <h2 id={stepHead(5).id} tabindex="-1">{stepHead(5).title}</h2>
+        </header>
+        <OptionGroup legend="Pakiet szyb" name="kf-pane" k="glass.pane" variant="compact" options={panes.map((p) => ({ value: p.id, label: p.label, desc: p.desc }))} />
+        <OptionGroup
+          legend="Dodatkowo"
+          name="kf-glass"
+          type="checkbox"
+          variant="compact"
+          options={glassToggles.map((g) => ({ value: g.id, label: g.label, desc: g.desc, tbc: g.tbc, k: `glass.${g.id}` }))}
+        />
+        <OptionGroup legend="Szyba bezpieczna" name="kf-safety" k="glass.safety" variant="compact" options={safetyGlass.map((s) => ({ value: s.id, label: s.label, desc: s.desc, tbc: s.tbc }))} />
+        <OptionGroup legend="Szprosy" name="kf-bars" k="bars.kind" variant="compact" options={barKinds.map((b) => ({ value: b.id, label: b.label, desc: b.desc, tbc: b.tbc }))} />
+        <div class="kf-bars" data-kf-bars hidden>
+          <div class="field">
+            <label for="kf-bars-v">Szprosy pionowe w polu</label>
+            <select id="kf-bars-v" data-k="bars.v">{countOpts.map((c) => <option value={c}>{c}</option>)}</select>
+          </div>
+          <div class="field">
+            <label for="kf-bars-h">Szprosy poziome w polu</label>
+            <select id="kf-bars-h" data-k="bars.h">{countOpts.map((c) => <option value={c}>{c}</option>)}</select>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. okucia -->
+      <section class="kf-step" data-step="okucia" hidden aria-labelledby={stepHead(6).id}>
+        <header class="kf-step__head">
+          <span class="kf-step__num">{stepHead(6).n}</span>
+          <h2 id={stepHead(6).id} tabindex="-1">{stepHead(6).title}</h2>
+        </header>
+        <OptionGroup legend="Zawiasy" name="kf-hinges" k="hardware.hinges" variant="compact" options={hinges.map((h) => ({ value: h.id, label: h.label, desc: h.desc, tbc: h.tbc }))} />
+        <OptionGroup
+          legend="Kolor klamki"
+          name="kf-handle"
+          k="hardware.handle"
+          variant="swatch"
+          tbc="dostępność do potwierdzenia"
+          options={handles.map((h) => ({ value: h.id, label: h.label, swatch: { hex: h.hex } }))}
+        />
+        <OptionGroup legend="Bezpieczeństwo" name="kf-rc" k="hardware.rc" variant="compact" options={security.map((s) => ({ value: s.id, label: s.label, desc: s.desc, tbc: s.tbc }))} />
+        <p class="kf-hint kf-note" data-kf-rc-hint hidden>
+          Klasa RC2 obejmuje całe okno: okucia, klamkę z zamkiem lub przyciskiem i szybę P4A. Doradca sprawdzi, czy wybrany system i układ skrzydeł są dostępne w tej klasie.
+        </p>
+      </section>
+
+      <!-- 8. dodatki -->
+      <section class="kf-step" data-step="dodatki" hidden aria-labelledby={stepHead(7).id}>
+        <header class="kf-step__head">
+          <span class="kf-step__num">{stepHead(7).n}</span>
+          <h2 id={stepHead(7).id} tabindex="-1">{stepHead(7).title}</h2>
+        </header>
+        <OptionGroup legend="Osłona zewnętrzna" name="kf-shading" k="extras.shading" variant="compact" options={shadings.map((s) => ({ value: s.id, label: s.label, desc: s.desc, tbc: s.tbc }))} />
+        <OptionGroup legend="Napęd osłony" name="kf-drive" k="extras.drive" variant="compact" attrs={{ 'data-kf-drive': '' }} options={drives.map((d) => ({ value: d.id, label: d.label, desc: d.desc }))} />
+        <OptionGroup
+          legend="Moskitiera"
+          name="kf-screen"
+          k="extras.screen"
+          variant="compact"
+          options={screens.map((s) => ({ value: s.id, label: s.label, desc: s.desc, tbc: s.tbc, attrs: { 'data-types': s.types.join(' ') } }))}
+        />
+        <OptionGroup
+          legend="Parapety"
+          name="kf-sills"
+          type="checkbox"
+          variant="compact"
+          attrs={{ 'data-kf-sills': '' }}
+          options={sills.map((s) => ({ value: s.id, label: s.label, desc: s.desc, tbc: s.tbc, k: `extras.${s.id}` }))}
+        />
+        <p class="kf-hint" data-kf-sill-note hidden>Drzwi balkonowe i przesuwne mają próg zamiast parapetu. Wykończenie progu omówimy przy pomiarze.</p>
+        <p class="kf-hint">Rolety i żaluzje dobierzemy kolorem do okien i elewacji. Zobacz <a href={url('/rolety-zewnetrzne/')}>rolety zewnętrzne</a> i <a href={url('/zaluzje-fasadowe/')}>żaluzje fasadowe</a>.</p>
+      </section>
+
+      <!-- 9. montaż -->
+      <section class="kf-step" data-step="montaz" hidden aria-labelledby={stepHead(8).id}>
+        <header class="kf-step__head">
+          <span class="kf-step__num">{stepHead(8).n}</span>
+          <h2 id={stepHead(8).id} tabindex="-1">{stepHead(8).title}</h2>
+        </header>
+        <div class="kf-crew">
+          <Icon name="ekipa" class="kf-crew__icon" />
+          <div>
+            <strong>{OWN_CREW_NOTE}</strong>
+            <span>Za pomiar, dobór sposobu osadzenia i montaż odpowiada jedna firma. <a href={url('/montaz-okien/')}>Jak montujemy</a></span>
+          </div>
+        </div>
+        <OptionGroup legend="Sposób montażu" name="kf-mount" k="mount" variant="compact" options={mountings.map((m) => ({ value: m.id, label: m.label, desc: m.desc, tbc: m.tbc }))} />
+        <OptionGroup
+          legend="Wymiana okien (dotyczy całego projektu)"
+          name="kf-removal"
+          type="checkbox"
+          variant="compact"
+          attrs={{ 'data-kf-removal': '' }}
+          options={[{ value: removal.id, label: removal.label, tbc: removal.tbc, k: '@demontaz' }]}
+        />
+        <p class="kf-hint">Więcej o warstwowym uszczelnieniu okna: <a href={url('/cieply-montaz-okien/')}>ciepły montaż okien</a>.</p>
+      </section>
+
+      <!-- 10. projekt -->
+      <section class="kf-step" data-step="projekt" hidden aria-labelledby={stepHead(9).id}>
+        <header class="kf-step__head kf-step__head--split">
+          <div>
+            <span class="kf-step__num">{stepHead(9).n}</span>
+            <h2 id={stepHead(9).id} tabindex="-1">{stepHead(9).title}</h2>
+          </div>
+          <p class="kf-total" data-kf-total></p>
+        </header>
+        <ul class="kf-list" data-kf-list></ul>
+        <div class="kf-row kf-row--actions">
+          <button type="button" class="btn" data-kf-add>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+            Dodaj kolejne okno
+          </button>
+          <button type="button" class="btn btn--ghost" data-kf-copy>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1" /><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" /></svg>
+            Skopiuj link do projektu
+          </button>
+          <button type="button" class="kf-textbtn" data-kf-reset>Zacznij od nowa</button>
+        </div>
+        <div class="kf-linkbox" data-kf-linkbox hidden>
+          <label for="kf-link">Link do projektu</label>
+          <input id="kf-link" type="text" readonly />
+        </div>
+        <p class="kf-status" data-kf-status role="status" aria-live="polite"></p>
+        <p class="kf-hint">Projekt zapisuje się w tej przeglądarce. Link otworzy go na innym urządzeniu – możesz go też wysłać domownikom.</p>
+      </section>
+
+      <!-- 11. wysyłka -->
+      <section class="kf-step" data-step="wysylka" hidden aria-labelledby={stepHead(10).id}>
+        <header class="kf-step__head">
+          <span class="kf-step__num">{stepHead(10).n}</span>
+          <h2 id={stepHead(10).id} tabindex="-1">{stepHead(10).title}</h2>
+        </header>
+        <div class="kf-send">
+          <div class="kf-send__review">
+            <p class="kf-hint kf-send__lead">
+              Sprawdź zestawienie. Projekt jest wstępny – dokładne wymiary i wycenę przygotuje doradca po pomiarze.
+              Pomiar i wycena są bezpłatne.
+            </p>
+            <p class="kf-error" data-kf-review-err aria-live="polite"></p>
+            <div class="kf-review" data-kf-review></div>
+            <details class="kf-plain">
+              <summary>Zobacz treść, którą otrzyma doradca</summary>
+              <pre data-kf-plain></pre>
+            </details>
+          </div>
+          <div class="form-panel kf-send__form">
+            <h3 class="kf-send__title">Umów konsultację i pomiar</h3>
+            <p class="kf-hint">Oddzwonimy, omówimy projekt i umówimy bezpłatny pomiar.</p>
+            <RequestForm />
+          </div>
+        </div>
+      </section>
+
+      <div class="kf-nav" data-fab-avoid>
+        <button type="button" class="btn btn--ghost btn--sm kf-nav__btn" data-kf-prev>
+          <Icon name="arrow-left" class="" /> Wstecz
+        </button>
+        <span class="kf-nav__count" data-kf-count aria-hidden="true">1 / {total}</span>
+        <button type="button" class="btn btn--sm kf-nav__btn" data-kf-next>
+          <span data-kf-next-label>Dalej</span> <Icon name="arrow" class="arrow" />
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import '../../scripts/konfigurator';
+</script>
+
+<style>
+  .kf [hidden] { display: none !important; }
+  .kf { position: relative; }
+  .kf-noscript { padding: 16px 20px; border: 1px solid var(--line-strong); background: var(--bg-soft); margin: 0 0 24px; }
+
+  /* ---------- stepper ---------- */
+  .kf-steps {
+    /* containing block for the .sr-only spans, so they stay inside the horizontal scroller */
+    position: relative;
+    margin: 0 0 clamp(20px, 3vw, 32px);
+    border-top: 1px solid var(--line-strong);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .kf-steps::-webkit-scrollbar { display: none; }
+  .kf-steps__list { list-style: none; margin: 0; padding: 0; display: flex; min-width: max-content; }
+  .kf-steps__list li { flex: 1 0 auto; }
+  .kf-steps__btn {
+    display: grid; gap: 2px; justify-items: start;
+    width: 100%;
+    margin-top: -1px;
+    padding: 12px 18px 10px 0;
+    border: 0; border-top: 2px solid transparent;
+    background: none;
+    font: inherit; text-align: left;
+    color: var(--muted);
+    cursor: pointer;
+    transition: border-color .2s var(--ease), color .2s;
+  }
+  .kf-steps__num { font-size: .7rem; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: .04em; }
+  .kf-steps__label { font-size: .84rem; font-weight: 500; white-space: nowrap; }
+  .kf-steps__btn:hover { color: var(--ink); }
+  .kf-steps__btn.is-done { color: var(--ink-2); }
+  .kf-steps__btn.is-done .kf-steps__num::after { content: ' ✓'; color: var(--accent); }
+  .kf-steps__btn[aria-current='step'] { color: var(--ink); border-top-color: var(--accent); }
+  .kf-steps__btn[aria-current='step'] .kf-steps__label { font-weight: 600; }
+  .kf-steps__btn.has-error .kf-steps__num::after { content: ' !'; color: var(--accent); }
+  .kf-steps__btn:focus-visible { outline-offset: -2px; }
+  @media (min-width: 1000px) {
+    .kf-steps { overflow: visible; }
+    .kf-steps__list { min-width: 0; }
+    .kf-steps__list li { flex: 1 1 0; min-width: 0; }
+    .kf-steps__btn { padding-right: 8px; }
+  }
+
+  /* ---------- layout ---------- */
+  .kf-layout { display: grid; gap: clamp(24px, 3.4vw, 48px); align-items: start; }
+  .kf-main { min-width: 0; }
+  .kf-aside { min-width: 0; }
+  @media (min-width: 1000px) {
+    .kf-layout { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); }
+    .kf-aside {
+      position: sticky; top: calc(var(--header-h) + 16px);
+      max-height: calc(100vh - var(--header-h) - 32px);
+      overflow-y: auto; scrollbar-width: thin;
+    }
+    .kf[data-step='projekt'] .kf-layout,
+    .kf[data-step='wysylka'] .kf-layout { grid-template-columns: minmax(0, 1fr); }
+  }
+  .kf[data-step='projekt'] .kf-aside,
+  .kf[data-step='wysylka'] .kf-aside { display: none; }
+
+  /* ---------- preview ---------- */
+  .kf-preview { margin: 0; background: var(--bg); border: 1px solid var(--line); }
+  .kf-preview__bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 10px 12px 10px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .kf-preview__pos { margin: 0; min-width: 0; font-size: .82rem; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .kf-seg { display: inline-flex; flex: none; margin: 0; padding: 3px; border: 1px solid var(--line-strong); border-radius: 999px; }
+  .kf-seg label { position: relative; display: block; }
+  .kf-seg input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+  .kf-seg span { display: block; padding: 5px 13px; border-radius: 999px; font-size: .76rem; font-weight: 600; color: var(--muted); white-space: nowrap; transition: background .2s, color .2s; }
+  .kf-seg input:checked + span { background: var(--ink); color: var(--bg); }
+  .kf-seg input:focus-visible + span { outline: 2px solid var(--navy); outline-offset: 2px; }
+  .kf-preview__draw { height: clamp(280px, 46vh, 500px); padding: 16px; }
+  .kf-preview__draw :global(svg) { display: block; width: 100%; height: 100%; }
+  .kf-preview__cap { padding: 12px 16px 14px; border-top: 1px solid var(--line); }
+  .kf-preview__desc { margin: 0; font-size: .8rem; line-height: 1.55; color: var(--muted); }
+
+  .kf-legend { margin-top: 8px; font-size: .8rem; color: var(--muted); }
+  .kf-legend summary { cursor: pointer; font-weight: 600; color: var(--ink); width: max-content; max-width: 100%; }
+  .kf-legend ul { list-style: none; margin: 10px 0 8px; padding: 0; display: grid; gap: 6px; }
+  .kf-legend li { display: grid; grid-template-columns: 20px 1fr; gap: 10px; align-items: start; line-height: 1.5; }
+  .kf-legend svg { width: 18px; height: 18px; fill: none; stroke: var(--ink); stroke-width: 1.4; margin-top: 1px; }
+  .kf-legend p { margin: 0; line-height: 1.5; }
+
+  /* ---------- live summary (desktop) ---------- */
+  .kf-sum { margin-top: 14px; padding: 16px 18px; background: var(--bg-softer); border: 1px solid var(--line); }
+  .kf-sum__title { font-size: .92rem; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 10px; }
+  .kf-sum__list { margin: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 5px 16px; font-size: .8rem; line-height: 1.45; }
+  .kf-sum__list :global(dt) { color: var(--muted); }
+  .kf-sum__list :global(dd) { margin: 0; color: var(--ink); }
+  .kf-sum__note { margin: 12px 0 0; padding-top: 10px; border-top: 1px solid var(--line); font-size: .76rem; color: var(--muted); }
+
+  /* mobile: compact sticky drawing on top, steps below */
+  @media (max-width: 999px) {
+    .kf-aside { margin-inline: calc(var(--gutter) * -1); }
+    .kf-preview { border-inline: 0; }
+    .kf-preview__bar { padding-inline: var(--gutter); }
+    .kf-preview__draw { height: min(30vh, 250px); padding: 8px var(--gutter); }
+    .kf-preview__cap { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; padding: 0; border: 0; }
+    .kf-sum { display: none; }
+  }
+  @media (max-width: 999px) and (min-height: 600px) {
+    .kf-aside { position: sticky; top: var(--header-h); z-index: 6; background: var(--bg); }
+    .kf-preview { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line-strong); }
+  }
+
+  /* ---------- steps ---------- */
+  .kf-step > * + * { margin-top: 28px; }
+  .kf-step__head { margin-bottom: 4px; }
+  .kf-step__head--split { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 8px 24px; }
+  .kf-step__num { display: block; margin-bottom: 8px; font-size: .78rem; font-weight: 600; color: var(--muted); }
+  .kf-step h2 { font-size: clamp(1.6rem, 2.6vw, 2.25rem); }
+  .kf-step h2:focus { outline: none; }
+
+  .kf-hint { margin: 0; font-size: .84rem; line-height: 1.55; color: var(--muted); }
+  .kf-note { padding: 12px 14px; background: var(--bg-softer); border-left: 3px solid var(--accent); color: var(--text); }
+  .kf-error { margin: 0; font-size: .86rem; font-weight: 500; line-height: 1.5; color: var(--ink); }
+  .kf-error:not(:empty) { padding: 10px 14px; border-left: 3px solid var(--accent); background: var(--bg-softer); }
+  .kf-error:not(:empty)::before { content: '! '; font-weight: 700; color: var(--accent); }
+
+  .kf-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; }
+  .kf-row--actions .btn svg { width: 17px; height: 17px; }
+  /* text buttons – also created by the script (project list, review) */
+  .kf :global(.kf-textbtn) {
+    padding: 8px 0; border: 0; background: none; cursor: pointer;
+    font: inherit; font-size: .86rem; font-weight: 600; color: var(--muted);
+    text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 4px;
+  }
+  .kf :global(.kf-textbtn:hover) { color: var(--ink); text-decoration-color: currentColor; }
+
+  .kf-group { margin: 0; padding: 0; border: 0; min-width: 0; display: grid; gap: 12px; }
+  .kf-group__legend { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 0; margin-bottom: 4px; font-size: .78rem; font-weight: 600; color: var(--muted); }
+  .kf-openings { display: grid; gap: 16px 20px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); }
+  .kf-openings :global(select) { cursor: pointer; }
+
+  .kf-name { max-width: 420px; }
+
+  .kf-dims { display: grid; gap: 12px; }
+  .kf-dims__row { display: flex; align-items: flex-end; gap: 14px; }
+  .kf-dims__row .field { flex: 1 1 0; max-width: 200px; }
+  .kf-dims__x { padding-bottom: 12px; color: var(--muted); }
+  .kf-dims input[aria-invalid='true'] { border-bottom-color: var(--accent); }
+
+  .kf-bars { display: grid; gap: 20px; grid-template-columns: repeat(2, minmax(0, 200px)); }
+
+  .kf-crew { display: flex; gap: 16px; align-items: flex-start; padding: 18px 20px; background: var(--dark); color: var(--muted-on-dark); }
+  .kf-crew :global(.kf-crew__icon) { width: 40px; height: 40px; flex: none; color: #fff; }
+  .kf-crew strong { display: block; color: #fff; font-weight: 600; font-size: 1rem; line-height: 1.4; margin-bottom: 4px; }
+  .kf-crew span { font-size: .86rem; line-height: 1.55; }
+  .kf-crew a { color: #fff; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, .4); text-underline-offset: 3px; }
+
+  /* ---------- project list ---------- */
+  .kf-total { margin: 0; font-size: .86rem; font-weight: 600; color: var(--ink); }
+  .kf-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  @media (min-width: 760px) { .kf-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .kf-list :global(.kf-item) {
+    display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 16px;
+    padding: 16px; background: var(--bg); border: 1px solid var(--line-strong);
+  }
+  .kf-list :global(.kf-item.is-current) { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+  .kf-list :global(.kf-item__draw) { aspect-ratio: 1; display: grid; place-items: center; padding: 8px; background: var(--bg-softer); }
+  .kf-list :global(.kf-item__draw svg) { width: 100%; height: 100%; }
+  .kf-list :global(.kf-item__body) { min-width: 0; display: grid; gap: 4px; align-content: start; }
+  .kf-list :global(.kf-item__title) { margin: 0; font-weight: 600; font-size: .95rem; color: var(--ink); line-height: 1.35; }
+  .kf-list :global(.kf-item__badge) { margin-left: 8px; font-size: .68rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-600); }
+  .kf-list :global(.kf-item__meta) { margin: 0; font-size: .8rem; color: var(--muted); line-height: 1.5; }
+  .kf-list :global(.kf-item__actions) { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 8px; }
+  .kf-list :global(.kf-item__actions .kf-textbtn) { padding: 4px 0; font-size: .8rem; color: var(--ink); }
+  .kf-list :global(.kf-qty) { display: inline-flex; align-items: center; border: 1px solid var(--line-strong); border-radius: 999px; }
+  .kf-list :global(.kf-qty button) {
+    width: 32px; height: 32px; border: 0; background: none; border-radius: 50%;
+    font: 600 1rem/1 var(--font); color: var(--ink); cursor: pointer;
+  }
+  .kf-list :global(.kf-qty button:hover) { background: var(--bg-soft); }
+  .kf-list :global(.kf-qty button:disabled) { opacity: .35; cursor: default; }
+  .kf-list :global(.kf-qty input) {
+    width: 38px; border: 0; background: none; text-align: center;
+    font: 600 .88rem/1 var(--font); color: var(--ink); -moz-appearance: textfield; appearance: textfield;
+  }
+  .kf-list :global(.kf-qty input::-webkit-inner-spin-button),
+  .kf-list :global(.kf-qty input::-webkit-outer-spin-button) { -webkit-appearance: none; margin: 0; }
+  .kf-list :global(.kf-qty__unit) { padding-right: 12px; font-size: .78rem; color: var(--muted); }
+
+  .kf-linkbox { display: grid; gap: 6px; max-width: 640px; }
+  .kf-linkbox label { font-size: .78rem; font-weight: 600; color: var(--muted); }
+  .kf-linkbox input { width: 100%; font: inherit; font-size: .84rem; padding: 10px 12px; border: 1px solid var(--line-strong); background: var(--bg); color: var(--ink); }
+  .kf-status { margin: 0; font-size: .88rem; font-weight: 500; color: var(--ink); }
+  .kf-status:empty { display: none; }
+
+  /* ---------- review + form ---------- */
+  .kf-send { display: grid; gap: clamp(28px, 4vw, 48px); align-items: start; }
+  @media (min-width: 1000px) { .kf-send { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); } .kf-send__form { position: sticky; top: calc(var(--header-h) + 16px); } }
+  .kf-send__review { display: grid; gap: 16px; min-width: 0; }
+  .kf-send__lead { font-size: .9rem; color: var(--text); }
+  .kf-send__title { font-size: 1.35rem; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .kf-send__form .kf-hint { margin-bottom: 22px; }
+
+  .kf-review { display: grid; gap: 12px; }
+  .kf-review :global(.kf-rev) { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 18px; padding: 18px; background: var(--bg); border: 1px solid var(--line); }
+  .kf-review :global(.kf-rev__draw) { aspect-ratio: 1; display: grid; place-items: center; padding: 8px; background: var(--bg-softer); align-self: start; }
+  .kf-review :global(.kf-rev__draw svg) { width: 100%; height: 100%; }
+  .kf-review :global(.kf-rev h3) { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
+  .kf-review :global(.kf-rev dl) { margin: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 14px; font-size: .8rem; line-height: 1.5; }
+  .kf-review :global(.kf-rev dt) { color: var(--muted); }
+  .kf-review :global(.kf-rev dd) { margin: 0; color: var(--ink); }
+  .kf-review :global(.kf-rev__edit) { margin-top: 8px; }
+  .kf-review :global(.kf-rev--project) { grid-template-columns: minmax(0, 1fr); background: var(--bg-softer); }
+  @media (max-width: 520px) {
+    .kf-review :global(.kf-rev) { grid-template-columns: minmax(0, 1fr); }
+    .kf-review :global(.kf-rev__draw) { max-width: 160px; }
+    .kf-review :global(.kf-rev dl), .kf-sum__list { grid-template-columns: minmax(0, 1fr); gap: 0 14px; }
+    .kf-review :global(.kf-rev dd) { margin-bottom: 6px; }
+    .kf-list :global(.kf-item) { grid-template-columns: 72px minmax(0, 1fr); gap: 12px; padding: 12px; }
+  }
+
+  .kf-plain { font-size: .82rem; }
+  .kf-plain summary { cursor: pointer; font-weight: 600; color: var(--ink); }
+  .kf-plain pre {
+    margin: 10px 0 0; padding: 14px; max-height: 320px; overflow: auto;
+    background: var(--bg-softer); border: 1px solid var(--line);
+    font-size: .74rem; line-height: 1.55; white-space: pre-wrap; word-break: break-word; color: var(--text);
+  }
+
+  /* ---------- bottom navigation (sticky bar on mobile) ---------- */
+  .kf-nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    margin-top: 36px; padding-top: 20px;
+    border-top: 1px solid var(--line);
+  }
+  .kf-nav__count { font-size: .8rem; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .kf-nav__btn :global(svg) { width: 16px; height: 16px; }
+  @media (max-width: 999px) {
+    .kf-nav {
+      position: sticky; bottom: 0; z-index: 7;
+      margin-inline: calc(var(--gutter) * -1);
+      padding: 10px var(--gutter) calc(10px + env(safe-area-inset-bottom, 0px));
+      background: var(--bg);
+      border-top: 1px solid var(--line-strong);
+    }
+  }
+  @media (max-width: 400px) {
+    .kf-nav { gap: 8px; }
+    .kf-nav__count { display: none; }
+    .kf-nav .btn { padding-inline: 16px; }
+  }
+
+  /* ---------- SVG drawing (markup generated by rysunek.ts) ---------- */
+  .kf :global(.kf-svg) { font-family: var(--font); }
+  .kf :global(.kf-svg text) { font-family: var(--font); }
+  .kf :global(.kf-frame), .kf :global(.kf-sash), .kf :global(.kf-box), .kf :global(.kf-rail) { stroke: var(--ink); }
+  .kf :global(.kf-glass) { fill: color-mix(in srgb, var(--navy) 9%, var(--bg)); stroke: var(--ink); }
+  .kf :global(.kf-glass--mat) { fill: color-mix(in srgb, var(--ink) 5%, var(--bg-soft)); }
+  .kf :global(.kf-shine) { stroke: var(--bg); fill: none; stroke-linecap: round; opacity: .9; }
+  .kf :global(.kf-sym) { stroke: var(--ink); fill: none; stroke-linejoin: round; stroke-linecap: round; opacity: .72; }
+  .kf :global(.kf-fix) { fill: var(--muted); font-weight: 600; }
+  .kf :global(.kf-bar) { stroke: var(--ink); }
+  .kf :global(.kf-bar--mid) { opacity: .75; stroke-opacity: .5; }
+  .kf :global(.kf-handle) { stroke: var(--ink); }
+  .kf :global(.kf-hinge) { fill: var(--line-strong); stroke: var(--ink); }
+  .kf :global(.kf-thin) { stroke: var(--ink); fill: none; opacity: .35; }
+  .kf :global(.kf-hidden) { stroke: var(--muted); fill: none; }
+  .kf :global(.kf-curtain), .kf :global(.kf-slat) { stroke: var(--ink); stroke-opacity: .6; }
+  .kf :global(.kf-mesh) { stroke: var(--ink); stroke-opacity: .45; }
+  .kf :global(.kf-mesh-line) { stroke: var(--ink); opacity: .22; fill: none; }
+  .kf :global(.kf-sill) { fill: var(--bg-soft); stroke: var(--ink); }
+  .kf :global(.kf-sill--out) { fill: var(--line-strong); }
+  .kf :global(.kf-person) { fill: var(--line); }
+  .kf :global(.kf-ext) { stroke: var(--muted); opacity: .5; fill: none; }
+  .kf :global(.kf-dimline) { stroke: var(--accent); fill: none; }
+  .kf :global(.kf-dim) { fill: var(--accent); font-weight: 600; letter-spacing: .04em; }
+  .kf :global(.kf-dim--seg) { font-weight: 500; }
+  .kf :global(.kf-cap) { fill: var(--muted); letter-spacing: .14em; font-weight: 500; }
+  .kf :global(.kf-field) { cursor: pointer; outline: none; }
+  .kf :global(.kf-hit) { fill: transparent; stroke: none; transition: fill .2s; }
+  .kf :global(.kf-field:hover .kf-hit) { fill: color-mix(in srgb, var(--navy) 7%, transparent); }
+  .kf :global(.kf-field:focus-visible .kf-hit) {
+    fill: color-mix(in srgb, var(--navy) 8%, transparent);
+    stroke: var(--navy); stroke-width: 3px; vector-effect: non-scaling-stroke;
+  }
+</style>

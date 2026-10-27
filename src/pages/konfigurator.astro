@@ -1,0 +1,124 @@
+---
+// /konfigurator/ – window configurator (prototype). SEO texts: docs/seo-plan.md §4.2 (title, meta, H1)
+// and the /konfigurator/ row in §4.3 (static text around the app, links to /okna-pcv/, /okna-aluminiowe/, /kontakt/).
+// The JS lives only on this page (imported by Configurator.astro). Requirements for the full version:
+// docs/konfigurator-wymagania.md.
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Faq from '../components/Faq.astro';
+import InstallBlock from '../components/InstallBlock.astro';
+import Icon from '../components/Icon.astro';
+import Configurator from '../components/konfigurator/Configurator.astro';
+import { url } from '../lib/url';
+import { abs, WEBSITE_ID, BUSINESS_ID } from '../lib/schema';
+
+const title = 'Konfigurator okien – wstępna wycena online | Inter Windows';
+const description =
+  'Skonfiguruj okno: wymiary, podział, kolor, szyby i dodatki. Wyślij projekt, a doradca z Płocka przygotuje dokładną wycenę i umówi pomiar.';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  '@id': `${abs('/konfigurator/')}#strona`,
+  url: abs('/konfigurator/'),
+  name: 'Konfigurator okien',
+  description,
+  inLanguage: 'pl-PL',
+  isPartOf: { '@id': WEBSITE_ID },
+  about: { '@id': BUSINESS_ID },
+};
+
+const how = [
+  {
+    icon: 'konfigurator',
+    title: 'Jak działa konfigurator',
+    text: 'Wybierasz typ, podział, wymiary, kolor, szyby i dodatki. Rysunek pokazuje proporcje okna i sposób otwierania skrzydeł. Do projektu dodasz kolejne okna, a link do niego wyślesz domownikom.',
+  },
+  {
+    icon: 'doradztwo',
+    title: 'Co się dzieje po wysłaniu projektu',
+    text: 'Projekt trafia do doradcy w Płocku. Oddzwonimy, omówimy wybór systemu, szyb i dodatków i umówimy bezpłatny pomiar w dogodnym terminie.',
+  },
+  {
+    icon: 'pomiar',
+    title: 'Dlaczego i tak przyjedziemy na pomiar',
+    text: 'Dokładne wymiary, stan otworów i sposób osadzenia sprawdzamy na miejscu. Dopiero wtedy przygotowujemy wycenę okien razem z montażem.',
+  },
+];
+
+const faq = [
+  {
+    q: 'Dlaczego konfigurator nie pokazuje ceny?',
+    a: 'Cena okna zależy od systemu, wymiarów, szyb, koloru i sposobu montażu, a część z tych rzeczy można rzetelnie ustalić dopiero na miejscu. Zamiast liczby, która nie odpowiadałaby Twojemu projektowi, po bezpłatnym pomiarze przygotujemy wycenę okien razem z montażem. Od czego zależy cena, opisujemy na stronie [okna na wymiar](/okna/).',
+  },
+  {
+    q: 'Czy muszę znać dokładne wymiary okien?',
+    a: 'Nie. Domyślnie wymiary poda nasz technik przy pomiarze. Jeśli znasz orientacyjne wymiary, wpisz je, a rysunek pokaże proporcje okna. Ostateczne wymiary zawsze ustalamy na miejscu.',
+  },
+  {
+    q: 'Czy projekt się zapisze?',
+    a: 'Tak, w tej przeglądarce. W kroku „Projekt” możesz też skopiować link do projektu, otworzyć go na innym urządzeniu albo wysłać domownikom. Dane kontaktowe podajesz dopiero przy wysyłce.',
+  },
+  {
+    q: 'Kto zamontuje okna z mojego projektu?',
+    a: 'Wyłącznie nasza ekipa. Nie przekazujemy montażu podwykonawcom, więc za pomiar, dobór i montaż odpowiada jedna firma. Zobacz, [jak montujemy](/montaz-okien/).',
+  },
+];
+---
+
+<Base title={title} description={description} updated="2026-10-27" schema={schema}>
+  <PageHero
+    title="Konfigurator okien"
+    eyebrow="Projekt wstępny"
+    lead="Zaprojektuj okna i drzwi balkonowe krok po kroku i wyślij projekt doradcy. **Projekt wstępny – dokładne wymiary i wycenę przygotuje doradca po pomiarze.**"
+    breadcrumbs={[{ name: 'Konfigurator okien' }]}
+    media={false}
+  />
+
+  <section class="section kf-section" id="projekt-okien" aria-label="Konfigurator okien">
+    <div class="container">
+      <Configurator />
+    </div>
+  </section>
+
+  <section class="section section--soft" id="jak-to-dziala">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Jak to działa</span>
+        <h2>Projekt, pomiar, <em>montaż</em></h2>
+        <p>
+          Konfigurator pomaga uporządkować wybór przed rozmową z doradcą. Nie zastępuje pomiaru: to na miejscu sprawdzamy otwory
+          i dobieramy sposób osadzenia okien.
+        </p>
+      </div>
+      <div class="values">
+        {how.map((h) => (
+          <div class="value">
+            <Icon name={h.icon} class="icon" />
+            <h3>{h.title}</h3>
+            <p>{h.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <InstallBlock product="okna i drzwi z Twojego projektu" />
+
+  <Faq items={faq} title="Pytania o konfigurator" eyebrow="FAQ" />
+
+  <section class="section section--tight pt-0">
+    <div class="container">
+      <div class="related">
+        <a href={url('/okna-pcv/')}><Icon name="okna-pcv" class="icon" />Okna PCV DAKO</a>
+        <a href={url('/okna-aluminiowe/')}><Icon name="okna-aluminiowe" class="icon" />Okna aluminiowe</a>
+        <a href={url('/drzwi-tarasowe/')}><Icon name="drzwi-tarasowe" class="icon" />Drzwi tarasowe</a>
+        <a href={url('/kontakt/')}><Icon name="pomiar" class="icon" />Kontakt i bezpłatny pomiar</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .kf-section { padding-top: clamp(28px, 4vw, 48px); padding-bottom: clamp(56px, 7vw, 96px); }
+</style>

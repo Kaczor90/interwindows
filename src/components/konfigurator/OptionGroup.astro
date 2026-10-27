@@ -1,0 +1,158 @@
+---
+// Accessible group of option cards: native radio / checkbox inputs inside labels (keyboard and
+// screen readers work without extra code). The configurator script binds inputs by `data-k`
+// (state path, e.g. "glass.pane"; "@context" = project-level value).
+//   <OptionGroup legend="Rodzaj" name="kf-type" k="type" options={[{ value: 'okno', label: 'Okno' }]} />
+//   variant: cards (default) | thumbs (mini drawing on top) | swatch (colour dot) | compact
+interface Opt {
+  value: string | number;
+  label: string;
+  desc?: string;
+  /** small line under the label, e.g. system name */
+  sub?: string;
+  points?: string[];
+  tbc?: boolean | string;
+  swatch?: { hex: string; grain?: string };
+  /** SVG markup (build-time drawing) */
+  thumb?: string;
+  /** per-option binding (checkbox groups) */
+  k?: string;
+  attrs?: Record<string, string>;
+}
+interface Props {
+  legend: string;
+  name: string;
+  k?: string;
+  type?: 'radio' | 'checkbox';
+  options: Opt[];
+  variant?: 'cards' | 'thumbs' | 'swatch' | 'compact';
+  hint?: string;
+  /** group-level "do potwierdzenia" tag */
+  tbc?: string;
+  id?: string;
+  /** extra attributes on the fieldset (e.g. data-kf-show) */
+  attrs?: Record<string, string>;
+}
+const { legend, name, k, type = 'radio', options, variant = 'cards', hint, tbc, id, attrs = {} } = Astro.props;
+const tbcText = (t: boolean | string) => (typeof t === 'string' ? t : 'do potwierdzenia');
+const swatchStyle = (s: { hex: string; grain?: string }) =>
+  s.grain
+    ? `background:repeating-linear-gradient(172deg, ${s.hex} 0 3px, ${s.grain} 3px 4px, ${s.hex} 4px 8px, ${s.grain} 8px 8.6px, ${s.hex} 8.6px 12px)`
+    : `background:${s.hex}`;
+---
+
+<fieldset class:list={['og', `og--${variant}`, `og--${type}`]} id={id} {...attrs}>
+  <legend class="og__legend">
+    <span>{legend}</span>
+    {tbc && <span class="tbc">{tbc}</span>}
+  </legend>
+  {hint && <p class="og__hint">{hint}</p>}
+  <div class="og__grid">
+    {options.map((o) => (
+      <label class="og__opt" data-value={String(o.value)} {...(o.attrs ?? {})}>
+        <input
+          class="og__input"
+          type={type}
+          name={type === 'radio' ? name : `${name}-${o.value}`}
+          value={String(o.value)}
+          data-k={o.k ?? k}
+        />
+        <span class="og__body">
+          {o.thumb && <span class="og__thumb" set:html={o.thumb} />}
+          {o.swatch && <span class="og__swatch" style={swatchStyle(o.swatch)} aria-hidden="true" />}
+          <span class="og__text">
+            <span class="og__label">{o.label}</span>
+            {o.sub && <span class="og__sub">{o.sub}</span>}
+            {o.desc && <span class="og__desc">{o.desc}</span>}
+            {o.points && o.points.length > 0 && (
+              <span class="og__points">
+                {o.points.map((p) => <span>{p}</span>)}
+              </span>
+            )}
+            {o.tbc && <span class="tbc og__tbc">{tbcText(o.tbc)}</span>}
+          </span>
+          <span class="og__check" aria-hidden="true"></span>
+        </span>
+      </label>
+    ))}
+  </div>
+</fieldset>
+
+<style>
+  [hidden] { display: none !important; }
+
+  .og { margin: 0; padding: 0; border: 0; min-width: 0; }
+  .og__legend {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px;
+    padding: 0; margin-bottom: 12px;
+    font-size: .78rem; font-weight: 600; letter-spacing: .01em; color: var(--muted);
+  }
+  .og__hint { margin: -4px 0 12px; font-size: .84rem; color: var(--muted); line-height: 1.55; }
+
+  .og__grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); }
+  .og--compact .og__grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); }
+  .og--swatch .og__grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); gap: 8px; }
+  .og--thumbs .og__grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 128px), 1fr)); }
+  @media (max-width: 420px) {
+    .og--thumbs .og__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .og--swatch .og__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  .og__opt { position: relative; display: block; min-width: 0; }
+  .og__opt.is-disabled { pointer-events: none; }
+  /* the native input stays focusable and announced; the card is its visual */
+  .og__input { position: absolute; top: 14px; left: 14px; width: 1px; height: 1px; margin: 0; opacity: 0; }
+
+  .og__body {
+    display: flex; align-items: flex-start; gap: 12px;
+    height: 100%;
+    padding: 14px 16px;
+    background: var(--bg);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: border-color .2s var(--ease), box-shadow .2s var(--ease), background .2s var(--ease);
+  }
+  .og__opt:hover .og__body { border-color: var(--ink-2); }
+  .og__input:checked + .og__body { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+  .og__input:focus-visible + .og__body { outline: 2px solid var(--navy); outline-offset: 2px; }
+  .og__input:disabled + .og__body { opacity: .45; cursor: not-allowed; background: var(--bg-softer); }
+
+  .og__text { display: grid; gap: 3px; min-width: 0; flex: 1; }
+  .og__label { font-size: .92rem; font-weight: 600; color: var(--ink); line-height: 1.35; }
+  .og__sub { font-size: .8rem; font-weight: 500; color: var(--navy); line-height: 1.4; }
+  .og__desc { font-size: .82rem; color: var(--muted); line-height: 1.5; }
+  .og__points { display: grid; gap: 2px; margin-top: 4px; font-size: .8rem; color: var(--text); line-height: 1.45; }
+  .og__points span::before { content: '–'; margin-right: 6px; color: var(--accent); }
+  .og__tbc { justify-self: start; margin-top: 4px; }
+
+  /* radio / checkbox indicator */
+  .og__check {
+    flex: none; margin-left: auto;
+    width: 18px; height: 18px; margin-top: 1px;
+    border: 1.5px solid var(--line-strong);
+    border-radius: 50%;
+    background: var(--bg);
+    transition: border-color .2s, background .2s;
+  }
+  .og__input:checked + .og__body .og__check { border-color: var(--ink); background: radial-gradient(circle, var(--ink) 0 4px, var(--bg) 4.5px); }
+  .og--checkbox .og__check { border-radius: 3px; position: relative; }
+  .og--checkbox .og__input:checked + .og__body .og__check { background: var(--ink); }
+  .og--checkbox .og__input:checked + .og__body .og__check::after {
+    content: ''; position: absolute; left: 5px; top: 1.5px; width: 4.5px; height: 9px;
+    border: solid var(--bg); border-width: 0 2px 2px 0; transform: rotate(45deg);
+  }
+
+  /* thumbnails (template drawings) */
+  .og--thumbs .og__body { flex-direction: column; align-items: stretch; gap: 10px; padding: 12px; }
+  .og--thumbs .og__check { position: absolute; top: 10px; right: 10px; }
+  .og__thumb { display: grid; place-items: center; aspect-ratio: 1.15; background: var(--bg-softer); padding: 10px; }
+  .og__thumb :global(svg) { width: 100%; height: 100%; }
+  .og--thumbs .og__label { font-size: .84rem; }
+
+  /* colour swatches */
+  .og--swatch .og__body { align-items: center; padding: 10px 12px; gap: 10px; }
+  .og__swatch { flex: none; width: 30px; height: 30px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .18); }
+  .og--swatch .og__label { font-size: .86rem; }
+  .og--swatch .og__desc { font-size: .76rem; }
+</style>
