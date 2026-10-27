@@ -1,0 +1,47 @@
+---
+// "Montaż wykonała nasza ekipa – bez podwykonawców" box on project pages, links to /montaz-okien/.
+//   <CrewNote />
+import { url } from '../../lib/url';
+import Icon from '../Icon.astro';
+---
+
+<section class="section section--tight" id="montaz-ekipa" aria-labelledby="montaz-title">
+  <div class="container">
+    <div class="rz-crew reveal">
+      <span class="rz-crew__icon" aria-hidden="true"><Icon name="ekipa" class="" /></span>
+      <div class="rz-crew__text">
+        <h2 id="montaz-title">Montaż wykonała nasza ekipa – bez podwykonawców</h2>
+        <p>
+          Okna, drzwi i bramy montują u nas wyłącznie monterzy z naszego zespołu. Nie przekazujemy montażu
+          podwykonawcom, więc za produkt i za montaż odpowiada jedna firma.
+        </p>
+      </div>
+      <div class="rz-crew__actions">
+        <a class="btn" href={url('/montaz-okien/')} data-cta="realizacja-montaz"><Icon name="arrow" class="arrow" /> Jak montujemy</a>
+        <a class="link-arrow" href={url('/o-firmie/#ekipy')}>Poznaj naszą ekipę <Icon name="arrow" class="" /></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .rz-crew {
+    display: grid; gap: 22px 32px; align-items: center;
+    padding: clamp(26px, 4vw, 44px);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+  }
+  @media (min-width: 960px) { .rz-crew { grid-template-columns: auto minmax(0, 1fr) auto; } }
+  .rz-crew__icon {
+    display: grid; place-items: center;
+    width: 64px; height: 64px;
+    color: var(--ink);
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+  }
+  .rz-crew__icon :global(svg) { width: 36px; height: 36px; }
+  .rz-crew h2 { font-size: clamp(1.35rem, 2.2vw, 1.75rem); font-weight: 500; letter-spacing: -0.025em; }
+  .rz-crew p { margin: 12px 0 0; color: var(--muted); max-width: 640px; }
+  .rz-crew__actions { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; }
+</style>

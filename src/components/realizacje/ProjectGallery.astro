@@ -1,0 +1,96 @@
+---
+// Photos of one project: before/after pairs side by side (photos with the same `pair` id and
+// phase "przed"/"po"), then the remaining photos in a light masonry. Every photo links to its
+// 1600 px file and opens in <Lightbox /> (place the Lightbox once on the page).
+//   <ProjectGallery photos={r.photos} />
+import { url } from '../../lib/url';
+import { small, smallSizeOf, type ProjectPhoto } from '../../data/realizacje';
+
+interface Props {
+  photos: ProjectPhoto[];
+  /** heading level of the "Przed i po" sub-heading */
+  pairHeading?: 'h3' | 'h4';
+}
+const { photos, pairHeading: PairHeading = 'h3' } = Astro.props;
+
+const pairIds = [...new Set(photos.filter((ph) => ph.pair).map((ph) => ph.pair!))];
+const pairs = pairIds
+  .map((id) => ({
+    id,
+    before: photos.find((ph) => ph.pair === id && ph.phase === 'przed'),
+    after: photos.find((ph) => ph.pair === id && ph.phase === 'po'),
+  }))
+  .filter((x): x is { id: string; before: ProjectPhoto; after: ProjectPhoto } => !!x.before && !!x.after);
+const inPairs = new Set(pairs.flatMap((x) => [x.before.src, x.after.src]));
+const rest = photos.filter((ph) => !inPairs.has(ph.src));
+// the pairs show the whole "before" photo; the "after" photo is cropped to the same proportions
+const ratio = (ph: ProjectPhoto) => `${ph.width} / ${ph.height}`;
+const phaseLabel = { przed: 'Przed', 'w-trakcie': 'W trakcie', po: 'Po' } as const;
+---
+
+<div class="pg" data-lb-group>
+  {pairs.length > 0 && (
+    <div class="pg__pairs">
+      <PairHeading class="pg__subhead">Przed i po</PairHeading>
+      {pairs.map(({ before, after }) => (
+        <div class="pg__pair" style={`--ratio:${ratio(before)}`}>
+          {[before, after].map((ph) => {
+            const s = smallSizeOf(ph);
+            return (
+              <figure class="pg__item pg__item--pair">
+                <a class="photo" href={url(ph.src)} data-lb data-caption={`${phaseLabel[ph.phase!]}: ${ph.alt}`}>
+                  <img src={url(small(ph.src))} srcset={`${url(small(ph.src))} ${s.width}w, ${url(ph.src)} ${ph.width}w`} sizes="(min-width: 960px) 30vw, 50vw" alt={ph.alt} width={s.width} height={s.height} loading="lazy" decoding="async" />
+                </a>
+                <figcaption class:list={['pg__badge', { 'pg__badge--after': ph.phase === 'po' }]}>{ph.phase === 'po' ? 'Po' : 'Przed'}</figcaption>
+              </figure>
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  )}
+
+  {rest.length > 0 && (
+    <div class="pg__grid" style={`--cols:${Math.min(4, Math.max(2, rest.length <= 4 ? rest.length : 3))}`}>
+      {rest.map((ph) => {
+        const s = smallSizeOf(ph);
+        return (
+          <figure class="pg__item">
+            <a class="photo" href={url(ph.src)} data-lb data-caption={ph.alt}>
+              <img src={url(small(ph.src))} srcset={`${url(small(ph.src))} ${s.width}w, ${url(ph.src)} ${ph.width}w`} sizes="(min-width: 960px) 33vw, (min-width: 560px) 50vw, 100vw" alt={ph.alt} width={s.width} height={s.height} loading="lazy" decoding="async" />
+            </a>
+            {ph.phase && ph.phase !== 'po' && <figcaption class="pg__badge">{phaseLabel[ph.phase]}</figcaption>}
+          </figure>
+        );
+      })}
+    </div>
+  )}
+</div>
+
+<style>
+  .pg { display: grid; gap: clamp(32px, 4vw, 48px); }
+  .pg__subhead { font-size: 1.02rem; font-weight: 600; margin-bottom: 14px; }
+  .pg__pairs { display: grid; gap: 12px; }
+  .pg__pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .pg__item { position: relative; margin: 0; }
+  .pg__item--pair .photo { display: block; aspect-ratio: var(--ratio); }
+  .pg__item--pair img { width: 100%; height: 100%; object-fit: cover; }
+  .pg__item .photo { display: block; cursor: zoom-in; }
+  .pg__item .photo:hover img { transform: scale(1.03); }
+  .pg__item .photo:focus-visible { outline-offset: 3px; }
+  .pg__badge {
+    position: absolute; left: 10px; top: 10px;
+    padding: 3px 10px;
+    font-size: .72rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+    color: var(--ink);
+    background: var(--bg);
+    border-radius: 999px;
+    pointer-events: none;
+  }
+  .pg__badge--after { color: var(--bg); background: var(--ink); }
+
+  /* masonry with CSS columns: photos keep their own proportions */
+  .pg__grid { columns: var(--cols, 3) 150px; column-gap: 12px; }
+  .pg__grid .pg__item { break-inside: avoid; margin-bottom: 12px; }
+  .pg__grid img { width: 100%; height: auto; }
+</style>

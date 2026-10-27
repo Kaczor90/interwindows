@@ -1,0 +1,83 @@
+---
+// "Zakres i założenia" box of a project page: place, building, date, scope, systems.
+// Unconfirmed facts (town, systems) show the .tbc tag – see docs/realizacje-do-potwierdzenia.md.
+//   <FactsBox r={r} />
+import { url } from '../../lib/url';
+import Icon from '../Icon.astro';
+import { monthYear, type Realizacja } from '../../data/realizacje';
+
+interface Props {
+  r: Realizacja;
+}
+const { r } = Astro.props;
+const term = r.photosDate ? monthYear(r.photosDate) : monthYear(r.date);
+---
+
+<div class="facts">
+  <h2 class="facts__title">Zakres i założenia</h2>
+  <dl class="facts__list">
+    <div>
+      <dt>Miejsce</dt>
+      <dd>
+        {r.town ? r.town : <span class="tbc">do potwierdzenia</span>}
+      </dd>
+    </div>
+    <div>
+      <dt>Obiekt</dt>
+      <dd>{r.buildingType}</dd>
+    </div>
+    <div>
+      <dt>Termin</dt>
+      <dd>{term}</dd>
+    </div>
+    <div>
+      <dt>Zakres</dt>
+      <dd>
+        <ul class="facts__scope">
+          {r.scope.map((s) => <li><Icon name="check" class="" /><span>{s}</span></li>)}
+        </ul>
+      </dd>
+    </div>
+    <div>
+      <dt>Systemy i marki</dt>
+      <dd>
+        {r.systems.length > 0 ? (
+          <ul class="facts__brands">{r.systems.map((s) => <li>{s}</li>)}</ul>
+        ) : (
+          <span class="tbc">do potwierdzenia</span>
+        )}
+      </dd>
+    </div>
+    {r.equipment && r.equipment.length > 0 && (
+      <div>
+        <dt>Montaż</dt>
+        <dd>{r.equipment.join(', ')}</dd>
+      </div>
+    )}
+  </dl>
+  <div class="facts__links">
+    <a class="link-arrow" href={url('/obszar-dzialania/')}>Gdzie pracujemy <Icon name="arrow" class="" /></a>
+    <a class="link-arrow" href={r.fbPost} target="_blank" rel="noopener">Post o tej realizacji na Facebooku <Icon name="external" class="" /></a>
+  </div>
+</div>
+
+<style>
+  .facts {
+    padding: clamp(24px, 3vw, 32px);
+    background: var(--bg);
+    border: 1px solid var(--line);
+  }
+  .facts__title { font-size: 1.12rem; font-weight: 600; letter-spacing: -0.015em; margin-bottom: 18px; }
+  .facts__list { margin: 0; display: grid; }
+  .facts__list > div { display: grid; gap: 4px; padding: 14px 0; border-top: 1px solid var(--line); }
+  @media (min-width: 480px) { .facts__list > div { grid-template-columns: 120px 1fr; gap: 16px; } }
+  .facts__list dt { font-size: .8rem; font-weight: 600; color: var(--muted); padding-top: 2px; }
+  .facts__list dd { margin: 0; font-size: .92rem; color: var(--ink); line-height: 1.55; }
+  .facts__scope { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .facts__scope li { display: grid; grid-template-columns: 18px 1fr; gap: 8px; }
+  .facts__scope :global(svg) { width: 15px; height: 15px; color: var(--accent); margin-top: 4px; }
+  .facts__brands { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+  .facts__brands li { padding: 2px 10px; font-size: .8rem; font-weight: 500; border: 1px solid var(--line-strong); border-radius: 999px; }
+  .facts__links { display: grid; gap: 10px; padding-top: 18px; border-top: 1px solid var(--line); }
+  .facts__links .link-arrow { font-size: .86rem; }
+</style>

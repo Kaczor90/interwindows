@@ -1,0 +1,189 @@
+---
+// Project page /realizacje/{slug}/ generated from src/data/realizacje.ts (docs/seo-plan.md §3.4, §4.2, §4.3).
+// Layout: hero with cover → "Zakres i założenia" box + story (wyzwanie → rozwiązanie i produkty → efekt)
+// → gallery (before/after pairs first) → own-crew box → related projects → CTA (+ configurator) → quote form.
+// JSON-LD: BreadcrumbList (from PageHero) + CreativeWork about the Service of each product category.
+import { url } from '../../lib/url';
+import { abs, BUSINESS_ID, WEBSITE_ID } from '../../lib/schema';
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import PageHero from '../../components/PageHero.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import QuoteForm from '../../components/QuoteForm.astro';
+import FactsBox from '../../components/realizacje/FactsBox.astro';
+import ProjectGallery from '../../components/realizacje/ProjectGallery.astro';
+import ProjectCard from '../../components/realizacje/ProjectCard.astro';
+import CrewNote from '../../components/realizacje/CrewNote.astro';
+import Lightbox from '../../components/realizacje/Lightbox.astro';
+import { nbsp, realizacje, relatedTo, small, workMonth, type Realizacja } from '../../data/realizacje';
+import { categoryBySlug } from '../../data/oferta';
+
+export function getStaticPaths() {
+  return realizacje.map((r) => ({ params: { slug: r.slug }, props: { r } }));
+}
+
+const { r } = Astro.props as { r: Realizacja };
+const path = `/realizacje/${r.slug}/`;
+const UPDATED = '2026-10-27';
+
+const products = r.products.map((pr) => {
+  const cat = pr.category ? categoryBySlug(pr.category) : undefined;
+  return { ...pr, href: cat ? `/${cat.slug}/` : undefined, catTitle: cat?.title };
+});
+const categories = [...new Set(r.products.map((pr) => pr.category).filter((c): c is string => !!c))]
+  .map((slug) => categoryBySlug(slug))
+  .filter((c): c is NonNullable<ReturnType<typeof categoryBySlug>> => !!c);
+// main category first
+categories.sort((a, b) => (a.slug === r.mainCategory ? -1 : b.slug === r.mainCategory ? 1 : 0));
+
+const related = relatedTo(r, 3);
+const portrait = r.cover.height > r.cover.width;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  '@id': `${abs(path)}#realizacja`,
+  name: r.title,
+  headline: r.title,
+  description: r.seo.description,
+  url: abs(path),
+  inLanguage: 'pl-PL',
+  image: r.photos.map((ph) => abs(ph.src)),
+  dateCreated: r.photosDate ?? r.postDate,
+  ...(r.town ? { contentLocation: { '@type': 'Place', name: r.town } } : {}),
+  about: categories.map((c) => ({
+    '@type': 'Service',
+    name: c.serviceType,
+    serviceType: c.serviceType,
+    url: abs(`/${c.slug}/`),
+    provider: { '@id': BUSINESS_ID },
+  })),
+  creator: { '@id': BUSINESS_ID },
+  isPartOf: { '@id': WEBSITE_ID },
+  keywords: [...r.products.map((pr) => pr.name), ...r.systems].join(', '),
+};
+---
+
+<Base title={r.seo.title} description={r.seo.description} image={r.og} imageAlt={r.cover.alt} updated={UPDATED} schema={schema}>
+  <div class:list={['rp-hero', { 'rp-hero--portrait': portrait }]} style={r.cover.position ? `--cover-pos:${r.cover.position}` : undefined}>
+    <PageHero
+      title={nbsp(r.title)}
+      eyebrow={`Realizacja · ${workMonth(r)}`}
+      lead={nbsp(r.lead)}
+      breadcrumbs={[{ name: 'Realizacje', path: '/realizacje/' }, { name: r.cardTitle }]}
+      image={{ src: r.cover.src, srcSmall: small(r.cover.src), alt: r.cover.alt, width: r.cover.width, height: r.cover.height }}
+      highlights={r.highlights.map(nbsp)}
+    >
+      <a class="btn" href={url('#wycena')} data-quote-link data-cta="realizacja-pomiar"><Icon name="arrow" class="arrow" /> Umów bezpłatny pomiar</a>
+      <a class="btn btn--ghost" href={url('#galeria')}>Zobacz zdjęcia ({r.photos.length})</a>
+    </PageHero>
+  </div>
+
+  <section class="section section--soft">
+    <div class="container rp">
+      <aside class="rp__facts reveal">
+        <FactsBox r={r} />
+      </aside>
+
+      <div class="rp__story">
+        <section class="rp__block reveal">
+          <span class="eyebrow">Przed montażem</span>
+          <h2>Wyzwanie</h2>
+          {r.challenge.map((t) => <p>{t}</p>)}
+        </section>
+
+        <section class="rp__block reveal">
+          <span class="eyebrow">Montaż</span>
+          <h2>Rozwiązanie i zastosowane produkty</h2>
+          {r.solution.map((t) => <p>{t}</p>)}
+          <ul class="rp__products">
+            {products.map((pr) => (
+              <li>
+                <span class="rp__product">{pr.name}{pr.brand && <span class="rp__brand"> · {pr.brand}</span>}</span>
+                {pr.href && <a class="link-arrow" href={url(pr.href)}>{pr.catTitle} – oferta <Icon name="arrow" class="" /></a>}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section class="rp__block reveal">
+          <span class="eyebrow">Po montażu</span>
+          <h2>Efekt</h2>
+          {r.result.map((t) => <p>{t}</p>)}
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight" id="galeria">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">Galeria</span>
+          <h2>Zdjęcia z realizacji</h2>
+        </div>
+        <p>Kliknij zdjęcie, żeby je powiększyć.</p>
+      </div>
+      <ProjectGallery photos={r.photos} />
+    </div>
+  </section>
+
+  <CrewNote />
+
+  <section class="section section--tight section--rule">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">Zobacz też</span>
+          <h2>Podobne realizacje</h2>
+        </div>
+        <a class="link-arrow" href={url('/realizacje/')}>Wszystkie realizacje <Icon name="arrow" class="" /></a>
+      </div>
+      <ul class="rp__related">
+        {related.map((o) => <li><ProjectCard r={o} /></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand
+    eyebrow="Podobny projekt?"
+    title="Umów bezpłatny pomiar albo zacznij od konfiguratora"
+    text="Doradca przyjedzie na pomiar i dobierze stolarkę do budynku. Jeśli chcesz najpierw sprawdzić warianty, skonfiguruj okno online i wyślij projekt do wyceny."
+    primary={{ label: 'Umów bezpłatny pomiar', href: '#wycena', cta: 'realizacja-band-pomiar' }}
+    secondary={{ label: 'Skonfiguruj okno', href: '/konfigurator/', cta: 'realizacja-band-konfigurator', icon: 'sliders' }}
+  />
+
+  <QuoteForm title="Podobny projekt? Umów bezpłatny pomiar" preselect={r.mainCategory} />
+
+  <Lightbox />
+</Base>
+
+<style>
+  /* portrait covers (doors, tall photos): squarer frame so the hero does not cut the photo too hard */
+  .rp-hero--portrait :global(.page-hero__img) { aspect-ratio: 1 / 1; }
+  .rp-hero--portrait :global(.page-hero__img img) { object-position: var(--cover-pos, center 35%); }
+
+  .rp { display: grid; gap: clamp(32px, 5vw, 64px); }
+  @media (min-width: 960px) {
+    .rp { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: start; }
+    .rp__facts { grid-column: 2; grid-row: 1; position: sticky; top: calc(var(--header-h) + 24px); }
+    .rp__story { grid-column: 1; grid-row: 1; }
+  }
+  .rp__story { display: grid; gap: clamp(36px, 5vw, 56px); }
+  .rp__block { max-width: 720px; }
+  .rp__block h2 { font-size: clamp(1.6rem, 2.4vw, 2.1rem); margin-bottom: 18px; }
+  .rp__block p { color: var(--text); }
+  .rp__products { list-style: none; margin: 18px 0 0; padding: 0; border-top: 1px solid var(--line-strong); }
+  .rp__products li {
+    display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 20px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .rp__product { font-weight: 600; color: var(--ink); font-size: .94rem; }
+  .rp__brand { font-weight: 400; color: var(--muted); }
+  .rp__products .link-arrow { font-size: .84rem; }
+
+  .rp__related { list-style: none; margin: 0; padding: 0; display: grid; gap: 20px; }
+  @media (min-width: 640px) { .rp__related { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 960px) { .rp__related { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+</style>

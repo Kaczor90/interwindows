@@ -1,0 +1,233 @@
+---
+// Hub /realizacje/ (docs/seo-plan.md §3.4, §4.2): intro, product filter, project cards
+// (src/data/realizacje.ts), loose album photos (src/data/realizacje-zdjecia.ts) and CTA.
+//
+// Filter = radio buttons styled as chips. It works WITHOUT JavaScript: CSS hides the cards and photos that
+// do not match the checked radio (`:has()`); browsers without `:has()` simply show everything. A tiny script
+// only announces the result for screen readers. No URL changes, so no indexable filter pages (SEO §3.1).
+import { url } from '../../lib/url';
+import { abs, BUSINESS_ID, WEBSITE_ID } from '../../lib/schema';
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import PageHero from '../../components/PageHero.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import QuoteForm from '../../components/QuoteForm.astro';
+import ProjectCard from '../../components/realizacje/ProjectCard.astro';
+import Lightbox from '../../components/realizacje/Lightbox.astro';
+import { filters, loosePhotos, realizacje } from '../../data/realizacje';
+import { photoSrc, photoSrcSmall, smallSize } from '../../data/realizacje-zdjecia';
+
+const UPDATED = '2026-10-27';
+const loose = loosePhotos();
+const totalPhotos = realizacje.reduce((n, r) => n + r.photos.length, 0) + loose.length;
+
+// only chips that match at least one project
+const chips = filters
+  .filter((f) => realizacje.some((r) => r.filters.includes(f.key)))
+  .map((f) => ({
+    ...f,
+    projects: realizacje.filter((r) => r.filters.includes(f.key)).length,
+    photos: loose.filter((z) => z.filterKeys.includes(f.key)).length,
+  }));
+
+// CSS for the no-JS filter: hide non-matching items; hide the whole loose gallery when nothing in it matches
+const filterCss = chips
+  .map((c) =>
+    [
+      `.rz:has(#rz-f-${c.key}:checked) [data-f]:not([data-f~="${c.key}"]){display:none}`,
+      c.photos === 0 ? `.rz:has(#rz-f-${c.key}:checked) .rz-loose{display:none}` : '',
+    ].join(''),
+  )
+  .join('\n');
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  '@id': `${abs('/realizacje/')}#strona`,
+  name: 'Nasze realizacje',
+  url: abs('/realizacje/'),
+  inLanguage: 'pl-PL',
+  isPartOf: { '@id': WEBSITE_ID },
+  about: { '@id': BUSINESS_ID },
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: realizacje.map((r, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: abs(`/realizacje/${r.slug}/`),
+      name: r.title,
+    })),
+  },
+};
+---
+
+<Base
+  title="Realizacje – okna i drzwi w Płocku i okolicy | Inter Windows"
+  description="Domy w Płocku i okolicznych gminach, w których montowaliśmy okna, drzwi tarasowe, rolety i bramy. Zdjęcia, zastosowane systemy i opis prac."
+  image="/img/realizacje/projekty/og/realizacje.jpg"
+  imageAlt="Mini żuraw osadza dużą witrynę w budynku – realizacja Inter Windows"
+  updated={UPDATED}
+  schema={schema}
+>
+  <PageHero
+    title="Nasze realizacje"
+    eyebrow="Realizacje"
+    lead="Zdjęcia z naszych montaży: od stuletniej kamienicy w Płocku po nowe domy w okolicy. Przy opisanych realizacjach podajemy, co montowaliśmy, z jakich systemów i z czym trzeba było sobie poradzić."
+    breadcrumbs={[{ name: 'Realizacje' }]}
+    media={false}
+    highlights={[
+      `${realizacje.length} realizacji opisanych krok po kroku`,
+      `${totalPhotos} zdjęć z naszych montaży`,
+      'Montaż wyłącznie naszą ekipą, bez podwykonawców',
+      'Zdjęcia przed i po tam, gdzie je mamy',
+    ]}
+  >
+    <a class="btn" href={url('#wycena')} data-quote-link data-cta="realizacje-pomiar"><Icon name="arrow" class="arrow" /> Umów bezpłatny pomiar</a>
+    <a class="btn btn--ghost" href={url('/konfigurator/')} data-cta="realizacje-konfigurator"><Icon name="sliders" class="" /> Skonfiguruj okno</a>
+  </PageHero>
+
+  <section class="section section--tight" id="lista">
+    <div class="container rz" data-lb-group>
+      <div class="section-head section-head--split rz-head">
+        <div>
+          <span class="eyebrow">Z naszych montaży</span>
+          <h2>Realizacje opisane krok po kroku</h2>
+        </div>
+        <p>Zakres prac, zastosowane systemy i zdjęcia z budowy. Nie podajemy adresów naszych klientów.</p>
+      </div>
+
+      <fieldset class="rz-filter">
+        <legend class="rz-filter__label">Pokaż realizacje z produktem</legend>
+        <div class="rz-filter__chips">
+          <input type="radio" name="rz-filtr" id="rz-f-all" value="" checked />
+          <label for="rz-f-all">Wszystkie <span class="rz-filter__n">{realizacje.length}</span></label>
+          {chips.map((c) => (
+            <>
+              <input type="radio" name="rz-filtr" id={`rz-f-${c.key}`} value={c.key} data-projects={c.projects} data-photos={c.photos} />
+              <label for={`rz-f-${c.key}`}>{c.label} <span class="rz-filter__n">{c.projects}</span></label>
+            </>
+          ))}
+        </div>
+      </fieldset>
+      <p class="sr-only" aria-live="polite" data-rz-status></p>
+      <style is:inline set:html={filterCss}></style>
+
+      <ul class="rz-grid">
+        {realizacje.map((r, i) => (
+          <li data-f={r.filters.join(' ')} class:list={{ 'rz-grid__wide': i === 0 }}>
+            <ProjectCard r={r} wide={i === 0} />
+          </li>
+        ))}
+      </ul>
+
+      <section class="rz-loose" aria-labelledby="rz-loose-title">
+        <div class="section-head section-head--split rz-loose__head">
+          <div>
+            <span class="eyebrow">Album ekip</span>
+            <h2 id="rz-loose-title">Więcej zdjęć z montaży</h2>
+          </div>
+          <p>Pojedyncze ujęcia z innych budów: okna, przeszklenia, drzwi i bramy tuż po montażu. Kliknij, żeby powiększyć.</p>
+        </div>
+        <ul class="rz-photos">
+          {loose.map((z) => {
+            const s = smallSize(z);
+            return (
+              <li data-f={z.filterKeys.join(' ')}>
+                <a class="photo" href={url(photoSrc(z))} data-lb data-caption={z.alt}>
+                  <img
+                    src={url(photoSrcSmall(z))}
+                    srcset={`${url(photoSrcSmall(z))} ${s.width}w, ${url(photoSrc(z))} ${z.width}w`}
+                    sizes="(min-width: 960px) 25vw, (min-width: 560px) 33vw, 50vw"
+                    alt={z.alt}
+                    width={s.width}
+                    height={s.height}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    </div>
+  </section>
+
+  <CtaBand
+    eyebrow="Chcesz podobny efekt?"
+    title="Umów pomiar – resztą zajmie się nasza ekipa"
+    text="Przyjedziemy na bezpłatny pomiar, doradzimy rozwiązanie i przygotujemy wycenę. Montaż wykonają nasi monterzy, bez podwykonawców."
+    primary={{ label: 'Umów bezpłatny pomiar', href: '#wycena', cta: 'realizacje-band-pomiar' }}
+    secondary={{ label: 'Skonfiguruj okno', href: '/konfigurator/', cta: 'realizacje-band-konfigurator', icon: 'sliders' }}
+  />
+
+  <QuoteForm title="Chcesz podobny efekt? Umów pomiar" />
+
+  <Lightbox />
+</Base>
+
+<script>
+  // Screen-reader announcement of the filter result (the filtering itself is pure CSS).
+  const status = document.querySelector<HTMLElement>('[data-rz-status]');
+  const plural = (n: number, one: string, few: string, many: string) => {
+    if (n === 1) return one;
+    const d = n % 10;
+    const t = n % 100;
+    return d >= 2 && d <= 4 && (t < 12 || t > 14) ? few : many;
+  };
+  document.querySelectorAll<HTMLInputElement>('input[name="rz-filtr"]').forEach((input) => {
+    input.addEventListener('change', () => {
+      if (!status || !input.checked) return;
+      const cards = document.querySelectorAll('.rz-grid > li');
+      const photos = document.querySelectorAll('.rz-photos > li');
+      const visible = (els: NodeListOf<Element>) => [...els].filter((el) => (el as HTMLElement).offsetParent !== null).length;
+      const p = visible(cards);
+      const z = visible(photos);
+      status.textContent = `Pokazano ${p} ${plural(p, 'realizację', 'realizacje', 'realizacji')} i ${z} ${plural(z, 'zdjęcie', 'zdjęcia', 'zdjęć')}.`;
+    });
+  });
+</script>
+
+<style>
+  .rz-head { margin-bottom: clamp(28px, 4vw, 40px); }
+
+  /* filter chips: visually hidden radios + labels in the global .chip look */
+  .rz-filter { margin: 0 0 clamp(28px, 4vw, 40px); padding: 0; border: 0; min-width: 0; }
+  .rz-filter__label { padding: 0; margin-bottom: 12px; font-size: .8rem; font-weight: 600; color: var(--muted); }
+  .rz-filter__chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .rz-filter input {
+    position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+    overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+  }
+  .rz-filter label {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 16px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    font-size: .84rem; font-weight: 500;
+    color: var(--ink);
+    background: var(--bg);
+    cursor: pointer;
+    transition: background .2s, color .2s, border-color .2s;
+  }
+  .rz-filter label:hover { border-color: var(--ink); }
+  .rz-filter input:checked + label { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+  .rz-filter input:focus-visible + label { outline: 2px solid var(--navy); outline-offset: 3px; }
+  .rz-filter__n { font-size: .74rem; font-weight: 600; opacity: .6; font-variant-numeric: tabular-nums; }
+
+  .rz-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 20px; }
+  @media (min-width: 640px) { .rz-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 960px) {
+    .rz-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .rz-grid__wide { grid-column: 1 / -1; }
+  }
+  @media (min-width: 640px) and (max-width: 959px) { .rz-grid__wide { grid-column: 1 / -1; } }
+
+  .rz-loose { margin-top: clamp(64px, 8vw, 112px); padding-top: clamp(40px, 5vw, 64px); border-top: 1px solid var(--line); }
+  .rz-loose__head { margin-bottom: clamp(24px, 3vw, 36px); }
+  .rz-photos { list-style: none; margin: 0; padding: 0; columns: 4 150px; column-gap: 10px; }
+  .rz-photos li { break-inside: avoid; margin-bottom: 10px; }
+  .rz-photos .photo { display: block; cursor: zoom-in; }
+  .rz-photos img { width: 100%; height: auto; }
+  .rz-photos .photo:focus-visible { outline-offset: 3px; }
+</style>
