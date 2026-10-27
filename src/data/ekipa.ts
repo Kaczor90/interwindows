@@ -51,7 +51,20 @@ export const ekipa: CrewMember[] = [
     alt: 'Bartosz Bezdziek, współwłaściciel Inter Windows, w kurtce roboczej przy oknie na budowie',
   },
   // FICTIONAL EXAMPLE DATA (client: "wymyślcie resztę") – replace with the real installers before launch.
-  { name: 'Marek W.', role: 'Monter – brygadzista', experience: '14 lat doświadczenia', photo: null, fictional: true },
-  // FICTIONAL EXAMPLE DATA – replace before launch.
-  { name: 'Tomasz K.', role: 'Monter stolarki', experience: '8 lat doświadczenia', photo: null, fictional: true },
+  // The photo is AI-generated (a fictional person, preview only – _tresci/ai/ekipa/INDEX.md); replace it with the real installer's photo.
+  {
+    name: 'Marek W.',
+    role: 'Monter – brygadzista',
+    experience: '14 lat doświadczenia',
+    photo: { src: '/img/ekipa/monter-2.webp', width: 1200, height: 1500, small: '/img/ekipa/monter-2-600.webp', smallWidth: 600 },
+    fictional: true,
+  },
+  // FICTIONAL EXAMPLE DATA – replace before launch. The photo is AI-generated (a fictional person, preview only).
+  {
+    name: 'Tomasz K.',
+    role: 'Monter stolarki',
+    experience: '8 lat doświadczenia',
+    photo: { src: '/img/ekipa/monter-3.webp', width: 1200, height: 1500, small: '/img/ekipa/monter-3-600.webp', smallWidth: 600 },
+    fictional: true,
+  },
 ];

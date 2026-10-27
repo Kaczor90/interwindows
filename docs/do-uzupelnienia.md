@@ -41,7 +41,7 @@ NAP musi być identyczny na stronie, w wizytówce Google, na Facebooku i w katal
 
 ## 2. Ekipa i montaż
 
-- [ ] **[BLOKUJE] Monterzy 2 i 3 to FIKCYJNE DANE PRZYKŁADOWE** („Marek W., monter – brygadzista, 14 lat” i „Tomasz K.,
+- [ ] **[BLOKUJE] Monterzy 2 i 3 to FIKCYJNE DANE PRZYKŁADOWE** (zdjęcie AI) („Marek W., monter – brygadzista, 14 lat” i „Tomasz K.,
   monter stolarki, 8 lat”) wpisane na prośbę klienta, żeby pokazać układ. **Podmienić przed startem** na prawdziwe imiona
   (lub imię + inicjał), role i staż. Plik: `src/data/ekipa.ts` (pole `fictional: true`). Karty są na stronie głównej,
   `/montaz-okien/` i `/o-firmie/`.
@@ -100,7 +100,9 @@ Strony kategorii: dane w `src/data/oferta.ts`.
   `public/img/ekipa/` i `src/data/ekipa.ts`. Najlepiej jedna sesja z Bartoszem, żeby trzy portrety wyglądały spójnie.
 - [ ] **[BLOKUJE] Portret Pawła Majchrzaka** (`/o-firmie/`, karta właściciela – dziś zastępcze tło). Portret Bartosza już jest.
 - [ ] **[PO STARCIE] Ilustracje AI do podmiany na własne zdjęcia.** Są poglądowe (w stopce: „część ilustracji ma charakter poglądowy”),
-  nigdy na `/realizacje/` ani w kartach ekipy. Pliki w `public/img/ai/`, opisy w `src/data/ai-zdjecia.ts`:
+  nigdy na `/realizacje/`. W kartach ekipy są tylko na podglądzie: Marek W. i Tomasz K. to osoby fikcyjne ze zdjęciami AI
+  (osobny punkt [BLOKUJE] wyżej), a portret Bartosza to jego zdjęcie przerobione AI (potwierdzić podobieństwo i zgodę).
+  Pliki w `public/img/ai/`, opisy w `src/data/ai-zdjecia.ts`:
 
   | Ilustracja | Gdzie | Na co podmienić |
   |---|---|---|

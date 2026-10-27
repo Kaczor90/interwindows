@@ -5,10 +5,10 @@ import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import PageHero from '../components/PageHero.astro';
 import QuoteForm from '../components/QuoteForm.astro';
-import MapLink from '../components/MapLink.astro';
+import GoogleMap from '../components/GoogleMap.astro';
 import { site, people, social } from '../data/site';
 
-// Google Business Profile link (stable CID) – used for the map panel and 'Wyznacz trasę'
+// Google Business Profile link (stable CID) – used for 'Wyznacz trasę' and 'Opinie w Google' (the map links to it too)
 const mapsUrl = site.googleMapsUrl;
 const roles: Record<string, string> = { 'Paweł Majchrzak': 'Współwłaściciel', 'Bartosz Bezdziek': 'Współwłaściciel' };
 ---
@@ -69,7 +69,7 @@ const roles: Record<string, string> = { 'Paweł Majchrzak': 'Współwłaściciel
             ))}
           </div>
         </div>
-        <div class="reveal" style="min-height:380px;display:grid"><MapLink /></div>
+        <GoogleMap fill class="reveal" />
       </div>
     </div>
   </section>

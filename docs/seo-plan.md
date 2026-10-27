@@ -567,7 +567,7 @@ Cel (mobile, dane CrUX po starcie): LCP < 2,5 s (dążyć do < 1,8 s), INP < 200
 | Slider w hero (obecna strona: Swiper + jQuery + Bootstrap) | jedno zdjęcie hero, `fetchpriority="high"`, bez slidera |
 | Animacje „reveal" z Profilu | **nie stosować na H1 ani hero**: element LCP z `opacity: 0` opóźnia LCP. Treść musi być widoczna bez JS (Profil dodaje klasę `.js`, zachować). |
 | Fonty (obecnie Poppins w 18 odmianach z Google Fonts) | self-hosting woff2, **subset latin-ext** (ą, ę, ł, ż…), maks. 2 rodziny i 4 odmiany, `font-display: swap`, preload głównej odmiany, fallback z `size-adjust` przeciw CLS |
-| Mapa Google | bez iframe przy wczytaniu: statyczny obrazek + link „Otwórz w Mapach Google" albo ładowanie po kliknięciu (szybciej i zgodnie z RODO) |
+| Mapa Google | decyzja klienta 27.10.2026: osadzona mapa (iframe bez klucza API, `GoogleMap.astro`) tylko poniżej zgięcia, `loading="lazy"`, w pudełku o stałym `aspect-ratio` (bez CLS), z linkiem „Otwórz w Mapach Google"; opisana w polityce prywatności |
 | Konfigurator | wyspa Astro (`client:visible` lub `client:load`) tylko na `/konfigurator/`, kod dzielony. Tekst SEO renderowany statycznie. Inne strony linkują do konfiguratora, nie osadzają go. |
 | Skrypty zewnętrzne | GA4 przez Consent Mode v2 po zgodzie, bez widgetów czatu i osadzeń Instagrama (statyczne miniatury z linkiem) |
 | Baner cookies | nakładka u dołu ekranu, która nie przesuwa treści (CLS) |

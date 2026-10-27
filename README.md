@@ -99,6 +99,7 @@ zwykły tekst (`isLinked()` w `site.ts`, obsługa w `src/lib/rich.ts`). `true` w
 | `QuoteForm` | `title?`, `lead?`, `preselect?`, `id?` (domyślnie `wycena`), `tone?` | formularz → `kontakt.php` → `/dziekujemy/` |
 | `ProcessSteps` | `steps?`, `layout?`, `images?` | kroki montażu ze znacznikami „do potwierdzenia” |
 | `CrewGrid` | `members?` (domyślnie `ekipa.ts`) | karty montażystów; zdjęcie tylko gdy plik istnieje (inaczej placeholder) |
+| `GoogleMap` | `fill?`, `zoom?`, `class?` | mapa Google (iframe, lazy, szara do najechania) + link do profilu; zapytanie i zoom w `site.mapEmbed` |
 | `Placeholder`, `PhotoStrip`, `InstallBlock`, `Brands`, `MapLink`, `GridLines`, `Icon`, `Testimonials`, `Rail`, `CtaBar`, `ThemeSwitch` | – | jak w komentarzach na górze plików |
 | `realizacje/*` | `ProjectCard`, `ProjectGallery`, `FactsBox`, `CrewNote`, `Lightbox` | strony realizacji (karta `ProjectCard` także na stronie głównej) |
 

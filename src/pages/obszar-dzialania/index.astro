@@ -8,7 +8,7 @@ import { service } from '../../lib/schema';
 import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
 import PageHero from '../../components/PageHero.astro';
-import MapLink from '../../components/MapLink.astro';
+import GoogleMap from '../../components/GoogleMap.astro';
 import PhotoStrip from '../../components/PhotoStrip.astro';
 import Faq from '../../components/Faq.astro';
 import CtaBand from '../../components/CtaBand.astro';
@@ -84,9 +84,7 @@ const schema = service({
         <p class="muted">Orientacyjne czasy przejazdu samochodem z biura przy ul. Przemysłowej 22. Rzeczywisty czas zależy od pory dnia i ruchu.</p>
       </div>
       <div class="reach">
-        <div class="reach__map reveal">
-          <MapLink />
-        </div>
+        <GoogleMap fill zoom={9} class="reveal" />
         <div class="reach__bands reveal">
           <div class="band-row band-row--home">
             <span class="band-row__label">Siedziba</span>
@@ -210,7 +208,6 @@ const schema = service({
 <style>
   .reach { display: grid; gap: 24px; }
   @media (min-width: 960px) { .reach { grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); align-items: stretch; } }
-  .reach__map { min-height: 380px; display: grid; }
   .reach__bands { display: grid; align-content: start; border-top: 1px solid var(--line-strong); }
   .band-row {
     display: grid; gap: 8px 24px;

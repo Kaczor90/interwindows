@@ -8,6 +8,7 @@ import CrewGrid from '../components/CrewGrid.astro';
 import Brands from '../components/Brands.astro';
 import QuoteForm from '../components/QuoteForm.astro';
 import CtaBand from '../components/CtaBand.astro';
+import GoogleMap from '../components/GoogleMap.astro';
 import { site } from '../data/site';
 import { categories } from '../data/oferta';
 import { photoByFile, photoSrc, photoSrcSmall } from '../data/realizacje-zdjecia';
@@ -407,22 +408,7 @@ const guides = [
         </ul>
         <a class="btn btn--ghost" href={url('/obszar-dzialania/')}><Icon name="arrow" class="arrow" /> Sprawdź obszar działania</a>
       </div>
-      <div class="area__diagram reveal" aria-hidden="true">
-        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" fill="none">
-          <g stroke="#cdd2db" stroke-width="1">
-            <circle cx="200" cy="200" r="70" />
-            <circle cx="200" cy="200" r="130" stroke-dasharray="4 6" />
-            <circle cx="200" cy="200" r="188" stroke-dasharray="2 6" />
-            <path d="M200 6v28M200 366v28M6 200h28M366 200h28" />
-          </g>
-          <g stroke="#e7e9ee"><path d="M67 67l266 266M333 67 67 333" /></g>
-          <text x="200" y="26" text-anchor="middle" fill="#747b8b" font-family="Plus Jakarta Sans Variable, sans-serif" font-size="11" font-weight="600" letter-spacing=".2em">N</text>
-          <circle cx="200" cy="200" r="16" style="stroke: var(--accent)" stroke-width="1.2" fill="#fff" />
-          <circle cx="200" cy="200" r="5" style="fill: var(--accent)" />
-          <text x="200" y="244" text-anchor="middle" fill="#141824" font-family="Plus Jakarta Sans Variable, sans-serif" font-size="22" letter-spacing="-0.5">Płock</text>
-          <text x="200" y="264" text-anchor="middle" fill="#747b8b" font-family="Plus Jakarta Sans Variable, sans-serif" font-size="11" letter-spacing=".08em">ul. Przemysłowa 22</text>
-        </svg>
-      </div>
+      <GoogleMap class="reveal" />
     </div>
   </section>
 

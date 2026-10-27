@@ -82,6 +82,10 @@ export const site = {
   /** Google Business Profile / Maps link (stable CID) – schema hasMap + sameAs, map and route links.
    *  NOTE: the profile shows postal code 09-401; the site keeps 09-400 (VAT register) – to resolve. */
   googleMapsUrl: 'https://maps.google.com/?cid=52966961919073747',
+  /** Google Maps iframe (src/components/GoogleMap.astro; no API key): search query + default zoom.
+   *  The query resolves to the business pin at ul. Przemysłowa 22 (checked 27.10.2026).
+   *  Disclosed in /polityka-prywatnosci/ (Google may set cookies when the map loads). */
+  mapEmbed: { query: 'Inter Windows, Przemysłowa 22, 09-400 Płock', zoom: 13 },
 
   instagram: 'https://www.instagram.com/inter_windows',
   facebook: 'https://www.facebook.com/profile.php?id=61580449427158',
