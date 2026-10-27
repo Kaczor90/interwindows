@@ -1,9 +1,13 @@
 ---
-// "Poznaj naszych montażystów" – grid of installer cards from src/data/ekipa.ts.
-// Missing photos render as placeholders. The section heading is up to the page.
+// "Poznaj naszych montażystów" – installer cards from src/data/ekipa.ts (3 people).
+// A photo is used only when its file exists in public/ at build time; otherwise (and for photo: null)
+// the card shows a placeholder, so a missing file never breaks the build or shows a broken image.
+// Layout: phones – horizontal cards (photo left); ≥ 600 px – three columns. The heading is up to the page.
 //   <CrewGrid />                                  all members
 //   <CrewGrid members={ekipa.slice(0, 2)} />      a subset
 import { url } from '../lib/url';
+import { srcsetOf } from '../lib/img';
+import { inPublic } from '../lib/public-file';
 import Placeholder from './Placeholder.astro';
 import { ekipa, type CrewMember } from '../data/ekipa';
 
@@ -11,14 +15,30 @@ interface Props {
   members?: CrewMember[];
 }
 const { members = ekipa } = Astro.props;
+
+const cards = members.map((m) => {
+  const photo = m.photo && inPublic(m.photo.src) ? m.photo : null;
+  const small = photo && inPublic(photo.small) ? photo.small : undefined;
+  const alt = m.alt ?? (m.placeholder || m.fictional ? 'Monter Inter Windows – imię i nazwisko (do uzupełnienia)' : `${m.name} – ${m.role}, Inter Windows`);
+  return { ...m, photo, small, alt };
+});
 ---
 
-<ul class="crew" role="list">
-  {members.map((m) => (
+<ul class:list={['crew', `crew--${Math.min(cards.length, 4)}`]} role="list">
+  {cards.map((m) => (
     <li class="crew-card reveal">
       <div class="crew-card__photo">
         {m.photo ? (
-          <img src={url(m.photo)} alt={`${m.name} – ${m.role}`} width="800" height="1000" loading="lazy" />
+          <img
+            src={url(m.small ?? m.photo.src)}
+            srcset={srcsetOf(m.photo.src, m.photo.width, m.photo.height, m.small, m.photo.smallWidth)}
+            sizes="(min-width: 1300px) 400px, (min-width: 600px) 31vw, 40vw"
+            alt={m.alt}
+            width={m.photo.width}
+            height={m.photo.height}
+            loading="lazy"
+            decoding="async"
+          />
         ) : (
           <Placeholder icon="person" label="Zdjęcie montażysty – do podmiany" />
         )}

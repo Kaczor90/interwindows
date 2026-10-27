@@ -15,7 +15,7 @@ import ProjectGallery from '../../components/realizacje/ProjectGallery.astro';
 import ProjectCard from '../../components/realizacje/ProjectCard.astro';
 import CrewNote from '../../components/realizacje/CrewNote.astro';
 import Lightbox from '../../components/realizacje/Lightbox.astro';
-import { nbsp, realizacje, relatedTo, small, workMonth, type Realizacja } from '../../data/realizacje';
+import { nbsp, realizacje, relatedTo, small, type Realizacja } from '../../data/realizacje';
 import { categoryBySlug } from '../../data/oferta';
 
 export function getStaticPaths() {
@@ -68,7 +68,6 @@ const schema = {
   <div class:list={['rp-hero', { 'rp-hero--portrait': portrait }]} style={r.cover.position ? `--cover-pos:${r.cover.position}` : undefined}>
     <PageHero
       title={nbsp(r.title)}
-      eyebrow={`Realizacja · ${workMonth(r)}`}
       lead={nbsp(r.lead)}
       breadcrumbs={[{ name: 'Realizacje', path: '/realizacje/' }, { name: r.cardTitle }]}
       image={{ src: r.cover.src, srcSmall: small(r.cover.src), alt: r.cover.alt, width: r.cover.width, height: r.cover.height }}
@@ -87,13 +86,11 @@ const schema = {
 
       <div class="rp__story">
         <section class="rp__block reveal">
-          <span class="eyebrow">Przed montażem</span>
           <h2>Wyzwanie</h2>
           {r.challenge.map((t) => <p>{t}</p>)}
         </section>
 
         <section class="rp__block reveal">
-          <span class="eyebrow">Montaż</span>
           <h2>Rozwiązanie i zastosowane produkty</h2>
           {r.solution.map((t) => <p>{t}</p>)}
           <ul class="rp__products">
@@ -107,7 +104,6 @@ const schema = {
         </section>
 
         <section class="rp__block reveal">
-          <span class="eyebrow">Po montażu</span>
           <h2>Efekt</h2>
           {r.result.map((t) => <p>{t}</p>)}
         </section>
@@ -119,7 +115,6 @@ const schema = {
     <div class="container">
       <div class="section-head section-head--split">
         <div>
-          <span class="eyebrow">Galeria</span>
           <h2>Zdjęcia z realizacji</h2>
         </div>
         <p>Kliknij zdjęcie, żeby je powiększyć.</p>
@@ -134,7 +129,6 @@ const schema = {
     <div class="container">
       <div class="section-head section-head--split">
         <div>
-          <span class="eyebrow">Zobacz też</span>
           <h2>Podobne realizacje</h2>
         </div>
         <a class="link-arrow" href={url('/realizacje/')}>Wszystkie realizacje <Icon name="arrow" class="" /></a>
@@ -146,7 +140,6 @@ const schema = {
   </section>
 
   <CtaBand
-    eyebrow="Podobny projekt?"
     title="Umów bezpłatny pomiar albo zacznij od konfiguratora"
     text="Doradca przyjedzie na pomiar i dobierze stolarkę do budynku. Jeśli chcesz najpierw sprawdzić warianty, skonfiguruj okno online i wyślij projekt do wyceny."
     primary={{ label: 'Umów bezpłatny pomiar', href: '#wycena', cta: 'realizacja-band-pomiar' }}

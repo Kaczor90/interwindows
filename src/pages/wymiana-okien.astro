@@ -152,7 +152,6 @@ const schema = service({ name: seo.h1, serviceType: 'Wymiana okien', path, descr
 <Base title={seo.title} description={seo.description} updated="2026-10-27" schema={schema}>
   <PageHero
     title={seo.h1.replace(' – ', ' – ')}
-    eyebrow="Wymiana okien"
     lead="Wymieniamy okna w domach i mieszkaniach w Płocku i okolicy. Doradzamy, mierzymy i montujemy **własną ekipą**: od demontażu starych okien po obróbki i parapety. Wycenę dostajesz po bezpłatnym pomiarze."
     breadcrumbs={[{ name: 'Wymiana okien' }]}
     image={{ src: photoSrc(hero), srcSmall: photoSrcSmall(hero), alt: hero.alt, width: hero.width, height: hero.height }}
@@ -172,7 +171,6 @@ const schema = service({ name: seo.h1, serviceType: 'Wymiana okien', path, descr
       <div class="content">
         <section class="content-section" id="kiedy-warto">
           <div class="content-section__head reveal">
-            <span class="eyebrow">Sygnały</span>
             <h2>Kiedy wymiana się opłaca</h2>
           </div>
           <div class="content-section__body rich reveal">
@@ -187,7 +185,6 @@ const schema = service({ name: seo.h1, serviceType: 'Wymiana okien', path, descr
 
         <section class="content-section" id="zakres">
           <div class="content-section__head reveal">
-            <span class="eyebrow">Zakres</span>
             <h2>Co obejmuje usługa</h2>
           </div>
           <div class="content-section__body reveal">
@@ -207,7 +204,6 @@ const schema = service({ name: seo.h1, serviceType: 'Wymiana okien', path, descr
 
         <section class="content-section" id="dzien-montazu">
           <div class="content-section__head reveal">
-            <span class="eyebrow">Krok po kroku</span>
             <h2>Dzień montażu krok po kroku</h2>
           </div>
           <div class="content-section__body">
@@ -231,7 +227,6 @@ const schema = service({ name: seo.h1, serviceType: 'Wymiana okien', path, descr
 
         <section class="content-section" id="w-domu">
           <div class="content-section__head reveal">
-            <span class="eyebrow">Dom jednorodzinny</span>
             <h2>Wymiana okien w domu</h2>
           </div>
           <div class="content-section__body rich reveal">
@@ -253,7 +248,6 @@ const schema = service({ name: seo.h1, serviceType: 'Wymiana okien', path, descr
 
         <section class="content-section" id="w-bloku">
           <div class="content-section__head reveal">
-            <span class="eyebrow">Mieszkanie</span>
             <h2>Wymiana okien w mieszkaniu w bloku</h2>
           </div>
           <div class="content-section__body rich reveal">
@@ -274,7 +268,6 @@ const schema = service({ name: seo.h1, serviceType: 'Wymiana okien', path, descr
 
         <section class="content-section" id="cena">
           <div class="content-section__head reveal">
-            <span class="eyebrow">Wycena</span>
             <h2>Ile kosztuje wymiana okien w Płocku</h2>
           </div>
           <div class="content-section__body rich reveal">
@@ -298,7 +291,6 @@ const schema = service({ name: seo.h1, serviceType: 'Wymiana okien', path, descr
 
         <section class="content-section" id="dofinansowanie">
           <div class="content-section__head reveal">
-            <span class="eyebrow">Finanse</span>
             <h2>Dofinansowanie i ulga termomodernizacyjna</h2>
           </div>
           <div class="content-section__body rich reveal">
@@ -321,7 +313,6 @@ const schema = service({ name: seo.h1, serviceType: 'Wymiana okien', path, descr
     <div class="container">
       <div class="section-head section-head--split">
         <div>
-          <span class="eyebrow">Z naszych montaży</span>
           <h2>Realizacje w Płocku i okolicach</h2>
         </div>
         <a class="link-arrow" href={url('/realizacje/')}>Wszystkie realizacje <Icon name="arrow" class="" /></a>
@@ -332,10 +323,9 @@ const schema = service({ name: seo.h1, serviceType: 'Wymiana okien', path, descr
 
   <InstallBlock product="nowe okna" />
 
-  <Faq items={faq} title="Pytania o wymianę okien" eyebrow="FAQ" />
+  <Faq items={faq} title="Pytania o wymianę okien" />
 
   <CtaBand
-    eyebrow="Konfigurator okien"
     title="Przygotuj projekt okien przed pomiarem"
     text="Wybierz typ, wymiary, podział, kolor i szyby. Doradca przygotuje wycenę wymiany i umówi bezpłatny pomiar."
     primary={{ label: 'Otwórz konfigurator', href: '/konfigurator/' }}
@@ -346,7 +336,7 @@ const schema = service({ name: seo.h1, serviceType: 'Wymiana okien', path, descr
 
   <section class="section section--tight">
     <div class="container">
-      <div class="section-head"><span class="eyebrow">Zobacz też</span><h2>Powiązane strony</h2></div>
+      <div class="section-head"><h2>Powiązane strony</h2></div>
       <div class="related">
         {related.map((r) => <a href={url(r.href)}><Icon name={r.icon} class="icon" />{r.label}</a>)}
       </div>

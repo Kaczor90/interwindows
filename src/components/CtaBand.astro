@@ -24,7 +24,6 @@ interface Link {
 interface Props {
   title: string;
   text?: string;
-  eyebrow?: string;
   primary: Link;
   secondary?: Link;
   tone?: 'dark' | 'light';
@@ -32,7 +31,7 @@ interface Props {
   /** decorative background; width/height of the big file, smallWidth of srcSmall (default: hero-dom, 1600×1338 + 960 px) */
   image?: { src: string; srcSmall?: string; position?: string; width?: number; height?: number; smallWidth?: number };
 }
-const { title, text, eyebrow, primary, secondary, tone = 'dark', wrap = true, image } = Astro.props;
+const { title, text, primary, secondary, tone = 'dark', wrap = true, image } = Astro.props;
 const dark = tone === 'dark' || !!image;
 const primaryIcon = primary.icon ?? 'arrow';
 ---
@@ -53,7 +52,6 @@ const primaryIcon = primary.icon ?? 'arrow';
     </div>
     <div class="container band-photo__inner reveal">
       <div>
-        {eyebrow && <span class="eyebrow">{eyebrow}</span>}
         <h2>{title}</h2>
         {text && <p class="lead">{text}</p>}
       </div>
@@ -74,7 +72,6 @@ const primaryIcon = primary.icon ?? 'arrow';
         <span class="band__ring band__ring--1" aria-hidden="true"></span>
         <span class="band__ring band__ring--2" aria-hidden="true"></span>
         <div class="band__text">
-          {eyebrow && <span class="eyebrow">{eyebrow}</span>}
           <h2>{title}</h2>
           {text && <p>{text}</p>}
         </div>
@@ -94,7 +91,6 @@ const primaryIcon = primary.icon ?? 'arrow';
     <span class="band__ring band__ring--1" aria-hidden="true"></span>
     <span class="band__ring band__ring--2" aria-hidden="true"></span>
     <div class="band__text">
-      {eyebrow && <span class="eyebrow">{eyebrow}</span>}
       <h2>{title}</h2>
       {text && <p>{text}</p>}
     </div>

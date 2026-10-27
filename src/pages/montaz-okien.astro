@@ -62,7 +62,7 @@ const reasons = [
 const proofs: { title: string; text: string; tbc?: boolean }[] = [
   { title: 'Zdjęcia z naszych budów', text: 'Publikujemy zdjęcia z montaży wykonanych przez nasze ekipy, z miesiącem wykonania.' },
   { title: 'Opinie klientów', text: 'Klienci piszą w nich o pracy ekipy: o punktualności, porządku i staranności montażu.' },
-  { title: 'Monterzy z imienia i nazwiska', text: 'Przedstawiamy ludzi, którzy przyjadą do Ciebie, z rolą w zespole i stażem.', tbc: true },
+  { title: 'Monterzy z imienia', text: 'Przedstawiamy ludzi, którzy przyjadą do Ciebie, z rolą w zespole i stażem.', tbc: true },
   { title: 'Zapis w umowie', text: 'Montaż wykonują wyłącznie pracownicy Inter Windows. Zapisujemy to w umowie.', tbc: true },
 ];
 
@@ -183,7 +183,6 @@ const schema = service({
     <div class="container">
       <div class="section-head section-head--split">
         <div>
-          <span class="eyebrow">Własne ekipy</span>
           <h2>Dlaczego nigdy nie oddajemy montażu podwykonawcom</h2>
         </div>
         <p class="muted">
@@ -236,7 +235,6 @@ const schema = service({
     <div class="container">
       <div class="section-head section-head--split">
         <div>
-          <span class="eyebrow">Montaż krok po kroku</span>
           <h2>Od pomiaru do odbioru w 5 krokach</h2>
         </div>
         <p class="muted">Każdy etap prowadzi nasz zespół. Na pomiarze ustalamy, co i jak będzie montowane, a w dniu montażu ekipa realizuje ten plan.</p>
@@ -261,7 +259,6 @@ const schema = service({
     <div class="container">
       <div class="section-head section-head--split">
         <div>
-          <span class="eyebrow">Sposób osadzenia</span>
           <h2>Metody montażu: tradycyjna, ciepły montaż, w warstwie ocieplenia</h2>
         </div>
         <p class="muted">
@@ -290,11 +287,10 @@ const schema = service({
     <div class="container">
       <div class="section-head section-head--split">
         <div>
-          <span class="eyebrow">Ludzie</span>
-          <h2>Poznaj nasze ekipy</h2>
+          <h2>Poznaj naszych montażystów</h2>
         </div>
         <p class="muted">
-          Te osoby przyjeżdżają na montaż. Pokazujemy je z imienia i nazwiska, z rolą w zespole i stażem, bo to one odpowiadają za to, jak okno będzie działać przez lata.
+          Te osoby przyjeżdżają na montaż. Pokazujemy je z imienia, z rolą w zespole i stażem, bo to one odpowiadają za to, jak okno będzie działać przez lata.
         </p>
       </div>
       <CrewGrid />
@@ -309,7 +305,6 @@ const schema = service({
     <div class="container">
       <div class="handover">
         <div class="reveal">
-          <span class="eyebrow">W trakcie prac</span>
           <h2>Jak chronimy dom w czasie prac</h2>
           <ul class="safety" role="list">
             {workSafety.map((w) => (
@@ -325,7 +320,6 @@ const schema = service({
         </div>
         <div>
           <div class="reveal">
-            <span class="eyebrow">Po montażu</span>
             <h2>Odbiór, gwarancja na montaż i przegląd po pierwszej zimie</h2>
           </div>
           <ul class="handover__list" role="list">
@@ -349,7 +343,6 @@ const schema = service({
     <div class="container">
       <div class="section-head section-head--split">
         <div>
-          <span class="eyebrow">Z naszych budów</span>
           <h2>Tak wyglądają nasze montaże</h2>
         </div>
         <p class="muted">Zdjęcia z montaży wykonanych przez nasze ekipy, prosto z placu budowy. Pod każdym miesiąc, w którym powstało.</p>
@@ -371,7 +364,6 @@ const schema = service({
   <section class="section section--tight" id="inne-produkty">
     <div class="container split" style="align-items:start">
       <div class="reveal">
-        <span class="eyebrow">Nie tylko okna</span>
         <h2>Montaż drzwi, bram i rolet</h2>
       </div>
       <div class="reveal">
@@ -392,10 +384,9 @@ const schema = service({
   <!-- OPINIE (component owned by the testimonials agent) -->
   <Testimonials />
 
-  <Faq items={faq} title="Pytania o montaż okien" eyebrow="FAQ" />
+  <Faq items={faq} title="Pytania o montaż okien" />
 
   <CtaBand
-    eyebrow="Konfigurator okien"
     title="Zaprojektuj okna online. Pomiar i montaż zostaw nam."
     text="Wybierz typ, wymiary, podział, kolor i szyby. Projekt trafi do doradcy, który przygotuje wycenę i umówi bezpłatny pomiar."
     primary={{ label: 'Otwórz konfigurator', href: '/konfigurator/' }}
@@ -406,7 +397,7 @@ const schema = service({
 
   <section class="section section--tight">
     <div class="container">
-      <div class="section-head"><span class="eyebrow">Zobacz też</span><h2>Powiązane strony</h2></div>
+      <div class="section-head"><h2>Powiązane strony</h2></div>
       <div class="related">
         {related.map((r) => <a href={url(r.href)}><Icon name={r.icon} class="icon" />{r.label}</a>)}
       </div>

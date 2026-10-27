@@ -234,7 +234,8 @@ p { margin: 0 0 1em; }
 
 /* ---------- typography helpers ---------- */
 
-/* eyebrow on light backgrounds: small accent ring + muted text */
+/* eyebrow: the small tags were removed site-wide (client decision 27.10.2026). Only the line-style
+   label remains, in the dark montaż section of the home page (#montaz) and in DarkHero (.on-dark below). */
 .eyebrow {
   display: inline-flex;
   align-items: center;
@@ -819,9 +820,18 @@ a.photo:hover img, a:hover > .photo img { transform: scale(1.03); }
 
 /* ---------- crew cards ---------- */
 
-.crew { display: grid; gap: 28px 20px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-@media (min-width: 900px) { .crew { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-.crew-card { display: flex; flex-direction: column; background: #fff; border: 1px solid var(--line); }
+/* phones: one column of horizontal cards (photo left); from 600 px: one column per person (3 → 3 columns) */
+.crew { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+.crew-card { display: grid; grid-template-columns: minmax(110px, 38%) minmax(0, 1fr); align-items: center; background: #fff; border: 1px solid var(--line); }
+@media (min-width: 600px) {
+  .crew { gap: 28px 20px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .crew--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .crew-card { display: flex; flex-direction: column; align-items: stretch; }
+}
+@media (min-width: 900px) {
+  .crew--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .crew { gap: 28px; }
+}
 .crew-card__photo { aspect-ratio: 4 / 5; }
 .crew-card__photo img { width: 100%; height: 100%; object-fit: cover; }
 .crew-card__body { padding: 18px 18px 20px; display: grid; gap: 4px; }
@@ -1287,7 +1297,7 @@ a.photo:hover img, a:hover > .photo img { transform: scale(1.03); }
   padding-block: 24px 28px;
   display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 28px;
   font-size: .8rem;
-  color: rgba(255, 255, 255, .45);
+  color: rgba(255, 255, 255, .58);  /* 6.5:1 on --dark (AA with margin) */
 }
 .footer-bottom nav { display: flex; flex-wrap: wrap; gap: 8px 24px; }
 .footer-ring {

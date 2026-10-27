@@ -12,7 +12,6 @@ export interface Faq {
 export interface Section {
   /** anchor id; defaults to a slug of h2 */
   id?: string;
-  eyebrow?: string;
   h2: string;
   /** rich paragraphs */
   body?: string[];
@@ -91,7 +90,6 @@ export const categories: Category[] = [
     sections: [
       {
         id: 'porownanie',
-        eyebrow: 'Wybór materiału',
         h2: 'PCV, aluminium czy drewno: porównanie',
         body: [
           'Materiał ramy decyduje o wyglądzie okna, jego wadze, pielęgnacji i o tym, jak duże przeszklenie da się zbudować. Nie ma jednego najlepszego wyboru. Jest wybór dopasowany do bryły domu, stylu wnętrz i tego, ile uwagi chcesz poświęcać oknom po latach.',
@@ -137,7 +135,6 @@ export const categories: Category[] = [
       },
       {
         id: 'ceny',
-        eyebrow: 'Wycena',
         h2: 'Ile kosztują okna w Płocku i od czego zależy cena',
         body: [
           'Cena okna to suma kilku decyzji. Dwa okna o tym samym wymiarze mogą kosztować zupełnie inaczej, bo różnią się systemem, szybą, kolorem i sposobem montażu. Dlatego nie publikujemy cennika z jedną liczbą, która nie odpowiadałaby Twojemu projektowi.',
@@ -211,7 +208,6 @@ export const categories: Category[] = [
     sections: [
       {
         id: 'dako-dpq-82',
-        eyebrow: 'Nasz podstawowy system',
         h2: 'DAKO DPQ-82 na profilu VEKA Softline 82 MD',
         body: [
           'To okno, które proponujemy najczęściej. DAKO, polski producent stolarki, którego jesteśmy autoryzowanym partnerem, buduje je na profilu VEKA Softline 82 MD. Profil ma głębokość 82 mm i kilka komór, a głębsza rama mieści grubsze pakiety szyb i lepiej izoluje.',
@@ -261,7 +257,6 @@ export const categories: Category[] = [
       },
       {
         id: 'ceny',
-        eyebrow: 'Wycena',
         h2: 'Ile kosztują okna PCV',
         body: [
           'Na cenę okna PCV najbardziej wpływają system profili, wymiary i podział, pakiet szyb, okleina oraz okucia. Do tego dochodzi zakres prac: demontaż starych okien, montaż, obróbki i parapety.',
@@ -321,7 +316,6 @@ export const categories: Category[] = [
       },
       {
         id: 'systemy-aluprof',
-        eyebrow: 'Systemy',
         h2: 'Systemy DAKO na profilach Aluprof',
         body: [
           'DAKO buduje okna aluminiowe na systemach Aluprof, polskiego producenta profili aluminiowych. W ofercie DAKO są m.in. linie DA-77 i DA-70N, które różnią się budową profilu, izolacyjnością i możliwościami konstrukcyjnymi.',
@@ -354,7 +348,6 @@ export const categories: Category[] = [
       },
       {
         id: 'ceny',
-        eyebrow: 'Wycena',
         h2: 'Cena okien aluminiowych',
         body: [
           'Okna aluminiowe są zwykle droższe od okien PCV podobnej wielkości. O cenie decydują system, wielkość tafli, liczba i typ skrzydeł, pakiet szyb, kolor oraz to, czy montaż wymaga sprzętu do podnoszenia szkła.',
@@ -406,7 +399,6 @@ export const categories: Category[] = [
     sections: [
       {
         id: 'systemy-dako',
-        eyebrow: 'Systemy',
         h2: 'Systemy DAKO DDF-68, DDR-68, DDA-78',
         body: [
           'W ofercie DAKO są m.in. drewniane systemy DDF-68 i DDR-68 oraz drewniano-aluminiowy DDA-78. Różnią się kształtem profilu i charakterem ramy, a wersja drewniano-aluminiowa ma od zewnątrz nakładkę z aluminium.',
@@ -431,7 +423,6 @@ export const categories: Category[] = [
       },
       {
         id: 'kamienice',
-        eyebrow: 'Płock',
         h2: 'Okna do kamienic i budynków zabytkowych w Płocku',
         body: [
           'Część budynków na Starym Mieście w Płocku i w centrum znajduje się pod ochroną konserwatorską. Wymiana okien wymaga tam zwykle uzgodnienia z Miejskim Konserwatorem Zabytków, który może określić materiał, podziały, szprosy i kolor stolarki.',
@@ -493,7 +484,6 @@ export const categories: Category[] = [
     sections: [
       {
         id: 'rodzaje',
-        eyebrow: 'Systemy',
         h2: 'HST, uchylno-przesuwne, SkyLine, harmonijkowe: porównanie',
         body: [
           'Rodzaj drzwi tarasowych wybiera się według szerokości otworu, sposobu korzystania z tarasu i oczekiwanego progu. W ofercie DAKO są m.in. drzwi podnoszono-przesuwne HST, uchylno-przesuwne SmartMove, minimalistyczne SkyLine oraz drzwi harmonijkowe. Dostępność konkretnego systemu i jego wymiary potwierdzamy przy wycenie.',
@@ -552,7 +542,6 @@ export const categories: Category[] = [
       },
       {
         id: 'ceny',
-        eyebrow: 'Wycena',
         h2: 'Ceny',
         body: [
           'Cena drzwi tarasowych zależy przede wszystkim od systemu, wymiarów, liczby skrzydeł i pakietu szyb. Znaczenie mają też kolor, rodzaj progu, dodatkowe zabezpieczenia oraz to, czy montaż wymaga sprzętu do podnoszenia szkła.',
@@ -655,7 +644,6 @@ export const categories: Category[] = [
       },
       {
         id: 'ceny',
-        eyebrow: 'Wycena',
         h2: 'Ceny',
         body: [
           'Na cenę drzwi zewnętrznych wpływają materiał i konstrukcja skrzydła, klasa odporności na włamanie, izolacyjność, przeszklenia i doświetla, rodzaj zamków oraz kolor i okucia. Do tego dochodzi zakres prac, na przykład demontaż starych drzwi i obróbka progu.',
@@ -742,7 +730,6 @@ export const categories: Category[] = [
       },
       {
         id: 'ceny',
-        eyebrow: 'Wycena',
         h2: 'Ceny',
         body: [
           'Cena drzwi wewnętrznych zależy od konstrukcji skrzydła, rodzaju okleiny lub lakieru, przeszklenia, okuć i typu ościeżnicy. Drzwi bezprzylgowe i ukryte wymagają systemowych ościeżnic i dokładniejszego montażu.',
@@ -793,7 +780,6 @@ export const categories: Category[] = [
     sections: [
       {
         id: 'rodzaje',
-        eyebrow: 'Systemy',
         h2: 'Podtynkowe, nadstawne, elewacyjne',
         body: [
           'Pancerz rolety, czyli zestaw aluminiowych profili, chroni okno przed słońcem, wiatrem i wzrokiem z zewnątrz. Różnice między systemami dotyczą głównie tego, gdzie chowa się skrzynka z pancerzem. Kolor pancerza i skrzynki dobierzemy do okien i elewacji.',
@@ -847,7 +833,6 @@ export const categories: Category[] = [
       },
       {
         id: 'ceny',
-        eyebrow: 'Wycena',
         h2: 'Ceny',
         body: [
           'Cena rolety zewnętrznej zależy od systemu montażu, wymiarów okna, rodzaju pancerza, koloru i napędu. Rolety podtynkowe i nadstawne planuje się razem z oknami, więc ich koszt warto ująć w jednej wycenie.',
@@ -901,7 +886,6 @@ export const categories: Category[] = [
     sections: [
       {
         id: 'rodzaje',
-        eyebrow: 'Systemy',
         h2: 'Typy: podtynkowe, samonośne, nadstawne',
         body: [
           'W każdym systemie lamele można całkowicie podnieść, opuścić i ustawić pod kątem. Różnice dotyczą sposobu montażu, który dobiera się do etapu budowy, grubości ocieplenia i wielkości przeszkleń.',
@@ -955,7 +939,6 @@ export const categories: Category[] = [
       },
       {
         id: 'ceny',
-        eyebrow: 'Wycena',
         h2: 'Ceny',
         body: [
           'Koszt żaluzji fasadowych zależy od liczby i szerokości okien, typu montażu, rodzaju lameli, koloru oraz automatyki: napędów, czujników i sterowania. Najwięcej zmienia to, czy żaluzje są zaplanowane w projekcie, czy dodawane do gotowej elewacji.',
@@ -1005,7 +988,6 @@ export const categories: Category[] = [
     sections: [
       {
         id: 'segmentowe',
-        eyebrow: 'Bramy segmentowe',
         h2: 'Segmentowe Thermo 60 i Standard 40',
         body: [
           'Brama segmentowa składa się z poziomych paneli, które przy otwieraniu przesuwają się pod strop. Nie zajmuje miejsca przed garażem ani na ścianach, dlatego to najczęstszy wybór w domach jednorodzinnych. Na naszych montażach widać bramy segmentowe w antracycie, bieli i złotym dębie.',
@@ -1038,7 +1020,6 @@ export const categories: Category[] = [
       },
       {
         id: 'ceny',
-        eyebrow: 'Wycena',
         h2: 'Ceny',
         body: [
           'Cena bramy garażowej zależy od wymiarów otworu, typu bramy, izolacyjności panelu, wzoru przetłoczeń, koloru oraz od napędu i dodatków, takich jak drzwi boczne, przeszklenia czy moduł do sterowania z telefonu.',

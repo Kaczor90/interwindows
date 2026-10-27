@@ -5,17 +5,15 @@ import { url } from '../lib/url';
 import { dako, brandLogos, brandNames } from '../data/partners';
 
 interface Props {
-  eyebrow?: string;
   title?: string;
 }
-const { eyebrow = 'Partnerzy', title = 'Sprawdzeni producenci, z którymi pracujemy' } = Astro.props;
+const { title = 'Sprawdzeni producenci, z którymi pracujemy' } = Astro.props;
 ---
 
 <section class="section section--tight" id="partnerzy">
   <div class="container">
     <div class="section-head section-head--split">
       <div>
-        <span class="eyebrow">{eyebrow}</span>
         <h2>{title}</h2>
       </div>
       <p class="muted">Dobieramy producenta do budynku i oczekiwań, a nie odwrotnie. Montaż w każdym przypadku wykonuje nasza ekipa.</p>
@@ -24,7 +22,6 @@ const { eyebrow = 'Partnerzy', title = 'Sprawdzeni producenci, z którymi pracuj
       <div class="brand-feature on-dark reveal">
         <div class="brand-feature__logo"><img src={url(dako.logo!)} alt="DAKO" width={dako.w} height={dako.h} loading="lazy" /></div>
         <div>
-          <span class="eyebrow">Autoryzowany partner</span>
           <strong>Autoryzowany partner DAKO</strong>
           <p>W ofercie DAKO mamy {dako.scope}. Okna PCV to system DAKO DPQ-82 na profilu VEKA Softline 82 MD.</p>
         </div>

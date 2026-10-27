@@ -9,11 +9,20 @@ import CrewGrid from '../components/CrewGrid.astro';
 import Brands from '../components/Brands.astro';
 import QuoteForm from '../components/QuoteForm.astro';
 import { site } from '../data/site';
+import { ekipa } from '../data/ekipa';
+import { inPublic } from '../lib/public-file';
+import { srcsetOf } from '../lib/img';
 import { photoByFile, photoSrc, photoSrcSmall } from '../data/realizacje-zdjecia';
 import Testimonials from '../components/Testimonials.astro';
 
 const hero = photoByFile('przeszklenie-szczytowe-wnetrze-wiezba')!;
 const owners = site.founders;
+// owner portraits: the crew photo of the same person (src/data/ekipa.ts), used only if the file exists
+const ownerPhoto = (name: string) => {
+  const m = ekipa.find((e) => e.name === name && e.photo && inPublic(e.photo.src));
+  return m?.photo ? { ...m.photo, small: inPublic(m.photo.small) ? m.photo.small : undefined, alt: m.alt ?? name } : null;
+};
+const ownerRole = (name: string) => ekipa.find((e) => e.name === name)?.role ?? 'Współwłaściciel';
 
 const values = [
   {
@@ -54,7 +63,6 @@ const schema = [
 >
   <PageHero
     title="Inter Windows – doradztwo i montaż w jednych rękach"
-    eyebrow="O firmie"
     lead="Firmę prowadzą Paweł Majchrzak i Bartosz Bezdziek, którzy przez 20 lat pracowali dla czołowych producentów okien, drzwi i bram. Dziś doradzają, mierzą i montują pod własnym szyldem, z własnym zespołem montażowym."
     breadcrumbs={[{ name: 'O firmie' }]}
     image={{ src: photoSrc(hero), srcSmall: photoSrcSmall(hero), alt: hero.alt, width: hero.width, height: hero.height }}
@@ -67,7 +75,6 @@ const schema = [
   <section class="section section--soft" id="historia">
     <div class="container split" style="align-items:start">
       <div class="reveal">
-        <span class="eyebrow">Nasza historia</span>
         <h2>Młoda firma, 20 lat doświadczenia</h2>
       </div>
       <div class="prose reveal">
@@ -92,7 +99,6 @@ const schema = [
     <div class="container">
       <div class="section-head section-head--split">
         <div>
-          <span class="eyebrow">Właściciele</span>
           <h2>Dwóch właścicieli: doradztwo i montaż pod osobistą kontrolą</h2>
         </div>
         <p class="muted">Każdy z nas pilnuje innego etapu Twojej inwestycji. Razem odpowiadamy za całość.</p>
@@ -100,9 +106,26 @@ const schema = [
       <div class="owners">
         {owners.map((name) => (
           <article class="owner reveal">
-            <div class="owner__photo"><Placeholder icon="person" label="Zdjęcie właściciela – do podmiany" /></div>
+            <div class="owner__photo">
+              {(() => {
+                const ph = ownerPhoto(name);
+                return ph ? (
+                  <img
+                    src={url(ph.small ?? ph.src)}
+                    srcset={srcsetOf(ph.src, ph.width, ph.height, ph.small, ph.smallWidth)}
+                    sizes="(min-width: 1000px) 300px, (min-width: 640px) 45vw, 100vw"
+                    alt={ph.alt}
+                    width={ph.width}
+                    height={ph.height}
+                    loading="lazy"
+                  />
+                ) : (
+                  <Placeholder icon="person" label="Zdjęcie właściciela – do podmiany" />
+                );
+              })()}
+            </div>
             <div class="owner__body">
-              <span class="crew-card__role">Współwłaściciel</span>
+              <span class="crew-card__role">{ownerRole(name)}</span>
               <h3>{name}</h3>
             </div>
           </article>
@@ -110,7 +133,7 @@ const schema = [
         <div class="owner-roles reveal">
           <div class="card">
             <span class="card__tag">Doradztwo</span>
-            <h3>Dobór szyty na miarę</h3>
+            <h3>Dobór do budynku i budżetu</h3>
             <p>Jeden z nas to specjalista od technologii i estetyki. Pomaga przebrnąć przez parametry techniczne i dobrać produkty, które pasują do potrzeb, budżetu i stylu budynku.</p>
           </div>
           <div class="card">
@@ -128,7 +151,6 @@ const schema = [
     <div class="container">
       <div class="section-head section-head--split">
         <div>
-          <span class="eyebrow">Nasze ekipy</span>
           <h2>Montują nasi ludzie. Zawsze.</h2>
         </div>
         <p class="muted">
@@ -147,7 +169,6 @@ const schema = [
   <section class="section section--tight">
     <div class="container">
       <div class="section-head">
-        <span class="eyebrow">Jak pracujemy</span>
         <h2>Na czym nam zależy</h2>
       </div>
       <div class="values">
@@ -162,7 +183,7 @@ const schema = [
     </div>
   </section>
 
-  <Brands eyebrow="Partnerzy" title="Partnerzy i producenci" />
+  <Brands title="Partnerzy i producenci" />
 
   <!-- OPINIE (component owned by the testimonials agent) -->
   <div id="opinie"><Testimonials /></div>
@@ -171,7 +192,6 @@ const schema = [
   <section class="section section--tight" id="dane-firmy">
     <div class="container split" style="align-items:start">
       <div>
-        <span class="eyebrow">Formalności</span>
         <h2>Dane firmy</h2>
       </div>
       <dl class="company-data">
@@ -185,7 +205,7 @@ const schema = [
     </div>
   </section>
 
-  <QuoteForm title="Poznajmy się: umów spotkanie" eyebrow="Spotkanie" lead="Zostaw numer telefonu. Oddzwonimy i umówimy spotkanie w biurze albo pomiar u Ciebie, na budowie lub w domu. Pomiar i wycena są bezpłatne." />
+  <QuoteForm title="Poznajmy się: umów spotkanie" lead="Zostaw numer telefonu. Oddzwonimy i umówimy spotkanie w biurze albo pomiar u Ciebie, na budowie lub w domu. Pomiar i wycena są bezpłatne." />
 </Base>
 
 <style>
@@ -194,6 +214,7 @@ const schema = [
   @media (min-width: 1000px) { .owners { grid-template-columns: minmax(0, 3fr) minmax(0, 3fr) minmax(0, 5fr); align-items: stretch; } }
   .owner { background: var(--bg); border: 1px solid var(--line); display: flex; flex-direction: column; }
   .owner__photo { aspect-ratio: 4 / 5; }
+  .owner__photo img { width: 100%; height: 100%; object-fit: cover; }
   .owner__body { padding: 18px 20px 22px; display: grid; gap: 4px; }
   .owner h3 { font-weight: 400; font-size: 1.5rem; line-height: 1.2; letter-spacing: -0.03em; }
   .owner-roles { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); align-content: stretch; }

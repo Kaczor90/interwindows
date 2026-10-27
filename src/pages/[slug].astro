@@ -98,7 +98,6 @@ const photoTags = (c.photoTags ?? []) as PhotoTag[];
 <Base title={c.seo.title} description={c.seo.description} updated={c.updated} schema={schema}>
   <PageHero
     title={c.seo.h1}
-    eyebrow={parent ? parent.title : 'Oferta'}
     lead={c.lead}
     breadcrumbs={crumbs}
     image={heroImage}
@@ -149,7 +148,6 @@ const photoTags = (c.photoTags ?? []) as PhotoTag[];
         {c.sections.map((s) => (
           <section class="content-section" id={sectionId(s)}>
             <div class="content-section__head reveal">
-              {s.eyebrow && <span class="eyebrow">{s.eyebrow}</span>}
               <h2>{s.h2}</h2>
             </div>
             <div class="content-section__body rich reveal">
@@ -208,7 +206,6 @@ const photoTags = (c.photoTags ?? []) as PhotoTag[];
     <div class="container">
       <div class="section-head section-head--split">
         <div>
-          <span class="eyebrow">Z naszych montaży</span>
           <h2>Realizacje w Płocku i okolicach</h2>
         </div>
         <a class="link-arrow" href={url('/realizacje/')}>Wszystkie realizacje <Icon name="arrow" class="" /></a>
@@ -219,11 +216,10 @@ const photoTags = (c.photoTags ?? []) as PhotoTag[];
 
   <InstallBlock product={productName} />
 
-  {c.faq && <Faq items={c.faq} title={`Pytania o ${productName}`} eyebrow="FAQ" />}
+  {c.faq && <Faq items={c.faq} title={`Pytania o ${productName}`} />}
 
   {c.cta === 'konfigurator' && (
     <CtaBand
-      eyebrow="Konfigurator okien"
       title="Zaprojektuj okna online. Pomiar i montaż zostaw nam."
       text="Wybierz typ, wymiary, podział, kolor i szyby. Projekt trafi do doradcy, który przygotuje wycenę i umówi bezpłatny pomiar."
       primary={{ label: 'Otwórz konfigurator', href: '/konfigurator/' }}
@@ -235,7 +231,7 @@ const photoTags = (c.photoTags ?? []) as PhotoTag[];
 
   <section class="section section--tight">
     <div class="container">
-      <div class="section-head"><span class="eyebrow">Zobacz też</span><h2>Powiązane strony</h2></div>
+      <div class="section-head"><h2>Powiązane strony</h2></div>
       <div class="related">
         {related.map((r) => (
           <a href={url(r.href)}><Icon name={r.icon} class="icon" />{r.label}</a>

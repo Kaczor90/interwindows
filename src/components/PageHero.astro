@@ -1,7 +1,7 @@
 ---
 // Subpage hero: breadcrumbs (+ BreadcrumbList JSON-LD), the page's only <h1>, lead, optional
 // highlights and a photo (or a placeholder). Buttons go into the default slot.
-//   <PageHero title="Montaż okien w Płocku – zawsze naszą ekipą" eyebrow="Montaż"
+//   <PageHero title="Montaż okien w Płocku – zawsze naszą ekipą"
 //             lead="…" breadcrumbs={[{ name: 'Montaż okien' }]}
 //             image={{ src: '/img/realizacje/x.webp', srcSmall: '/img/realizacje/x-800.webp', alt: '…', width: 1200, height: 1600 }}>
 //     <a class="btn" href="#wycena">Umów pomiar</a>
@@ -17,7 +17,6 @@ import type { Crumb } from '../lib/schema';
 
 interface Props {
   title: string;
-  eyebrow?: string;
   lead?: string;
   breadcrumbs: Crumb[];
   image?: { src: string; alt: string; width?: number; height?: number; srcSmall?: string };
@@ -28,7 +27,6 @@ interface Props {
 }
 const {
   title,
-  eyebrow,
   lead,
   breadcrumbs,
   image,
@@ -44,7 +42,6 @@ const hasSlot = Astro.slots.has('default');
     <Breadcrumbs items={breadcrumbs} />
     <div class:list={[{ 'page-hero__grid': media }]}>
       <div>
-        {eyebrow && <span class="eyebrow">{eyebrow}</span>}
         <h1>{title}</h1>
         {lead && <p class="lead rich" set:html={rich(lead)} />}
         {hasSlot && <div class="page-hero__actions"><slot /></div>}

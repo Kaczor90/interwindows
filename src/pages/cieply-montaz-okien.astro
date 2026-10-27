@@ -103,7 +103,6 @@ const schema = service({ name: seo.h1, serviceType: 'Ciepły montaż okien', pat
 <Base title={seo.title} description={seo.description} updated="2026-10-27" noindex={NOINDEX} schema={schema}>
   <PageHero
     title={seo.h1}
-    eyebrow="Ciepły montaż"
     lead="Ciepły montaż to sposób uszczelnienia styku okna z murem trzema warstwami. Chroni izolację przed wilgocią i ogranicza straty ciepła wokół ramy, czyli tam, gdzie zwykły montaż bywa najsłabszym miejscem okna. Wyjaśniamy, na czym polega, kiedy się opłaca i o co pytać przy wycenie."
     breadcrumbs={[{ name: 'Montaż okien', path: '/montaz-okien/' }, { name: 'Ciepły montaż okien' }]}
     image={{ src: aiSrc(hero), srcSmall: aiSrcSmall(hero), alt: hero.alt, width: hero.width, height: hero.height }}
@@ -122,7 +121,6 @@ const schema = service({ name: seo.h1, serviceType: 'Ciepły montaż okien', pat
       <div class="content">
         <section class="content-section" id="na-czym-polega">
           <div class="content-section__head reveal">
-            <span class="eyebrow">Zasada</span>
             <h2>Na czym polega: trzy warstwy uszczelnienia</h2>
           </div>
           <div class="content-section__body rich reveal">
@@ -142,7 +140,6 @@ const schema = service({ name: seo.h1, serviceType: 'Ciepły montaż okien', pat
 
         <section class="content-section" id="kiedy-warto">
           <div class="content-section__head reveal">
-            <span class="eyebrow">Zastosowanie</span>
             <h2>Kiedy ma największy sens</h2>
           </div>
           <div class="content-section__body rich reveal">
@@ -156,7 +153,6 @@ const schema = service({ name: seo.h1, serviceType: 'Ciepły montaż okien', pat
 
         <section class="content-section" id="materialy">
           <div class="content-section__head reveal">
-            <span class="eyebrow">Materiały</span>
             <h2>Materiały i systemy, których używamy</h2>
           </div>
           <div class="content-section__body rich reveal">
@@ -176,7 +172,6 @@ const schema = service({ name: seo.h1, serviceType: 'Ciepły montaż okien', pat
 
         <section class="content-section" id="przy-wymianie">
           <div class="content-section__head reveal">
-            <span class="eyebrow">Starszy dom</span>
             <h2>Ciepły montaż przy wymianie okien w starszym domu</h2>
           </div>
           <div class="content-section__body rich reveal">
@@ -197,7 +192,6 @@ const schema = service({ name: seo.h1, serviceType: 'Ciepły montaż okien', pat
 
         <section class="content-section" id="w-warstwie-ocieplenia">
           <div class="content-section__head reveal">
-            <span class="eyebrow">Dom energooszczędny</span>
             <h2>Montaż w warstwie ocieplenia</h2>
           </div>
           <div class="content-section__body rich reveal">
@@ -231,7 +225,6 @@ const schema = service({ name: seo.h1, serviceType: 'Ciepły montaż okien', pat
 
         <section class="content-section" id="cena">
           <div class="content-section__head reveal">
-            <span class="eyebrow">Wycena</span>
             <h2>Ile kosztuje ciepły montaż</h2>
           </div>
           <div class="content-section__body rich reveal">
@@ -250,10 +243,9 @@ const schema = service({ name: seo.h1, serviceType: 'Ciepły montaż okien', pat
     </div>
   </section>
 
-  <Faq items={faq} title="Pytania o ciepły montaż" eyebrow="FAQ" />
+  <Faq items={faq} title="Pytania o ciepły montaż" />
 
   <CtaBand
-    eyebrow="Pomiar"
     title="Porozmawiajmy o montażu w Twoim domu"
     text="Na bezpłatnym pomiarze sprawdzimy ściany i ościeża i doradzimy, jaki sposób osadzenia ma sens w Twoim budynku."
     primary={{ label: 'Umów bezpłatny pomiar', href: '#wycena' }}
@@ -264,7 +256,7 @@ const schema = service({ name: seo.h1, serviceType: 'Ciepły montaż okien', pat
 
   <section class="section section--tight">
     <div class="container">
-      <div class="section-head"><span class="eyebrow">Zobacz też</span><h2>Powiązane strony</h2></div>
+      <div class="section-head"><h2>Powiązane strony</h2></div>
       <div class="related">
         {related.map((r) => <a href={url(r.href)}><Icon name={r.icon} class="icon" />{r.label}</a>)}
       </div>

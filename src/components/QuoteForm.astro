@@ -13,7 +13,6 @@ import { categories } from '../data/oferta';
 
 interface Props {
   title?: string;
-  eyebrow?: string;
   lead?: string;
   /** category slug selected in the "Czego dotyczy" field */
   preselect?: string;
@@ -23,7 +22,6 @@ interface Props {
 }
 const {
   title = 'Umów bezpłatny pomiar',
-  eyebrow = 'Pomiar i wycena',
   lead = 'Zostaw numer telefonu i napisz w kilku słowach, czego potrzebujesz. Oddzwonimy, umówimy pomiar u Ciebie i przygotujemy wycenę. Pomiar i wycena są bezpłatne i niezobowiązujące.',
   preselect,
   id = 'wycena',
@@ -37,7 +35,6 @@ const topics = categories.filter((c) => c.slug !== 'okna');
 <section class:list={['section', { 'section--soft': tone === 'soft' }]} id={id}>
   <div class="container quote">
     <div class="quote__aside reveal">
-      <span class="eyebrow">{eyebrow}</span>
       <h2>{title}</h2>
       <p class="lead">{lead}</p>
       <ul class="contact-list">

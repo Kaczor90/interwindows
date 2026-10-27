@@ -28,8 +28,8 @@ Skrypt: `scripts/realizacje-projekty.mjs` (lista obszarów rozmycia na górze pl
 
 Numerów domów nie znaleziono na żadnym użytym zdjęciu.
 
-**Uwaga dla istniejących plików** (nie zmieniałem ich, należą do `scripts/images.mjs`):
-- `public/img/realizacje/zielone-drzwi-lukowe-kamienica-01.webp` (IMG_4279) pokazuje **osobę z profilu** za szybą naświetla. Ten plik jest dziś w sliderze strony głównej. Na stronie realizacji używam rozmytej kopii `public/img/realizacje/projekty/drzwi-drewniane-kamienica-plock-01.webp` (ten sam kadr, 1200×1600). Proponuję podmienić go też na stronie głównej albo dodać rozmycie w `scripts/images.mjs`.
+**Uwaga dla istniejących plików** (należą do `scripts/images.mjs`):
+- `zielone-drzwi-lukowe-kamienica-01.webp` (IMG_4279) pokazywał **osobę z profilu** za szybą naświetla. Załatwione (kontrola jakości 27.10.2026): plik usunięto z `public/img/realizacje/`, `scripts/images.mjs` go już nie tworzy (zbiór `PRIVATE`), w manifeście ma `publish: false`, a slider strony głównej używa rozmytej kopii `projekty/drzwi-drewniane-kamienica-plock-01.webp`.
 - `public/img/realizacje/dostawa-przeszklen-samochod.webp` (IMG_4150): w tle są dwa auta z tablicami. W pliku 1600 px tablice są nieczytelne (ok. 10 px wysokości), więc zostawiłem go bez zmian.
 
 ## Projekty

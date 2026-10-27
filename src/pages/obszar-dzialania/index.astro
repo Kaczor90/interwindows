@@ -65,7 +65,6 @@ const schema = service({
 <Base title={seo.title} description={seo.description} updated="2026-10-27" schema={schema}>
   <PageHero
     title={seo.h1.replace(' – ', ' – ')}
-    eyebrow="Obszar działania"
     lead={`Biuro mamy w Płocku przy ul. Przemysłowej 22. Mierzymy i montujemy okna, drzwi, rolety i bramy w mieście i w okolicznych gminach powiatu płockiego, a także w powiatach gostynińskim i sierpeckim. Wszędzie montuje ta sama, nasza ekipa.`}
     breadcrumbs={[{ name: 'Obszar działania' }]}
     media={false}
@@ -80,7 +79,6 @@ const schema = service({
     <div class="container">
       <div class="section-head section-head--split">
         <div>
-          <span class="eyebrow">Dojazd</span>
           <h2>Mapa i czasy dojazdu z Płocka</h2>
         </div>
         <p class="muted">Orientacyjne czasy przejazdu samochodem z biura przy ul. Przemysłowej 22. Rzeczywisty czas zależy od pory dnia i ruchu.</p>
@@ -112,7 +110,6 @@ const schema = service({
   <section class="section section--soft" id="miejscowosci">
     <div class="container split" style="align-items:start">
       <div class="reveal">
-        <span class="eyebrow">Gminy i miasta</span>
         <h2>Miejscowości, w&nbsp;których pracujemy</h2>
         <p class="lead" style="margin-top:20px">
           W tabeli są miejscowości wokół Płocka z orientacyjną odległością i czasem dojazdu. To nie jest zamknięta lista: jeśli Twoja miejscowość leży w okolicy, zadzwoń i zapytaj.
@@ -148,7 +145,6 @@ const schema = service({
     <div class="container">
       <div class="section-head section-head--split">
         <div>
-          <span class="eyebrow">Poza Płockiem</span>
           <h2>Jak pracujemy poza Płockiem</h2>
         </div>
         <p class="muted">Miejscowość nie zmienia standardu. Do Gąbina czy Sierpca przyjeżdża ta sama ekipa, z tym samym sprzętem, co na Podolszyce.</p>
@@ -178,7 +174,6 @@ const schema = service({
     <div class="container">
       <div class="section-head section-head--split">
         <div>
-          <span class="eyebrow">Z naszych montaży</span>
           <h2>Realizacje w Płocku i okolicach</h2>
         </div>
         <a class="link-arrow" href={url('/realizacje/')}>Wszystkie realizacje <Icon name="arrow" class="" /></a>
@@ -188,7 +183,7 @@ const schema = service({
     </div>
   </section>
 
-  <Faq items={faq} title="Pytania o dojazd i obszar działania" eyebrow="FAQ" />
+  <Faq items={faq} title="Pytania o dojazd i obszar działania" />
 
   <CtaBand
     title="Sprawdź termin pomiaru w Twojej okolicy"
@@ -201,7 +196,7 @@ const schema = service({
 
   <section class="section section--tight">
     <div class="container">
-      <div class="section-head"><span class="eyebrow">Zobacz też</span><h2>Powiązane strony</h2></div>
+      <div class="section-head"><h2>Powiązane strony</h2></div>
       <div class="related">
         <a href={url('/montaz-okien/')}><Icon name="montaz" class="icon" />Montaż okien</a>
         <a href={url('/wymiana-okien/')}><Icon name="demontaz" class="icon" />Wymiana okien</a>
