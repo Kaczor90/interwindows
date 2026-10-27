@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<!--
+  Źródło raportu „Widoczność Inter Windows w internecie” (27.10.2026).
+  Druk do PDF: Chrome/Chromium, format A4, marginesy i stopki pochodzą z reguły @page (bez nagłówków przeglądarki), z tłem.
+  Przykład: chrome --headless --no-pdf-header-footer --print-to-pdf=raport-widocznosci-inter-windows.pdf raport.html
+  Czcionka i logo: katalog assets/. Wykresy to wbudowane SVG. Numery stron w spisie treści są wpisane na stałe – po zmianach treści sprawdzić je w PDF.
+-->
+<title>Widoczność Inter Windows w internecie – raport i plan działań</title>
+<meta name="author" content="Raport dla Inter Windows s.c.">
+<meta name="description" content="Stan widoczności Inter Windows w internecie na 27.10.2026 i plan działań na 90 dni.">
+<style>
+/* Plus Jakarta Sans (variable, OFL) – pliki w assets/ */
+@font-face { font-family: 'PJS'; font-style: normal; font-weight: 200 800;
+  src: url(assets/plus-jakarta-sans-latin-ext-wght-normal.woff2) format('woff2');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+@font-face { font-family: 'PJS'; font-style: normal; font-weight: 200 800;
+  src: url(assets/plus-jakarta-sans-latin-wght-normal.woff2) format('woff2');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+
+:root {
+  --ink: #141824; --ink2: #3c4254; --muted: #6b7183; --navy: #1e3466; --navy-l: #dfe4ef; --navy-m: #b7c0d6;
+  --accent: #9b2c33; --panel: #f0f2f5; --panel2: #f7f8fa; --rule: #d8dce4;
+  --amber: #a5650f; --green: #2f6b4f;
+}
+@page { size: A4; margin: 20mm 16mm 17mm 16mm;
+  @top-left { content: "Widoczność Inter Windows w internecie"; font-family: PJS, sans-serif; font-size: 7.2pt; font-weight: 500; color: #6b7183; vertical-align: bottom; padding-bottom: 4.5mm; letter-spacing: .02em; }
+  @top-right { content: "Raport i plan działań · 27.10.2026"; font-family: PJS, sans-serif; font-size: 7.2pt; color: #6b7183; vertical-align: bottom; padding-bottom: 4.5mm; }
+  @bottom-left { content: "Inter Windows s.c. · Płock"; font-family: PJS, sans-serif; font-size: 7.2pt; color: #6b7183; vertical-align: top; padding-top: 4mm; }
+  @bottom-right { content: counter(page) " / " counter(pages); font-family: PJS, sans-serif; font-size: 7.6pt; font-weight: 600; color: #141824; vertical-align: top; padding-top: 4mm; }
+}
+@page cover { margin: 0;
+  @top-left { content: none; } @top-right { content: none; } @bottom-left { content: none; } @bottom-right { content: none; } }
+
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin: 0; font-family: PJS, 'Segoe UI', Arial, sans-serif; font-size: 8.75pt; line-height: 1.45; color: var(--ink); background: #fff; font-variant-numeric: lining-nums; font-feature-settings: "calt" 0; }
+p { margin: 0 0 2.2mm; }
+strong, b { font-weight: 650; }
+.muted { color: var(--muted); }
+.small { font-size: 7.6pt; }
+.nw { white-space: nowrap; }
+
+/* ---------- cover ---------- */
+.cover { page: cover; width: 210mm; height: 297mm; position: relative; overflow: hidden; break-after: page; }
+.cover .logo { position: absolute; left: 22mm; top: 22mm; width: 30mm; }
+.cover .lines { position: absolute; inset: 0; }
+.cover .lines i { position: absolute; top: 0; bottom: 0; width: 0; border-left: .5pt solid #e6e9ef; }
+.cover .main { position: absolute; left: 22mm; right: 22mm; top: 96mm; }
+.cover .subt { font-size: 15pt; font-weight: 500; color: var(--ink); margin: 0 0 4mm; letter-spacing: -.01em; }
+.cover h1 { font-size: 37pt; font-weight: 400; letter-spacing: -.035em; line-height: 1.02; margin: 5mm 0 7mm; }
+.cover h1 em { font-style: normal; color: var(--navy); }
+.cover .sub { font-size: 12pt; line-height: 1.45; color: var(--ink2); max-width: 140mm; }
+.cover .foot { position: absolute; left: 0; right: 0; bottom: 0; height: 74mm; background: var(--panel); padding: 0 22mm; }
+.cover .foot .grid { display: grid; grid-template-columns: 1.5fr 1fr 1.2fr; gap: 8mm; border-top: 2px solid var(--ink); padding-top: 5mm; margin-top: 16mm; }
+.cover .foot .k { font-size: 7pt; letter-spacing: .14em; font-weight: 600; color: var(--muted); margin-bottom: 2mm; }
+.cover .foot .v { font-size: 10.5pt; line-height: 1.4; }
+.cover .foot .v .muted { font-size: 8.5pt; }
+
+/* ---------- typography ---------- */
+.eyebrow { display: flex; align-items: center; gap: 2mm; font-size: 7.2pt; letter-spacing: .14em; font-weight: 600; color: var(--navy); margin: 0; }
+.eyebrow::before { content: ""; width: 5.5px; height: 5.5px; border: 1.3px solid var(--accent); border-radius: 50%; flex: none; }
+h1.ch { font-size: 23pt; font-weight: 400; letter-spacing: -.03em; line-height: 1.06; margin: 2mm 0 2.6mm; }
+h1.ch em { font-style: normal; color: var(--navy); }
+.lead { font-size: 9.6pt; line-height: 1.48; color: var(--ink2); margin-bottom: 3.4mm; }
+h2.sec { font-size: 11pt; font-weight: 650; letter-spacing: -.01em; margin: 3.4mm 0 1.8mm; padding-top: 2mm; border-top: .6pt solid var(--rule); display: flex; align-items: baseline; gap: 2.5mm; break-after: avoid; }
+h2.sec .k { font-size: 6.8pt; font-weight: 600; letter-spacing: .14em; color: var(--muted); }
+h3 { font-size: 9.2pt; font-weight: 650; margin: 3.5mm 0 1.6mm; break-after: avoid; }
+section.chapter { break-before: page; }
+.chead { break-inside: avoid; break-after: avoid; }
+section.flow { margin-top: 6mm; break-before: auto; }
+
+/* verdict row */
+.verdict { display: flex; align-items: center; gap: 3mm; margin: 0 0 3.4mm; font-size: 9.2pt; color: var(--ink2); }
+.verdict .st { flex: none; }
+
+/* status */
+.st { display: inline-flex; align-items: center; gap: 1.4mm; font-weight: 650; font-size: 7.2pt; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+.st svg { width: 10px; height: 10px; flex: none; }
+.st.pilne { color: var(--accent); } .st.popr { color: var(--amber); } .st.dobrze { color: var(--green); }
+
+/* tiles */
+.tiles { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 2px solid var(--ink); margin: 0 0 1mm; }
+.tiles.t3 { grid-template-columns: repeat(3, 1fr); }
+.tiles.t6 { grid-template-columns: repeat(3, 1fr); }
+.tile { padding: 2mm 3mm 2mm 3mm; border-left: .6pt solid var(--rule); }
+.tile:first-child, .tiles.t6 .tile:nth-child(4) { border-left: 0; padding-left: 0; }
+.tiles.t6 .tile:nth-child(n+4) { border-top: .6pt solid var(--rule); }
+.tile .n { font-size: 16pt; font-weight: 450; letter-spacing: -.03em; line-height: 1.1; color: var(--navy); }
+.tile .n small { font-size: 10pt; color: var(--muted); letter-spacing: 0; font-weight: 500; }
+.tile .l { font-size: 7.4pt; color: var(--muted); line-height: 1.3; margin-top: .8mm; }
+
+/* lists */
+ul.facts { list-style: none; padding: 0; margin: 0 0 2mm; }
+ul.facts li { position: relative; padding-left: 4mm; margin-bottom: 1.25mm; }
+ul.facts li::before { content: ""; position: absolute; left: .4mm; top: 1.75mm; width: 4px; height: 4px; background: var(--navy); }
+ol.issues { list-style: none; counter-reset: is; padding: 0; margin: 0 0 2mm; }
+ol.issues li { counter-increment: is; position: relative; padding-left: 7mm; margin-bottom: 1.45mm; break-inside: avoid; }
+ol.issues li::before { content: counter(is); position: absolute; left: 0; top: .2mm; width: 4.6mm; height: 4.6mm; border-radius: 50%; background: var(--navy); color: #fff; font-size: 6.8pt; font-weight: 700; text-align: center; line-height: 4.6mm; }
+ol.issues li b { font-weight: 650; }
+ol.plain { padding-left: 4.5mm; margin: 0; }
+ol.plain li { margin-bottom: 1.4mm; padding-left: .8mm; }
+ol.plain li::marker { font-weight: 700; color: var(--navy); }
+
+/* tables */
+table.t { width: 100%; border-collapse: collapse; font-size: 7.6pt; line-height: 1.36; margin: 0 0 2mm; }
+table.t th { text-align: left; vertical-align: bottom; font-weight: 650; color: var(--muted); font-size: 6.5pt; letter-spacing: .07em; text-transform: uppercase; border-bottom: 1.2pt solid var(--ink); padding: 0 2.2mm 1.3mm 0; }
+table.t td { border-bottom: .6pt solid var(--rule); padding: 1.2mm 2.2mm 1.2mm 0; vertical-align: top; }
+table.t tr { break-inside: avoid; }
+table.t thead { display: table-header-group; }
+table.t td.c, table.t th.c { text-align: center; }
+table.t td.r, table.t th.r { text-align: right; }
+table.t td b { font-weight: 650; }
+table.t tr.me td { background: var(--panel); }
+table.t tr.target td { background: var(--panel); border-top: 1.2pt solid var(--ink); border-bottom: 1.2pt solid var(--ink); font-weight: 600; }
+table.t td.k { font-weight: 600; }
+.diff { font-weight: 700; color: var(--accent); text-decoration: underline; text-decoration-thickness: 1.2px; text-underline-offset: 1.6px; }
+
+/* priority */
+.p { display: inline-block; min-width: 6.2mm; text-align: center; font-size: 6.6pt; font-weight: 700; letter-spacing: .04em; border-radius: 2px; padding: .25mm 1mm; }
+.p1 { background: var(--navy); color: #fff; }
+.p2 { background: var(--navy-l); color: var(--navy); }
+.p3 { border: .7pt solid var(--navy-m); color: var(--muted); padding: 0 .8mm; }
+
+/* boxes & layout */
+.box { background: var(--panel); padding: 3.6mm 4.4mm; margin: 0 0 3mm; break-inside: avoid; }
+.box h3:first-child, .box p:first-child { margin-top: 0; }
+.box > :last-child { margin-bottom: 0; }
+.box.line { background: none; border: .6pt solid var(--rule); }
+.cols2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; }
+.cols2 > * { min-width: 0; }
+.sumcols ol.issues li { font-size: 8.3pt; margin-bottom: 1.2mm; }
+.cols-62 { display: grid; grid-template-columns: 1.55fr 1fr; gap: 6mm; }
+.avoid { break-inside: avoid; }
+figure { margin: 1mm 0 3mm; break-inside: avoid; }
+figure .ft { font-size: 9pt; font-weight: 650; margin-bottom: 1mm; }
+figure .fs { font-size: 7.5pt; color: var(--muted); margin-bottom: 2mm; }
+figure svg { width: 100%; height: auto; display: block; }
+figcaption { font-size: 7.2pt; color: var(--muted); margin-top: 1.4mm; line-height: 1.35; }
+.tag { display: inline-block; font-size: 6.3pt; font-weight: 650; letter-spacing: .06em; text-transform: uppercase; color: var(--navy); border: .6pt solid var(--navy-m); border-radius: 2px; padding: 0 1mm; margin-right: 1mm; vertical-align: .3mm; white-space: nowrap; }
+.flag { font-size: 6.5pt; font-weight: 700; letter-spacing: .05em; color: var(--accent); white-space: nowrap; }
+
+/* rank strip & demand */
+svg.strip { width: 46mm; height: auto; vertical-align: middle; }
+.dem { display: inline-flex; gap: 1px; vertical-align: -.3mm; margin-right: 1.4mm; }
+.dem i { width: 2.4mm; height: 2.4mm; background: #e6e9ef; display: block; }
+.dem i.on { background: var(--navy); }
+.dem i.half { background: var(--navy-m); }
+
+/* scorecard */
+table.score td { padding-top: 1.7mm; padding-bottom: 1.7mm; }
+table.score td.ch { font-weight: 650; font-size: 8.3pt; width: 38mm; }
+table.score td.s { width: 27mm; }
+table.score td.v { font-size: 8pt; }
+table.score td.pg { width: 8mm; text-align: right; color: var(--muted); }
+
+/* toc */
+.toc { list-style: none; padding: 0; margin: 2mm 0 6mm; border-top: 2px solid var(--ink); }
+.toc li { display: grid; grid-template-columns: 9mm 1fr 12mm; align-items: baseline; padding: 1.55mm 0; border-bottom: .6pt solid var(--rule); font-size: 9.6pt; }
+.toc li .no { color: var(--muted); font-size: 8pt; font-weight: 600; }
+.toc li .pg { text-align: right; font-weight: 650; }
+.toc li .d { display: block; font-size: 7.6pt; color: var(--muted); margin-top: .4mm; }
+
+/* process flow */
+.flow5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.6mm; margin: 1mm 0 3mm; }
+.flow5 .stp { background: var(--panel); padding: 2.6mm 2.6mm 2.8mm; position: relative; }
+.flow5 .stp .no { font-size: 6.6pt; font-weight: 700; letter-spacing: .12em; color: var(--navy); }
+.flow5 .stp .tt { font-weight: 650; font-size: 8.2pt; margin: .8mm 0 1mm; line-height: 1.25; }
+.flow5 .stp .tx { font-size: 7.3pt; color: var(--ink2); line-height: 1.33; }
+.flow5 .stp .who { font-size: 6.8pt; color: var(--muted); margin-top: 1.2mm; }
+
+/* gantt */
+table.gantt { width: 100%; border-collapse: separate; border-spacing: 1.2px 1.8px; font-size: 7.4pt; margin: 0 0 2mm; }
+table.gantt th { font-size: 6.4pt; font-weight: 650; color: var(--muted); text-align: center; padding-bottom: .6mm; }
+table.gantt th.l { text-align: left; }
+table.gantt td.l { padding-right: 2mm; white-space: nowrap; color: var(--ink2); }
+table.gantt td.w { width: 8.3mm; height: 3.5mm; background: var(--panel2); }
+table.gantt td.on { background: var(--navy); }
+table.gantt td.lt { background: var(--navy-m); }
+table.gantt td.ms { background: var(--panel2); text-align: center; }
+table.gantt td.ms svg { width: 7px; height: 7px; display: block; margin: 0 auto; }
+table.gantt td.note { font-size: 7pt; color: var(--muted); background: repeating-linear-gradient(135deg, var(--panel2) 0 4px, #e6e9ef 4px 5px); padding-left: 2mm; }
+.legend { display: flex; gap: 5mm; font-size: 7.2pt; color: var(--ink2); margin: 0 0 3mm; align-items: center; flex-wrap: wrap; }
+.legend .sw { display: inline-block; width: 7mm; height: 3mm; vertical-align: -.4mm; margin-right: 1.3mm; }
+
+/* plan table */
+table.plan { table-layout: fixed; }
+table.plan td.wk { width: 9mm; font-weight: 700; color: var(--navy); font-size: 9pt; }
+table.plan td.dt { width: 19mm; color: var(--muted); white-space: nowrap; }
+table.plan td.who { width: 33mm; color: var(--ink2); }
+table.plan td.tm { color: var(--muted); }
+table.plan .task { display: grid; grid-template-columns: 17.5mm 1fr; column-gap: 1.6mm; margin-bottom: .9mm; }
+table.plan .task:last-child { margin-bottom: 0; }
+table.plan .task .tag { min-width: 0; width: 17.5mm; text-align: center; align-self: start; margin: .2mm 0 0; }
+table.plan tr.launch td { background: var(--panel); }
+
+/* review template */
+table.blank td { height: 5.1mm; }
+table.blank td.fill { border-left: .6pt solid var(--rule); }
+.lines3 { border-top: .6pt solid var(--rule); }
+.lines3 div { height: 7mm; border-bottom: .6pt solid var(--rule); font-size: 7.4pt; color: var(--muted); padding-top: 1.6mm; }
+
+/* templates (appendix) */
+.tpl { border-left: 2px solid var(--navy); padding: 1mm 0 1mm 3.6mm; margin: 0 0 2.6mm; break-inside: avoid; font-size: 8pt; line-height: 1.42; }
+.tpl .h { font-size: 6.8pt; font-weight: 700; letter-spacing: .1em; color: var(--muted); margin-bottom: 1mm; }
+.tpl p { margin-bottom: 1.4mm; }
+.ph { color: var(--navy); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- ======================= OKŁADKA ======================= -->
+<div class="cover">
+  <div class="lines"><i style="left:14mm"></i><i style="left:196mm"></i></div>
+  <img class="logo" src="assets/logo.png" alt="Inter Windows">
+  <div class="main">
+    <p class="eyebrow">RAPORT · PŁOCK, 27.10.2026</p>
+    <h1>Widoczność Inter Windows<br><em>w internecie</em></h1>
+    <p class="subt">Raport i plan działań</p>
+    <p class="sub">Strona internetowa, wizytówka Google, wyniki wyszukiwania, Facebook, Instagram, dane firmy i opinie. Co jest dziś, co przeszkadza klientom w znalezieniu firmy i co zrobić w ciągu 90 dni.</p>
+  </div>
+  <div class="foot">
+    <div class="grid">
+      <div><div class="k">PRZYGOTOWANO DLA</div><div class="v">Bartosz Bezdziek, Paweł Majchrzak<br><span class="muted">Inter Windows s.c. · ul. Przemysłowa 22, Płock</span></div></div>
+      <div><div class="k">DATA</div><div class="v">27.10.2026<br><span class="muted">stan na dzień raportu</span></div></div>
+      <div><div class="k">PLAN</div><div class="v">2.11.2026 – 31.01.2027<br><span class="muted">13 tygodni, przegląd co miesiąc</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= SPIS TREŚCI ======================= -->
+<section>
+  <p class="eyebrow">SPIS TREŚCI</p>
+  <h1 class="ch">Co jest w raporcie</h1>
+  <ol class="toc">
+    <li><span class="no">–</span><span>Podsumowanie</span><span class="pg">3</span></li>
+    <li><span class="no">1</span><span>Strona internetowa</span><span class="pg">4</span></li>
+    <li><span class="no">2</span><span>Wizytówka Google</span><span class="pg">5</span></li>
+    <li><span class="no">3</span><span>Wyniki wyszukiwania Google</span><span class="pg">7</span></li>
+    <li><span class="no">4</span><span>Facebook</span><span class="pg">8</span></li>
+    <li><span class="no">5</span><span>Instagram</span><span class="pg">10</span></li>
+    <li><span class="no">6</span><span>Spójność danych firmy (NAP)</span><span class="pg">11</span></li>
+    <li><span class="no">7</span><span>Opinie</span><span class="pg">12</span></li>
+    <li><span class="no">8</span><span>Plan działań na 90 dni</span><span class="pg">14</span></li>
+    <li><span class="no">9</span><span>Cele i mierniki</span><span class="pg">16</span></li>
+    <li><span class="no">10</span><span>Decyzje do podjęcia</span><span class="pg">17</span></li>
+    <li><span class="no">Z</span><span>Załącznik: gotowe teksty</span><span class="pg">18</span></li>
+  </ol>
+
+  <div class="cols2">
+    <div>
+      <h3>Jak czytać oceny</h3>
+      <table class="t">
+        <tbody>
+          <tr><td style="width:27mm"><span class="st pilne"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="6" fill="#9b2c33"/><rect x="5.2" y="2.4" width="1.6" height="4.8" rx=".8" fill="#fff"/><circle cx="6" cy="9.25" r=".95" fill="#fff"/></svg>pilne</span></td><td>Traci przez to klientów już dziś. Zacząć w pierwszych dwóch tygodniach.</td></tr>
+          <tr><td><span class="st popr"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5.2" fill="none" stroke="#a5650f" stroke-width="1.6"/><path d="M6 .8 A5.2 5.2 0 0 1 6 11.2 Z" fill="#a5650f"/></svg>do poprawy</span></td><td>Działa słabo albo nieregularnie. Poprawić w ciągu 90 dni.</td></tr>
+          <tr><td><span class="st dobrze"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5.2" fill="none" stroke="#2f6b4f" stroke-width="1.6"/><path d="M3.4 6.2 5.2 8 8.7 4.3" fill="none" stroke="#2f6b4f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>dobrze</span></td><td>Działa. Wystarczy utrzymać.</td></tr>
+        </tbody>
+      </table>
+      <h3>Priorytety działań</h3>
+      <table class="t">
+        <tbody>
+          <tr><td style="width:12mm"><span class="p p1">P1</span></td><td>Największy wpływ na telefony od klientów. Tygodnie <span class="nw">1–4</span>.</td></tr>
+          <tr><td><span class="p p2">P2</span></td><td>Ważne, w ciągu 90 dni.</td></tr>
+          <tr><td><span class="p p3">P3</span></td><td>Później albo po decyzji.</td></tr>
+        </tbody>
+      </table>
+      <p class="small muted">Kto: <b>Paweł</b>, <b>Bartosz</b>, <b>biuro</b> (osoba od rejestru i wiadomości), <b>montażyści</b> (brygadziści ekip), <b>wykonawca strony</b>. Podział ról to założenie do potwierdzenia (rozdział 10).</p>
+    </div>
+    <div>
+      <h3>Skąd są dane</h3>
+      <ul class="facts small">
+        <li>Wizytówki i Mapy Google: 27.10.2026, bez logowania, lokalizacja Płock.</li>
+        <li>Facebook: przegląd profilu i wszystkich 20 postów, 27.10.2026.</li>
+        <li>Instagram: widok publiczny bez logowania, 27.10.2026.</li>
+        <li>Obecna strona: kod z 24.08.2026, rejestr VAT z 27.10.2026.</li>
+        <li>Popyt na frazy: <b>szacunek</b> na podstawie podpowiedzi Google, nie dane z płatnych narzędzi.</li>
+        <li>Szczegóły są w dokumentach projektu: plan SEO, plan wizytówki z materiałami, analiza Facebooka i konkurencji.</li>
+      </ul>
+      <h3>Cztery pojęcia</h3>
+      <table class="t">
+        <tbody>
+          <tr><td class="k" style="width:22mm"><span class="nw">3-pak</span></td><td>Mapa z trzema firmami nad wynikami Google, np. po wpisaniu „okna Płock”. Stąd jest najwięcej telefonów.</td></tr>
+          <tr><td class="k">NAP</td><td>Nazwa, adres, telefon. Muszą być zapisane identycznie wszędzie.</td></tr>
+          <tr><td class="k">UTM</td><td>Dopisek w linku, dzięki któremu statystyki strony pokazują, skąd przyszedł klient.</td></tr>
+          <tr><td class="k">Search Console</td><td>Bezpłatne narzędzie Google: po jakich frazach strona się pokazuje i ile osób klika.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= PODSUMOWANIE ======================= -->
+<section class="chapter">
+  <div class="chead"><p class="eyebrow">PODSUMOWANIE</p>
+  <h1 class="ch">Dobre podstawy, <em>słaba widoczność</em></h1></div>
+  <p class="lead">Firma ma ocenę 5,0 w Google, setki zdjęć z realizacji i wyróżnik, którego konkurenci nie udowadniają: montaż wyłącznie własnymi ekipami. W internecie tego nie widać. Kto wpisuje „okna Płock”, znajduje Was w Mapach na 13. miejscu, a przy drzwiach, roletach i bramach nie znajduje wcale.</p>
+
+  <table class="t score">
+    <thead><tr><th>Kanał</th><th>Ocena</th><th>Werdykt</th><th class="r">Str.</th></tr></thead>
+    <tbody>
+      <tr><td class="ch">Strona internetowa</td><td class="s"><span class="st pilne"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="6" fill="#9b2c33"/><rect x="5.2" y="2.4" width="1.6" height="4.8" rx=".8" fill="#fff"/><circle cx="6" cy="9.25" r=".95" fill="#fff"/></svg>pilne</span></td><td class="v">Jedna strona bez podstron, formularza i polityki prywatności. Nowa strona w budowie usuwa większość problemów.</td><td class="pg">4</td></tr>
+      <tr><td class="ch">Wizytówka Google</td><td class="s"><span class="st pilne"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="6" fill="#9b2c33"/><rect x="5.2" y="2.4" width="1.6" height="4.8" rx=".8" fill="#fff"/><circle cx="6" cy="9.25" r=".95" fill="#fff"/></svg>pilne</span></td><td class="v">Ocena 5,0, ale brak kategorii dla drzwi, bram i rolet, stary opis, 26 zdjęć, ostatni post 12.08.</td><td class="pg">5</td></tr>
+      <tr><td class="ch">Wyniki wyszukiwania Google</td><td class="s"><span class="st popr"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5.2" fill="none" stroke="#a5650f" stroke-width="1.6"/><path d="M6 .8 A5.2 5.2 0 0 1 6 11.2 Z" fill="#a5650f"/></svg>do poprawy</span></td><td class="v">Poza <span class="nw">3-pakiem</span> dla sześciu głównych fraz. Poprawią się po naprawie wizytówki, opinii i po starcie nowej strony.</td><td class="pg">7</td></tr>
+      <tr><td class="ch">Facebook</td><td class="s"><span class="st popr"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5.2" fill="none" stroke="#a5650f" stroke-width="1.6"/><path d="M6 .8 A5.2 5.2 0 0 1 6 11.2 Z" fill="#a5650f"/></svg>do poprawy</span></td><td class="v">20 postów od stycznia do sierpnia, dwie długie przerwy, 0 komentarzy, ani jednego zdjęcia ekipy. Na okładce inny adres.</td><td class="pg">8</td></tr>
+      <tr><td class="ch">Instagram</td><td class="s"><span class="st popr"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5.2" fill="none" stroke="#a5650f" stroke-width="1.6"/><path d="M6 .8 A5.2 5.2 0 0 1 6 11.2 Z" fill="#a5650f"/></svg>do poprawy</span></td><td class="v">89 obserwujących, 26 postów, ostatni 13.08.2026. Opis profilu nie mówi o własnych ekipach.</td><td class="pg">10</td></tr>
+      <tr><td class="ch">Spójność danych firmy (NAP)</td><td class="s"><span class="st pilne"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="6" fill="#9b2c33"/><rect x="5.2" y="2.4" width="1.6" height="4.8" rx=".8" fill="#fff"/><circle cx="6" cy="9.25" r=".95" fill="#fff"/></svg>pilne</span></td><td class="v">Trzy kody pocztowe (<span class="nw">09-400</span>, <span class="nw">09-401</span>, <span class="nw">09-410</span>), dwa adresy, kilka wersji nazwy i dwa adresy <span class="nw">e-mail</span>.</td><td class="pg">11</td></tr>
+      <tr><td class="ch">Opinie</td><td class="s"><span class="st pilne"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="6" fill="#9b2c33"/><rect x="5.2" y="2.4" width="1.6" height="4.8" rx=".8" fill="#fff"/><circle cx="6" cy="9.25" r=".95" fill="#fff"/></svg>pilne</span></td><td class="v">9 opinii w Google, mniej niż jedna miesięcznie, bez odpowiedzi. Firmy z czołówki mają od 23 do 85.</td><td class="pg">12</td></tr>
+    </tbody>
+  </table>
+
+  <div class="cols2 sumcols" style="margin-top:3.4mm">
+    <div>
+      <h3 style="margin-top:0">Pięć najważniejszych problemów</h3>
+      <ol class="issues">
+        <li><b>Brak w Mapach przy drzwiach, roletach i bramach.</b> Wizytówka nie ma tych kategorii, więc Google jej nie pokazuje.</li>
+        <li><b>Za mało opinii.</b> 9 wobec <span class="nw">23–85</span> u konkurentów z czołówki. Opinie najmocniej decydują o kolejności w Mapach.</li>
+        <li><b>Strona ma jedną podstronę.</b> Na „okna PCV Płock” czy „bramy garażowe Płock” wygrywają serwisy typu Oferteo i kb.pl.</li>
+        <li><b>Różne dane firmy w różnych miejscach.</b> Google mniej ufa takiej firmie, a klient może trafić pod zły adres.</li>
+        <li><b>Własnych ekip nie widać.</b> Na 101 zdjęciach na Facebooku nie ma ani jednego montażysty. Opis wizytówki i obecna strona o nich nie mówią.</li>
+      </ol>
+    </div>
+    <div>
+      <h3 style="margin-top:0">Pięć najważniejszych działań</h3>
+      <ol class="issues">
+        <li><b>Tydzień 1: porządek w wizytówce.</b> 3 kategorie, nowy opis, usługi, produkty, <span class="nw">30–40</span> zdjęć, odpowiedzi na 9 opinii. Paweł, <span class="nw">3–4</span> h.</li>
+        <li><b>Od tygodnia 2: prośba o opinię po każdym montażu</b> (karta z kodem QR, SMS wieczorem, jedno przypomnienie) i kampania do dawnych klientów w 4 partiach.</li>
+        <li><b>Tygodnie <span class="nw">1–3</span>: jeden wzór danych firmy</b> i poprawki w Google, na Facebooku, Instagramie i w katalogach.</li>
+        <li><b>Dane do nowej strony:</b> ekipy, gwarancja na montaż, 6 realizacji z miejscowościami. Bez nich strona nie wystartuje z dowodami.</li>
+        <li><b>Co tydzień: zdjęcia od ekip i stały rytm postów.</b> Google: 1 post. Facebook i Instagram: 2 posty i 1 rolka.</li>
+      </ol>
+    </div>
+  </div>
+
+  <h3>Cele na 90 dni (do 31.01.2027)</h3>
+  <div class="tiles t6">
+    <div class="tile"><div class="n">9 <small>›</small> 35</div><div class="l">opinii w Google</div></div>
+    <div class="tile"><div class="n">0% <small>›</small> 100%</div><div class="l">odpowiedzi na opinie w ciągu 48 h</div></div>
+    <div class="tile"><div class="n">26 <small>›</small> 100</div><div class="l">zdjęć w wizytówce</div></div>
+    <div class="tile"><div class="n">13. <small>›</small> top 5</div><div class="l">„okna Płock” w Mapach</div></div>
+    <div class="tile"><div class="n">16. <small>›</small> top <span class="nw">3–5</span></div><div class="l">„montaż okien Płock” w Mapach</div></div>
+    <div class="tile"><div class="n">brak <small>›</small> top 10</div><div class="l">drzwi, bramy i rolety w Mapach</div></div>
+  </div>
+  <div class="box" style="margin-top:3mm">
+    <p class="small"><b>Co już działa:</b> ocena 5,0 bez słabej opinii, zweryfikowana wizytówka bez duplikatów, ok. 430 zdjęć z realizacji, rolki na Facebooku z zasięgiem <span class="nw">2–3</span> razy większym niż liczba obserwujących. W Płocku nikt nie ma działającego konfiguratora i nikt nie pokazuje swoich ekip. To miejsce jest wolne.</p>
+  </div>
+</section>
+
+<!-- ======================= 1. STRONA ======================= -->
+<section class="chapter">
+  <div class="chead"><p class="eyebrow">ROZDZIAŁ 1</p>
+  <h1 class="ch">Strona internetowa</h1>
+  <div class="verdict"><span class="st pilne"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="6" fill="#9b2c33"/><rect x="5.2" y="2.4" width="1.6" height="4.8" rx=".8" fill="#fff"/><circle cx="6" cy="9.25" r=".95" fill="#fff"/></svg>pilne</span><span>Obecna strona nie ma czego pokazać w Google i nie pozwala zostawić zapytania. Nowa strona w budowie to rozwiązuje.</span></div></div>
+  <div class="tiles">
+    <div class="tile"><div class="n">1</div><div class="l">strona, bez podstron oferty</div></div>
+    <div class="tile"><div class="n">0</div><div class="l">formularzy kontaktowych</div></div>
+    <div class="tile"><div class="n">2</div><div class="l">adresy tej samej strony (z www i bez)</div></div>
+    <div class="tile"><div class="n">0</div><div class="l">zdjęć ekipy i słów „własne ekipy”</div></div>
+  </div>
+
+  <h2 class="sec"><span class="k">A</span>Stan obecny</h2>
+  <ul class="facts">
+    <li>interwindows.pl to jedna długa strona z sekcjami O nas, Oferta, Realizacje, Referencje i Kontakt. Okna, drzwi, rolety i bramy nie mają osobnych podstron.</li>
+    <li>Tytuł strony zawiera „Płock”, więc Google już łączy markę z miastem. To dobry punkt wyjścia.</li>
+    <li>Strona działa pod dwoma adresami: z „www” i bez. Brak mapy strony dla Google (sitemap), pliku robots.txt i danych strukturalnych.</li>
+    <li>Nie ma formularza kontaktowego, polityki prywatności ani banera cookies. Telefon i adres są częściowo na obrazku, <span class="nw">e-mail</span> zapisano jako „biuro(małpa)interwindows.pl”, a ikona WhatsApp uruchamia zwykłe połączenie.</li>
+    <li>„Galeria realizacji” to link do albumu Google Photos: 430 zdjęć z okresu 09.12.<span class="nw">2024–06.03.2026</span>, bez miejscowości i opisów.</li>
+    <li>Zdjęcia w sliderze i w kartach oferty pochodzą od DAKO (znak „© DAKO”). Te same ma każdy dealer.</li>
+    <li>Teksty mówią o cenie („bardzo przystępne ceny”, „bez przepłacania”). O własnych ekipach nie ma ani jednego zdania wprost. Liczby 500+ klientów i 650+ projektów nie mają wyjaśnienia, czego dotyczą.</li>
+  </ul>
+
+  <h2 class="sec"><span class="k">B</span>Co jest do poprawienia</h2>
+  <ol class="issues">
+    <li><b>Brak podstron.</b> Google pokazuje stronę, która odpowiada na konkretne pytanie. Na „wymiana okien Płock” czy „bramy garażowe Płock” wygrywają dziś cenniki i agregatory, bo lokalne firmy takich stron nie mają.</li>
+    <li><b>Klient nie może zostawić zapytania.</b> Kto szuka okien wieczorem, musi zadzwonić następnego dnia. Część osób tego nie zrobi.</li>
+    <li><b>Brak polityki prywatności.</b> Jest wymagana przy formularzu i przy osadzonej mapie Google (RODO).</li>
+    <li><b>Dane kontaktowe na obrazku.</b> Google ich nie odczyta, a w telefonie nie da się ich kliknąć, żeby zadzwonić.</li>
+    <li><b>Dwa adresy tej samej strony.</b> Google widzi dwie kopie i dzieli między nie siłę strony.</li>
+    <li><b>Brak dowodów na „premium” i „własne ekipy”.</b> Płocka Fabryka Okien pisze to samo („Własny montaż – bez podwykonawców”). Wygra ten, kto pokaże ludzi, gwarancję na montaż i realizacje z nazwą miejscowości.</li>
+    <li><b>Brak pomiaru.</b> Nie wiadomo, ile osób wchodzi na stronę i ile z nich dzwoni. Dostęp do Google Search Console i Google Analytics nie jest potwierdzony.</li>
+  </ol>
+
+  <div class="box">
+    <h3>Rozwiązanie: nowa strona (w budowie, jeszcze nieopublikowana)</h3>
+    <div class="cols2">
+      <ul class="facts small">
+        <li><b>Strona główna</b> z sekcją „Własne ekipy montażowe” i pięcioma krokami montażu: pomiar, przygotowanie, montaż naszą ekipą, odbiór z protokołem, gwarancja.</li>
+        <li><b>10 stron oferty:</b> okna (przegląd), okna PCV, aluminiowe, drewniane, drzwi tarasowe, zewnętrzne, wewnętrzne, rolety zewnętrzne, żaluzje fasadowe, bramy garażowe.</li>
+        <li><b>/montaz-okien/</b> i <b>/wymiana-okien/</b>: strony wyróżnika.</li>
+      </ul>
+      <ul class="facts small">
+        <li><b>/obszar-dzialania/</b> (Płock i gminy do ok. 50 km), <b>/realizacje/</b> z nazwą miejscowości, <b>/poradnik/</b>, <b>/o-firmie/</b>, <b>/kontakt/</b> z formularzem.</li>
+        <li><b>/konfigurator/</b>: żaden konkurent w Płocku nie ma działającego konfiguratora.</li>
+        <li>Jeden adres https://www.interwindows.pl, przekierowania ze starych adresów, mapa strony, dane kontaktowe tekstem, polityka prywatności.</li>
+      </ul>
+    </div>
+    <p class="small" style="margin-top:1mm"><b>Co blokuje start z pełnymi dowodami:</b> imiona i zdjęcia montażystów (dziś 4 karty zastępcze), okres gwarancji na montaż, potwierdzenie odbioru z protokołem, lista realizacji z miejscowościami. Część zdjęć to ilustracje poglądowe do podmiany.</p>
+  </div>
+
+  <h2 class="sec"><span class="k">C</span>Działania</h2>
+  <table class="t act">
+    <thead><tr><th style="width:35%">Działanie</th><th style="width:25%">Efekt</th><th>Kto</th><th>Czas</th><th class="c">Prior.</th><th>Termin</th></tr></thead>
+    <tbody>
+      <tr><td>Ustalić gwarancję na montaż (ile lat, warunki) i potwierdzić kroki: odbiór z protokołem, wywóz starej stolarki</td><td>Konkretna obietnica zamiast ogólnika</td><td>Bartosz, Paweł</td><td>1 h</td><td class="c"><span class="p p1">P1</span></td><td>tydz. 1</td></tr>
+      <tr><td>Dane o ekipach: liczba ekip, imiona, role, staż, portrety (z pisemną zgodą)</td><td>Sekcja „własne ekipy” z prawdziwymi ludźmi</td><td>Bartosz</td><td>2 h + zdjęcia</td><td class="c"><span class="p p1">P1</span></td><td>tydz. 2</td></tr>
+      <tr><td>Spisać min. 6 realizacji: miejscowość, zakres, system, rok, zgoda klienta</td><td>Strony realizacji z nazwą miejscowości</td><td>Bartosz, biuro</td><td><span class="nw">2–3</span> h</td><td class="c"><span class="p p1">P1</span></td><td>tydz. 3</td></tr>
+      <tr><td>Zaakceptować politykę prywatności (okres przechowywania zapytań, hosting)</td><td>Formularz zgodny z RODO</td><td>Paweł</td><td>30 min</td><td class="c"><span class="p p1">P1</span></td><td>przed startem</td></tr>
+      <tr><td>Start nowej strony: jeden adres www, przekierowania, mapa strony, Search Console, Google Analytics (po zgodzie na cookies) z liczeniem telefonów, formularzy i konfiguracji</td><td>Google widzi jedną stronę; wiadomo, skąd są zapytania</td><td>wykonawca strony, Paweł (dostępy)</td><td>–</td><td class="c"><span class="p p1">P1</span></td><td>termin do ustalenia</td></tr>
+      <tr><td>Decyzja o widełkach cen „od … zł” na stronach oferty</td><td>Odpowiedź na częste „okna Płock cennik”</td><td>Paweł, Bartosz</td><td>decyzja</td><td class="c"><span class="p p2">P2</span></td><td>tydz. 4</td></tr>
+      <tr><td><span class="nw">2–4</span> nowe realizacje na stronie co miesiąc</td><td>Nowe frazy z nazwami miejscowości</td><td>biuro, montażyści (zdjęcia)</td><td>30 min / szt.</td><td class="c"><span class="p p2">P2</span></td><td>od startu</td></tr>
+      <tr><td>Sesja zdjęciowa: <span class="nw">3–5</span> wykończonych realizacji i reportaż z montażu</td><td>Własne zdjęcia zamiast ilustracji</td><td>Bartosz</td><td><span class="nw">1–2</span> dni</td><td class="c"><span class="p p2">P2</span></td><td>plan w tydz. 10, sesja wiosną</td></tr>
+      <tr><td>Strona Gostynina (gdy będą 3 realizacje i 1 opinia z regionu), potem Gąbin ze Słubicami i Sierpc</td><td>Klienci spoza Płocka</td><td>wykonawca strony</td><td>–</td><td class="c"><span class="p p3">P3</span></td><td>po spełnieniu warunków</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ======================= 2. WIZYTÓWKA ======================= -->
+<section class="flow">
+  <div class="chead"><p class="eyebrow">ROZDZIAŁ 2</p>
+  <h1 class="ch">Wizytówka Google</h1>
+  <div class="verdict"><span class="st pilne"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="6" fill="#9b2c33"/><rect x="5.2" y="2.4" width="1.6" height="4.8" rx=".8" fill="#fff"/><circle cx="6" cy="9.25" r=".95" fill="#fff"/></svg>pilne</span><span>Dobra ocena, ale niepełny profil. Najszybsza poprawa w całym raporcie: kilka godzin pracy w pierwszym tygodniu.</span></div></div>
+  <div class="tiles">
+    <div class="tile"><div class="n">5,0</div><div class="l">średnia ocena</div></div>
+    <div class="tile"><div class="n">9</div><div class="l">opinii, najnowsza sprzed ok. 2 miesięcy</div></div>
+    <div class="tile"><div class="n">26</div><div class="l">zdjęć (Oknaro: 255)</div></div>
+    <div class="tile"><div class="n">12.08</div><div class="l">ostatni post</div></div>
+  </div>
+
+  <h2 class="sec"><span class="k">A</span>Stan obecny</h2>
+  <table class="t">
+    <thead><tr><th style="width:21mm">Element</th><th>Co widać 27.10.2026</th><th style="width:24mm">Ocena</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Profil, nazwa</td><td>Jeden, bez duplikatów, najpewniej zweryfikowany; nie wiadomo, na czyim koncie. Nazwa „Inter Windows s.c. Bartosz Bezdziek, Paweł Majchrzak” ucina się na mapie.</td><td><span class="st popr"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5.2" fill="none" stroke="#a5650f" stroke-width="1.6"/><path d="M6 .8 A5.2 5.2 0 0 1 6 11.2 Z" fill="#a5650f"/></svg>sprawdzić</span></td></tr>
+      <tr><td class="k">Kategorie</td><td>Dostawca okien (główna), Montaż okien. Brak kategorii dla drzwi, bram i rolet.</td><td><span class="st pilne"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="6" fill="#9b2c33"/><rect x="5.2" y="2.4" width="1.6" height="4.8" rx=".8" fill="#fff"/><circle cx="6" cy="9.25" r=".95" fill="#fff"/></svg>pilne</span></td></tr>
+      <tr><td class="k">Opinie</td><td>5,0 z 9 opinii. Najnowsze sprzed ok. 2, 6 i 9 miesięcy. Żadnej odpowiedzi właściciela.</td><td><span class="st pilne"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="6" fill="#9b2c33"/><rect x="5.2" y="2.4" width="1.6" height="4.8" rx=".8" fill="#fff"/><circle cx="6" cy="9.25" r=".95" fill="#fff"/></svg>pilne</span></td></tr>
+      <tr><td class="k">Zdjęcia</td><td>26. Brak zdjęć ekipy, biura i szyldu.</td><td><span class="st popr"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5.2" fill="none" stroke="#a5650f" stroke-width="1.6"/><path d="M6 .8 A5.2 5.2 0 0 1 6 11.2 Z" fill="#a5650f"/></svg>do poprawy</span></td></tr>
+      <tr><td class="k">Posty</td><td>4 posty od 31.05 do 12.08.2026, przeklejone z Facebooka razem z emoji i hasztagami.</td><td><span class="st popr"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5.2" fill="none" stroke="#a5650f" stroke-width="1.6"/><path d="M6 .8 A5.2 5.2 0 0 1 6 11.2 Z" fill="#a5650f"/></svg>do poprawy</span></td></tr>
+      <tr><td class="k">Opis</td><td>Mówi o „dziewiętnastoletnim doświadczeniu” (strona: 20 lat). Nie wspomina o własnych ekipach ani o DAKO. Ma literówkę.</td><td><span class="st popr"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5.2" fill="none" stroke="#a5650f" stroke-width="1.6"/><path d="M6 .8 A5.2 5.2 0 0 1 6 11.2 Z" fill="#a5650f"/></svg>do poprawy</span></td></tr>
+      <tr><td class="k">Adres</td><td>Przemysłowa 22, <span class="diff"><span class="nw">09-401</span></span> Płock. Rejestr VAT i strona: <span class="nw">09-400</span>.</td><td><span class="st pilne"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="6" fill="#9b2c33"/><rect x="5.2" y="2.4" width="1.6" height="4.8" rx=".8" fill="#fff"/><circle cx="6" cy="9.25" r=".95" fill="#fff"/></svg>pilne</span></td></tr>
+      <tr><td class="k">Telefon, godziny</td><td>697 886 093, zgodny z resztą danych. Godziny pn–pt <span class="nw">8–16</span>, sob <span class="nw">8–13</span>; do potwierdzenia, czy w sobotę ktoś jest w biurze.</td><td><span class="st dobrze"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5.2" fill="none" stroke="#2f6b4f" stroke-width="1.6"/><path d="M3.4 6.2 5.2 8 8.7 4.3" fill="none" stroke="#2f6b4f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>dobrze</span></td></tr>
+      <tr><td class="k">Link, profile</td><td>Link do strony bez UTM. Podpięty Instagram, brak Facebooka.</td><td><span class="st popr"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5.2" fill="none" stroke="#a5650f" stroke-width="1.6"/><path d="M6 .8 A5.2 5.2 0 0 1 6 11.2 Z" fill="#a5650f"/></svg>do poprawy</span></td></tr>
+    </tbody>
+  </table>
+
+  <figure>
+    <div class="ft">Liczba opinii w Google: Inter Windows na tle firm z Płocka</div>
+    <div class="fs">Firmy pokazywane przez Google przy frazach „okna”, „montaż okien”, „drzwi”, „rolety” i „bramy” w Płocku</div>
+    <svg viewBox="0 0 680 276" role="img" aria-label="Liczba opinii w Google: Inter Windows i konkurenci z Płocka" xmlns="http://www.w3.org/2000/svg" font-family="PJS, sans-serif"><line x1="236" y1="28" x2="236" y2="270" stroke="#c9ced8" stroke-width="1"/><text x="236" y="24" font-size="9" fill="#6b7183" text-anchor="middle">0</text><line x1="325.4" y1="28" x2="325.4" y2="270" stroke="#e3e6ec" stroke-width="1"/><text x="325.4" y="24" font-size="9" fill="#6b7183" text-anchor="middle">20</text><line x1="414.8" y1="28" x2="414.8" y2="270" stroke="#e3e6ec" stroke-width="1"/><text x="414.8" y="24" font-size="9" fill="#6b7183" text-anchor="middle">40</text><line x1="504.2" y1="28" x2="504.2" y2="270" stroke="#e3e6ec" stroke-width="1"/><text x="504.2" y="24" font-size="9" fill="#6b7183" text-anchor="middle">60</text><line x1="593.6" y1="28" x2="593.6" y2="270" stroke="#e3e6ec" stroke-width="1"/><text x="593.6" y="24" font-size="9" fill="#6b7183" text-anchor="middle">80</text><text x="0" y="12" font-size="9" fill="#6b7183" font-weight="600" letter-spacing=".06em">FIRMA</text><text x="224" y="12" font-size="9" fill="#6b7183" font-weight="600" text-anchor="end" letter-spacing=".06em">OCENA</text><text x="236" y="12" font-size="9" fill="#6b7183" font-weight="600" letter-spacing=".06em">LICZBA OPINII W GOOGLE</text><line x1="392.5" y1="28" x2="392.5" y2="270" stroke="#9b2c33" stroke-width="1.2"/><text x="0" y="46.4" font-size="10.5" fill="#3c4254" font-weight="400">DOMAR-BUD</text><text x="224" y="46.4" font-size="10" fill="#6b7183" font-weight="400" text-anchor="end">4,2</text><path d="M236,38 H613 A3,3 0 0 1 616,41 V45 A3,3 0 0 1 613,48 H236 Z" fill="#b8bfcc"/><text x="622" y="46.4" font-size="10" fill="#3c4254" font-weight="500">85</text><text x="0" y="64.4" font-size="10.5" fill="#3c4254" font-weight="400">Atasze (rolety)</text><text x="224" y="64.4" font-size="10" fill="#6b7183" font-weight="400" text-anchor="end">4,5</text><path d="M236,56 H554.9 A3,3 0 0 1 557.9,59 V63 A3,3 0 0 1 554.9,66 H236 Z" fill="#b8bfcc"/><text x="563.9" y="64.4" font-size="10" fill="#3c4254" font-weight="500">72</text><text x="0" y="82.4" font-size="10.5" fill="#3c4254" font-weight="400">NOVEO</text><text x="224" y="82.4" font-size="10" fill="#6b7183" font-weight="400" text-anchor="end">4,3</text><path d="M236,74 H550.4 A3,3 0 0 1 553.4,77 V81 A3,3 0 0 1 550.4,84 H236 Z" fill="#b8bfcc"/><text x="559.4" y="82.4" font-size="10" fill="#3c4254" font-weight="500">71</text><text x="0" y="100.4" font-size="10.5" fill="#3c4254" font-weight="400">Kim</text><text x="224" y="100.4" font-size="10" fill="#6b7183" font-weight="400" text-anchor="end">4,6</text><path d="M236,92 H505.7 A3,3 0 0 1 508.7,95 V99 A3,3 0 0 1 505.7,102 H236 Z" fill="#b8bfcc"/><text x="514.7" y="100.4" font-size="10" fill="#3c4254" font-weight="500">61</text><text x="0" y="118.4" font-size="10.5" fill="#3c4254" font-weight="400">Bildau & Bussmann</text><text x="224" y="118.4" font-size="10" fill="#6b7183" font-weight="400" text-anchor="end">4,4</text><path d="M236,110 H487.8 A3,3 0 0 1 490.8,113 V117 A3,3 0 0 1 487.8,120 H236 Z" fill="#b8bfcc"/><text x="496.8" y="118.4" font-size="10" fill="#3c4254" font-weight="500">57</text><text x="0" y="136.4" font-size="10.5" fill="#3c4254" font-weight="400">ABC STALREM</text><text x="224" y="136.4" font-size="10" fill="#6b7183" font-weight="400" text-anchor="end">4,3</text><path d="M236,128 H425.2 A3,3 0 0 1 428.2,131 V135 A3,3 0 0 1 425.2,138 H236 Z" fill="#b8bfcc"/><text x="434.2" y="136.4" font-size="10" fill="#3c4254" font-weight="500">43</text><text x="0" y="154.4" font-size="10.5" fill="#3c4254" font-weight="400">KORNAT – Okna</text><text x="224" y="154.4" font-size="10" fill="#6b7183" font-weight="400" text-anchor="end">4,4</text><path d="M236,146 H385 A3,3 0 0 1 388,149 V153 A3,3 0 0 1 385,156 H236 Z" fill="#b8bfcc"/><text x="394" y="154.4" font-size="10" fill="#3c4254" font-weight="500">34</text><text x="0" y="172.4" font-size="10.5" fill="#3c4254" font-weight="400">Bastion</text><text x="224" y="172.4" font-size="10" fill="#6b7183" font-weight="400" text-anchor="end">4,3</text><path d="M236,164 H358.2 A3,3 0 0 1 361.2,167 V171 A3,3 0 0 1 358.2,174 H236 Z" fill="#b8bfcc"/><text x="367.2" y="172.4" font-size="10" fill="#3c4254" font-weight="500">28</text><text x="0" y="190.4" font-size="10.5" fill="#3c4254" font-weight="400">Oknaro</text><text x="224" y="190.4" font-size="10" fill="#6b7183" font-weight="400" text-anchor="end">4,8</text><path d="M236,182 H344.8 A3,3 0 0 1 347.8,185 V189 A3,3 0 0 1 344.8,192 H236 Z" fill="#b8bfcc"/><text x="353.8" y="190.4" font-size="10" fill="#3c4254" font-weight="500">25</text><text x="0" y="208.4" font-size="10.5" fill="#3c4254" font-weight="400">Okna i Drzwi – Bular Plus</text><text x="224" y="208.4" font-size="10" fill="#6b7183" font-weight="400" text-anchor="end">4,5</text><path d="M236,200 H335.8 A3,3 0 0 1 338.8,203 V207 A3,3 0 0 1 335.8,210 H236 Z" fill="#b8bfcc"/><text x="344.8" y="208.4" font-size="10" fill="#3c4254" font-weight="500">23</text><text x="0" y="226.4" font-size="10.5" fill="#3c4254" font-weight="400">Majster Okna i Drzwi</text><text x="224" y="226.4" font-size="10" fill="#6b7183" font-weight="400" text-anchor="end">4,3</text><path d="M236,218 H335.8 A3,3 0 0 1 338.8,221 V225 A3,3 0 0 1 335.8,228 H236 Z" fill="#b8bfcc"/><text x="344.8" y="226.4" font-size="10" fill="#3c4254" font-weight="500">23</text><text x="0" y="244.4" font-size="10.5" fill="#141824" font-weight="700">Inter Windows</text><text x="224" y="244.4" font-size="10" fill="#141824" font-weight="700" text-anchor="end">5,0</text><path d="M236,236 H273.2 A3,3 0 0 1 276.2,239 V243 A3,3 0 0 1 273.2,246 H236 Z" fill="#1e3466"/><text x="282.2" y="244.4" font-size="10" fill="#141824" font-weight="700">9</text><text x="0" y="262.4" font-size="10.5" fill="#3c4254" font-weight="400">Płocka Fabryka Okien</text><text x="224" y="262.4" font-size="10" fill="#6b7183" font-weight="400" text-anchor="end">5,0</text><path d="M236,254 H268.8 A3,3 0 0 1 271.8,257 V261 A3,3 0 0 1 268.8,264 H236 Z" fill="#b8bfcc"/><text x="277.8" y="262.4" font-size="10" fill="#3c4254" font-weight="500">8</text><rect x="397.5" y="225" width="166" height="28" fill="#ffffff"/><text x="400.5" y="236" font-size="9.5" fill="#9b2c33" font-weight="600">cel Inter Windows na 31.01.2027: 35</text><text x="400.5" y="248" font-size="9" fill="#6b7183">(plan wizytówki, rozdział 7)</text></svg>
+    <figcaption>Dane publiczne z Map Google, 27.10.2026. Pominięto sieć Co w Oknie Płock (5,0 / 383 opinie), sklep z roletami działający w innej skali. Pionowa linia: cel Inter Windows po 90 dniach.</figcaption>
+  </figure>
+
+  <div class="box">
+    <h3>Co mówi porównanie z konkurencją</h3>
+    <div class="cols2 small">
+      <ul class="facts">
+        <li><b>Kategoria otwiera wyniki.</b> W <span class="nw">3-paku</span> „rolety zewnętrzne Płock” jest firma z jedną opinią, bo ma kategorię „Sklep z żaluzjami”.</li>
+        <li><b>Opinie ustalają kolejność.</b> DOMAR-BUD ma 6 zdjęć i nie publikuje postów, a jest pierwszy przy „okna Płock”: ma 85 opinii.</li>
+        <li><b>Zdjęć mają więcej:</b> Oknaro 255, ABC STALREM 142, Bildau &amp; Bussmann 87, Majster 54. Inter Windows 26.</li>
+      </ul>
+      <ul class="facts">
+        <li><b>Rynek śpi.</b> U większości firm okiennych najnowsza opinia ma <span class="nw">4–11</span> miesięcy. Na opinie odpowiadają nieliczni (Oknaro, Majster, Atasze).</li>
+        <li><b>Nikt nie pokazuje ekipy</b> w zdjęciach wizytówki. To wolne miejsce dla Was.</li>
+        <li>Oknaro i Bastion mają w nazwie słowa kluczowe. To łamie zasady Google i grozi zawieszeniem profilu. Nie kopiować.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 class="sec"><span class="k">B</span>Co jest do poprawienia</h2>
+  <ol class="issues">
+    <li><b>Brak kategorii Dostawca drzwi, Dostawca drzwi garażowych i Sklep z żaluzjami.</b> Bez nich wizytówka nie pokaże się przy drzwiach, bramach i roletach, niezależnie od liczby opinii.</li>
+    <li><b>Mało zdjęć, żadnego z ludźmi.</b> Klient nie widzi, kto do niego przyjedzie. Zdjęcia szyldu i biura pomagają też przy weryfikacji profilu.</li>
+    <li><b>Opis nie sprzedaje.</b> Brak własnych ekip i DAKO, inna liczba lat niż na stronie.</li>
+    <li><b>Posty stoją od 12 sierpnia.</b> Hasztagi przeklejone z Facebooka w Google nic nie dają.</li>
+    <li><b>Link bez UTM.</b> Statystyki strony nie pokażą, ilu klientów przyszło z wizytówki.</li>
+    <li><b>Niejasny dostęp.</b> Jeśli profil jest na koncie jednej osoby albo dawnego wykonawcy strony, firma może go stracić. Opinie, kod pocztowy i nazwa: rozdziały 6 i 7.</li>
+  </ol>
+
+  <h2 class="sec"><span class="k">C</span>Działania</h2>
+  <table class="t act">
+    <thead><tr><th style="width:36%">Działanie</th><th style="width:25%">Efekt</th><th>Kto</th><th>Czas</th><th class="c">Prior.</th><th>Termin</th></tr></thead>
+    <tbody>
+      <tr><td>Sprawdzić dostęp: właściciel główny na koncie firmowym (biuro@), obaj wspólnicy jako właściciele, weryfikacja dwuetapowa</td><td>Nikt nie straci dostępu do profilu</td><td>Paweł</td><td>30 min</td><td class="c"><span class="p p1">P1</span></td><td>tydz. 1</td></tr>
+      <tr><td>Dodać kategorie: Dostawca drzwi, Dostawca drzwi garażowych, Sklep z żaluzjami. Główną zostawić.</td><td>Widoczność przy drzwiach, bramach i roletach</td><td>Paweł</td><td>15 min</td><td class="c"><span class="p p1">P1</span></td><td>tydz. 1</td></tr>
+      <tr><td>Wkleić gotowy opis, 15 usług, 10 produktów, atrybuty, link z UTM, Facebook</td><td>Pełny profil, który mówi o własnych ekipach</td><td>Paweł, Bartosz</td><td>2 h</td><td class="c"><span class="p p1">P1</span></td><td>tydz. 1</td></tr>
+      <tr><td>Wgrać <span class="nw">30–40</span> zdjęć i <span class="nw">1–2</span> filmy: szyld, biuro, ekipa, montaż, wykończone realizacje. Potem <span class="nw">2–3</span> zdjęcia po każdym montażu.</td><td>Klient widzi ludzi i prawdziwe prace; 100 zdjęć po 90 dniach</td><td>Bartosz wybiera, Paweł wgrywa</td><td>1,5 h</td><td class="c"><span class="p p1">P1</span></td><td>tydz. 1</td></tr>
+      <tr><td>Zmienić nazwę na „Inter Windows” i kod na <span class="nw">09-400</span>, razem, jednego dnia, gdy szyld jest gotowy</td><td>Zgodność danych, najwyżej jedna weryfikacja</td><td>Paweł, Bartosz</td><td><span class="nw">30–60</span> min</td><td class="c"><span class="p p1">P1</span></td><td>tydz. 2</td></tr>
+      <tr><td>1 post tygodniowo: realizacja z miejscowością, zdjęcie od ekipy, bez hasztagów i bez telefonu w treści</td><td>Świeże realizacje z okolicy</td><td>Paweł</td><td>10 min / tydz.</td><td class="c"><span class="p p1">P1</span></td><td>od tydz. 2</td></tr>
+      <tr><td>Lista kontrolna w poniedziałek: opinie, rejestr, post, zdjęcia, zmiany proponowane przez innych, godziny specjalne przed świętami</td><td>Nic nie umyka</td><td>Paweł</td><td>15 min / tydz.</td><td class="c"><span class="p p1">P1</span></td><td>co tydzień</td></tr>
+      <tr><td>W dniu startu strony podmienić linki: umawianie wizyt na /kontakt/, produkty na strony oferty, posty na realizacje</td><td>Klient z wizytówki trafia na właściwą podstronę</td><td>Paweł, wykonawca strony</td><td>45 min</td><td class="c"><span class="p p1">P1</span></td><td>dzień startu</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ======================= 3. WYNIKI WYSZUKIWANIA ======================= -->
+<section class="flow">
+  <div class="chead"><p class="eyebrow">ROZDZIAŁ 3</p>
+  <h1 class="ch">Wyniki wyszukiwania Google</h1>
+  <div class="verdict"><span class="st popr"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5.2" fill="none" stroke="#a5650f" stroke-width="1.6"/><path d="M6 .8 A5.2 5.2 0 0 1 6 11.2 Z" fill="#a5650f"/></svg>do poprawy</span><span>Firmy nie ma w <span class="nw">3-paku</span> dla żadnej z sześciu głównych fraz, a przy trzech nie ma jej wcale. Poprawi się razem z wizytówką, opiniami i nową stroną.</span></div></div>
+
+  <h2 class="sec" style="margin-top:2mm"><span class="k">A</span>Stan obecny</h2>
+  <table class="t">
+    <thead><tr><th style="width:30mm">Fraza w Google</th><th style="width:49mm">Miejsce w Mapach (pola <span class="nw">1–20</span>; ciemne <span class="nw">1–3</span> to <span class="nw">3-pak</span>)</th><th style="width:19mm">Inter Windows</th><th>W <span class="nw">3-paku</span> (ocena / liczba opinii)</th></tr></thead>
+    <tbody>
+      <tr><td class="k">okna Płock</td><td><svg class="strip" viewBox="0 0 212 16" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="2" width="8.6" height="12" rx="1.5" fill="#cdd4e3"/><rect x="10.4" y="2" width="8.6" height="12" rx="1.5" fill="#cdd4e3"/><rect x="20.8" y="2" width="8.6" height="12" rx="1.5" fill="#cdd4e3"/><rect x="31.2" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="41.6" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="52" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="62.4" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="72.8" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="83.2" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="93.6" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="104" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="114.4" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="124.8" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="135.2" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="145.6" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="156" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="166.4" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="176.8" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="187.2" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="197.6" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><circle cx="129.1" cy="8" r="5.6" fill="#1e3466" stroke="#fff" stroke-width="1.6"/></svg></td><td><b>13.</b></td><td>DOMAR-BUD (4,2 / 85), Oknaro (4,8 / 25), Bular Plus (4,5 / 23)</td></tr>
+      <tr><td class="k">montaż okien Płock</td><td><svg class="strip" viewBox="0 0 212 16" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="2" width="8.6" height="12" rx="1.5" fill="#cdd4e3"/><rect x="10.4" y="2" width="8.6" height="12" rx="1.5" fill="#cdd4e3"/><rect x="20.8" y="2" width="8.6" height="12" rx="1.5" fill="#cdd4e3"/><rect x="31.2" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="41.6" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="52" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="62.4" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="72.8" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="83.2" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="93.6" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="104" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="114.4" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="124.8" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="135.2" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="145.6" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="156" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="166.4" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="176.8" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="187.2" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="197.6" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><circle cx="160.3" cy="8" r="5.6" fill="#1e3466" stroke="#fff" stroke-width="1.6"/></svg></td><td><b>16.</b></td><td>Bular Plus, Co w Oknie Płock (5,0 / 383), Oknaro</td></tr>
+      <tr><td class="k">wymiana okien Płock</td><td><svg class="strip" viewBox="0 0 212 16" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="2" width="8.6" height="12" rx="1.5" fill="#cdd4e3"/><rect x="10.4" y="2" width="8.6" height="12" rx="1.5" fill="#cdd4e3"/><rect x="20.8" y="2" width="8.6" height="12" rx="1.5" fill="#cdd4e3"/><rect x="31.2" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="41.6" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="52" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="62.4" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="72.8" y="2" width="8.6" height="12" rx="1.5" fill="#9fabc6"/><rect x="83.2" y="2" width="8.6" height="12" rx="1.5" fill="#9fabc6"/><rect x="93.6" y="2" width="8.6" height="12" rx="1.5" fill="#9fabc6"/><rect x="104" y="2" width="8.6" height="12" rx="1.5" fill="#9fabc6"/><rect x="114.4" y="2" width="8.6" height="12" rx="1.5" fill="#9fabc6"/><rect x="124.8" y="2" width="8.6" height="12" rx="1.5" fill="#9fabc6"/><rect x="135.2" y="2" width="8.6" height="12" rx="1.5" fill="#9fabc6"/><rect x="145.6" y="2" width="8.6" height="12" rx="1.5" fill="#9fabc6"/><rect x="156" y="2" width="8.6" height="12" rx="1.5" fill="#9fabc6"/><rect x="166.4" y="2" width="8.6" height="12" rx="1.5" fill="#9fabc6"/><rect x="176.8" y="2" width="8.6" height="12" rx="1.5" fill="#9fabc6"/><rect x="187.2" y="2" width="8.6" height="12" rx="1.5" fill="#9fabc6"/><rect x="197.6" y="2" width="8.6" height="12" rx="1.5" fill="#9fabc6"/></svg></td><td><b>poza 7.</b></td><td>Kim (4,6 / 61), Oknaro, Bular Plus</td></tr>
+      <tr><td class="k">drzwi zewnętrzne Płock</td><td><svg class="strip" viewBox="0 0 212 16" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="2" width="8.6" height="12" rx="1.5" fill="#cdd4e3"/><rect x="10.4" y="2" width="8.6" height="12" rx="1.5" fill="#cdd4e3"/><rect x="20.8" y="2" width="8.6" height="12" rx="1.5" fill="#cdd4e3"/><rect x="31.2" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="41.6" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="52" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="62.4" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="72.8" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="83.2" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="93.6" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="104" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="114.4" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="124.8" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="135.2" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="145.6" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="156" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="166.4" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="176.8" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="187.2" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="197.6" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/></svg></td><td><b>brak</b> w 21</td><td>ABC STALREM (4,3 / 43), Bular Plus, DOMAR-BUD</td></tr>
+      <tr><td class="k">rolety zewnętrzne Płock</td><td><svg class="strip" viewBox="0 0 212 16" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="2" width="8.6" height="12" rx="1.5" fill="#cdd4e3"/><rect x="10.4" y="2" width="8.6" height="12" rx="1.5" fill="#cdd4e3"/><rect x="20.8" y="2" width="8.6" height="12" rx="1.5" fill="#cdd4e3"/><rect x="31.2" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="41.6" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="52" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="62.4" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="72.8" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="83.2" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="93.6" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="104" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="114.4" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="124.8" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="135.2" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="145.6" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="156" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="166.4" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="176.8" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="187.2" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="197.6" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/></svg></td><td><b>brak</b> w 18</td><td>Co w Oknie Płock, Dekorator (5,0 / 1), Atasze (4,5 / 72)</td></tr>
+      <tr><td class="k">bramy garażowe Płock</td><td><svg class="strip" viewBox="0 0 212 16" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="2" width="8.6" height="12" rx="1.5" fill="#cdd4e3"/><rect x="10.4" y="2" width="8.6" height="12" rx="1.5" fill="#cdd4e3"/><rect x="20.8" y="2" width="8.6" height="12" rx="1.5" fill="#cdd4e3"/><rect x="31.2" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="41.6" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="52" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="62.4" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="72.8" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="83.2" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="93.6" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="104" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="114.4" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="124.8" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="135.2" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="145.6" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="156" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="166.4" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="176.8" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="187.2" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/><rect x="197.6" y="2" width="8.6" height="12" rx="1.5" fill="#eef0f4"/></svg></td><td><b>brak</b> (lista: 9)</td><td>Oknaro, Bastion (4,3 / 28), Bramtech (3,4 / 5)</td></tr>
+    </tbody>
+  </table>
+  <p class="small muted">Pomiar z 27.10.2026, mapa ustawiona na Płock. Kolejność zależy od miejsca, w którym stoi szukający, więc pomiar trzeba powtarzać co miesiąc. <b>Pozycji obecnej strony w zwykłych wynikach nie mierzono</b>; pokaże je Search Console po starcie nowej strony.</p>
+
+  <h3 style="margin-top:1mm">Zwykłe wyniki pod mapą</h3>
+  <ul class="facts small">
+    <li>Przy „okna PCV Płock”, „wymiana okien Płock”, „drzwi zewnętrzne Płock” i „bramy garażowe Płock” wysoko są agregatory i cenniki: oferteo.pl, kb.pl, cenauslug.pl. Wygrywają z braku konkurencji, bo lokalne firmy prawie nie mają dobrych podstron. Próg wejścia jest niski.</li>
+    <li>Podpowiedzi Google („okna płock cennik”, „najwyżej oceniane”, „i okolice”) mówią, czego szuka klient: ceny, opinii i firmy z okolicy.</li>
+  </ul>
+  <h3>Czego szukają klienci (szacunek)</h3>
+  <table class="t avoid">
+    <thead><tr><th style="width:68mm">Fraza</th><th style="width:36mm">Popyt miesięcznie</th><th>Strona na nowej witrynie</th></tr></thead>
+    <tbody>
+      <tr><td>okna Płock</td><td class="nw"><span class="dem" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>wysoki</td><td>strona główna i „Okna”</td></tr>
+      <tr><td>okna PCV, montaż okien, wymiana okien Płock</td><td class="nw"><span class="dem" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></span>średni</td><td>trzy osobne strony</td></tr>
+      <tr><td>drzwi zewnętrzne, drzwi wewnętrzne, rolety zewnętrzne, bramy garażowe Płock</td><td class="nw"><span class="dem" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></span>średni</td><td>osobna strona dla każdej grupy</td></tr>
+      <tr><td>okna aluminiowe Płock; okna Gostynin, okna Sierpc</td><td class="nw"><span class="dem" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="half"></i><i class=""></i></span>niski do średniego</td><td>„Okna aluminiowe”, „Obszar działania”</td></tr>
+      <tr><td>żaluzje fasadowe Płock</td><td class="nw"><span class="dem" aria-hidden="true"><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i></span>niski</td><td>„Żaluzje fasadowe”</td></tr>
+    </tbody>
+  </table>
+  <p class="small muted">Wysoki: ok. 300+ wyszukań miesięcznie, średni <span class="nw">50–300</span>, niski <span class="nw">10–50</span>. Szacunek z podpowiedzi Google, nie z płatnych narzędzi; do sprawdzenia w Search Console.</p>
+
+  <h2 class="sec"><span class="k">B</span>Co jest do poprawienia</h2>
+  <ol class="issues">
+    <li><b>Brak w <span class="nw">3-paku</span></b>, skąd przychodzi najwięcej telefonów. Powody: brakujące kategorie, mało opinii, niepełny profil (rozdziały 2 i 7).</li>
+    <li><b>Odległość biura.</b> Przemysłowa leży na północno-wschodnim skraju miasta, więc dla szukających w centrum i na Podolszycach bliżej są konkurenci. Nadrabia się to opiniami i pełnym profilem, ale potrwa to dłużej.</li>
+    <li><b>Mało miejsc w sieci potwierdza adres i link do strony</b> (katalogi, DAKO, producenci), a brak pomiaru nie pozwala sprawdzić, co działa.</li>
+  </ol>
+
+  <h2 class="sec"><span class="k">C</span>Działania</h2>
+  <table class="t act">
+    <thead><tr><th style="width:38%">Działanie</th><th style="width:24%">Efekt</th><th>Kto</th><th>Czas</th><th class="c">Prior.</th><th>Termin</th></tr></thead>
+    <tbody>
+      <tr><td>Bing Places (import z Google) i Apple Business Connect</td><td>Mapy Bing i Apple, w tym iPhone i Siri</td><td>biuro</td><td>1 h</td><td class="c"><span class="p p1">P1</span></td><td>tydz. 3</td></tr>
+      <tr><td>Prośba do opiekuna DAKO o wpis w „Gdzie kupić” z linkiem do strony</td><td>Najcenniejszy link branżowy</td><td>Paweł</td><td>15 min</td><td class="c"><span class="p p1">P1</span></td><td>tydz. 5</td></tr>
+      <tr><td>Search Console i Bing Webmaster Tools, przesłanie mapy strony</td><td>Widać wyświetlenia i kliknięcia ok. 30 fraz</td><td>wykonawca strony</td><td>1 h</td><td class="c"><span class="p p1">P1</span></td><td>dzień startu</td></tr>
+      <tr><td>Darmowe katalogi (Aleo, Panorama Firm, PKT.pl, Firmy.net, Cylex) i wyszukiwarki dealerów producentów (Wikęd, Erkado, DRE, Porta, Aluprof i in.)</td><td>Ten sam adres i link w wielu miejscach</td><td>biuro, Paweł</td><td>3,5 h</td><td class="c"><span class="p p2">P2</span></td><td>tydz. <span class="nw">4–7</span></td></tr>
+      <tr><td>Poradnik: 4 artykuły na start, potem 2 miesięcznie</td><td>Ruch z pytań „ile kosztuje”, „HST czy PSK”</td><td>wykonawca strony, Bartosz</td><td>–</td><td class="c"><span class="p p2">P2</span></td><td>miesiące <span class="nw">2–4</span></td></tr>
+      <tr><td>Ręczny pomiar: 6 fraz w 4 punktach (biuro, Stary Rynek, Podolszyce, Radziwie)</td><td>Widać efekt działań</td><td>Paweł</td><td>20 min</td><td class="c"><span class="p p2">P2</span></td><td>tydz. 4, 9, 13</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ======================= 4. FACEBOOK ======================= -->
+<section class="flow">
+  <div class="chead"><p class="eyebrow">ROZDZIAŁ 4</p>
+  <h1 class="ch">Facebook</h1>
+  <div class="verdict"><span class="st popr"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5.2" fill="none" stroke="#a5650f" stroke-width="1.6"/><path d="M6 .8 A5.2 5.2 0 0 1 6 11.2 Z" fill="#a5650f"/></svg>do poprawy</span><span>Dwa zrywy publikacji i długie przerwy. Posty pokazują stolarkę, ale nie ludzi, miejsca i efekt.</span></div></div>
+  <div class="tiles">
+    <div class="tile"><div class="n">100</div><div class="l">obserwujących</div></div>
+    <div class="tile"><div class="n">20</div><div class="l">postów od 14.01 do 25.08.2026</div></div>
+    <div class="tile"><div class="n">0</div><div class="l">komentarzy pod wszystkimi postami</div></div>
+    <div class="tile"><div class="n">0 <small>/ 101</small></div><div class="l">zdjęć, na których widać ekipę</div></div>
+  </div>
+
+  <h2 class="sec"><span class="k">A</span>Stan obecny</h2>
+  <figure>
+    <div class="ft">Posty na Facebooku w kolejnych miesiącach</div>
+    <svg viewBox="0 0 680 216" role="img" aria-label="Liczba postów na Facebooku w kolejnych miesiącach" xmlns="http://www.w3.org/2000/svg" font-family="PJS, sans-serif"><line x1="34" y1="158" x2="676" y2="158" stroke="#c9ced8" stroke-width="1"/><text x="26" y="161.4" font-size="9" fill="#6b7183" text-anchor="end">0</text><line x1="34" y1="132" x2="676" y2="132" stroke="#e3e6ec" stroke-width="1"/><text x="26" y="135.4" font-size="9" fill="#6b7183" text-anchor="end">2</text><line x1="34" y1="106" x2="676" y2="106" stroke="#e3e6ec" stroke-width="1"/><text x="26" y="109.4" font-size="9" fill="#6b7183" text-anchor="end">4</text><line x1="34" y1="80" x2="676" y2="80" stroke="#e3e6ec" stroke-width="1"/><text x="26" y="83.4" font-size="9" fill="#6b7183" text-anchor="end">6</text><line x1="34" y1="54" x2="676" y2="54" stroke="#e3e6ec" stroke-width="1"/><text x="26" y="57.4" font-size="9" fill="#6b7183" text-anchor="end">8</text><rect x="34" y="4" width="10" height="10" rx="2" fill="#1e3466"/><text x="49" y="13" font-size="10" fill="#3c4254">posty własne</text><rect x="144" y="4" width="10" height="10" rx="2" fill="#b8bfcc"/><text x="159" y="13" font-size="10" fill="#3c4254">udostępnione posty producentów</text><text x="56.9" y="153" font-size="10" text-anchor="middle" fill="#6b7183" font-weight="400">0</text><text x="56.9" y="173" font-size="9.5" text-anchor="middle" fill="#3c4254">wrz</text><text x="102.8" y="153" font-size="10" text-anchor="middle" fill="#6b7183" font-weight="400">0</text><text x="102.8" y="173" font-size="9.5" text-anchor="middle" fill="#3c4254">paź</text><text x="148.6" y="153" font-size="10" text-anchor="middle" fill="#6b7183" font-weight="400">0</text><text x="148.6" y="173" font-size="9.5" text-anchor="middle" fill="#3c4254">lis</text><text x="194.5" y="153" font-size="10" text-anchor="middle" fill="#6b7183" font-weight="400">0</text><text x="194.5" y="173" font-size="9.5" text-anchor="middle" fill="#3c4254">gru</text><path d="M229.4,158 V57 A3,3 0 0 1 232.4,54 H248.4 A3,3 0 0 1 251.4,57 V158 Z" fill="#1e3466"/><text x="240.4" y="49" font-size="10" text-anchor="middle" fill="#141824" font-weight="600">8</text><text x="240.4" y="173" font-size="9.5" text-anchor="middle" fill="#3c4254">sty</text><path d="M275.2,158 V109 A3,3 0 0 1 278.2,106 H294.2 A3,3 0 0 1 297.2,109 V158 Z" fill="#1e3466"/><text x="286.2" y="101" font-size="10" text-anchor="middle" fill="#141824" font-weight="600">4</text><text x="286.2" y="173" font-size="9.5" text-anchor="middle" fill="#3c4254">lut</text><text x="332.1" y="153" font-size="10" text-anchor="middle" fill="#6b7183" font-weight="400">0</text><text x="332.1" y="173" font-size="9.5" text-anchor="middle" fill="#3c4254">mar</text><text x="377.9" y="153" font-size="10" text-anchor="middle" fill="#6b7183" font-weight="400">0</text><text x="377.9" y="173" font-size="9.5" text-anchor="middle" fill="#3c4254">kwi</text><text x="423.8" y="153" font-size="10" text-anchor="middle" fill="#6b7183" font-weight="400">0</text><text x="423.8" y="173" font-size="9.5" text-anchor="middle" fill="#3c4254">maj</text><text x="469.6" y="153" font-size="10" text-anchor="middle" fill="#6b7183" font-weight="400">0</text><text x="469.6" y="173" font-size="9.5" text-anchor="middle" fill="#3c4254">cze</text><path d="M504.5,158 V148 A3,3 0 0 1 507.5,145 H523.5 A3,3 0 0 1 526.5,148 V158 Z" fill="#1e3466"/><text x="515.5" y="140" font-size="10" text-anchor="middle" fill="#141824" font-weight="600">1</text><text x="515.5" y="173" font-size="9.5" text-anchor="middle" fill="#3c4254">lip</text><rect x="550.4" y="106" width="22" height="52" fill="#1e3466"/><path d="M550.4,104 V68 A3,3 0 0 1 553.4,65 H569.4 A3,3 0 0 1 572.4,68 V104 Z" fill="#b8bfcc"/><text x="561.4" y="60" font-size="10" text-anchor="middle" fill="#141824" font-weight="600">7</text><text x="561.4" y="173" font-size="9.5" text-anchor="middle" fill="#3c4254">sie</text><text x="607.2" y="153" font-size="10" text-anchor="middle" fill="#6b7183" font-weight="400">0</text><text x="607.2" y="173" font-size="9.5" text-anchor="middle" fill="#3c4254">wrz</text><text x="653.1" y="153" font-size="10" text-anchor="middle" fill="#6b7183" font-weight="400">0</text><text x="653.1" y="173" font-size="9.5" text-anchor="middle" fill="#3c4254">paź</text><text x="56.9" y="187" font-size="9" fill="#6b7183" text-anchor="middle">2025</text><text x="240.4" y="187" font-size="9" fill="#6b7183" text-anchor="middle">2026</text><line x1="217.4" y1="178" x2="217.4" y2="190" stroke="#c9ced8"/><path d="M40,133 V128 H211.4 V133" fill="none" stroke="#9b2c33" stroke-width="1.2"/><text x="125.7" y="112" font-size="10" text-anchor="middle" fill="#141824" font-weight="600">122 dni do pierwszego posta</text><text x="125.7" y="124" font-size="9" text-anchor="middle" fill="#6b7183">profil od 14.09.2025</text><path d="M315.1,133 V128 H486.6 V133" fill="none" stroke="#9b2c33" stroke-width="1.2"/><text x="400.9" y="112" font-size="10" text-anchor="middle" fill="#141824" font-weight="600">139 dni bez posta</text><text x="400.9" y="124" font-size="9" text-anchor="middle" fill="#6b7183">16.02 – 5.07.2026</text><path d="M590.3,133 V128 H670 V133" fill="none" stroke="#9b2c33" stroke-width="1.2"/><text x="630.1" y="112" font-size="10" text-anchor="middle" fill="#141824" font-weight="600">63 dni i trwa</text><text x="630.1" y="124" font-size="9" text-anchor="middle" fill="#6b7183">od 25.08.2026</text></svg>
+    <figcaption>Przegląd profilu 27.10.2026. W sierpniu 4 posty własne i 3 udostępnienia producentów (DAKO dwa razy, Sonarol raz).</figcaption>
+  </figure>
+  <div class="cols2">
+    <ul class="facts small">
+      <li>Reakcje: 27 łącznie, mediana 0. 11 z 20 postów nie ma żadnej reakcji. Udostępnień jest 29.</li>
+      <li>3 rolki: średnio 229 wyświetleń, <span class="nw">2–3</span> razy więcej niż obserwujących. Ostatnia z 16.02.</li>
+      <li>Najlepsze posty: drzwi wewnętrzne 11.08 (11 udostępnień), pełna realizacja 09.08 (8), drzwi zewnętrzne 12.08 (5 reakcji). Wspólne cechy: wykończone wnętrza, seria dzień po dniu.</li>
+      <li>Miejscowość realizacji pada w 1 poście. Większość zdjęć to stan surowy z foliami.</li>
+    </ul>
+    <ul class="facts small">
+      <li>Opisy mają średnio 756 znaków; 12 z 17 własnych postów ma po <span class="nw">8–17</span> hasztagów. Żaden post nie ma telefonu ani linku do strony.</li>
+      <li>Profil: <span class="nw">e-mail</span> <span class="diff">pawel@</span> zamiast biuro@, przycisk WhatsApp na <span class="diff">606 643 641</span>, brak adresu i godzin, jedna kategoria (Usługa montażu okien), 0 rekomendacji.</li>
+      <li>Zdjęcie w tle to wizytówka wspólnika z adresem <span class="diff">ul. Pniewskiego 42, <span class="nw">09-410</span> Płock</span>. Na zdjęciu z 09.08 widać tablicę rejestracyjną busa.</li>
+    </ul>
+  </div>
+
+  <h2 class="sec"><span class="k">B</span>Co jest do poprawienia</h2>
+  <ol class="issues">
+    <li><b>Nieregularność.</b> Po 139 dniach ciszy profil wyglądał na porzucony i dziś znów milczy od 25 sierpnia. Klient, który sprawdza firmę przed telefonem, widzi stare posty.</li>
+    <li><b>Wyróżnik niewidoczny.</b> „Własne ekipy, bez podwykonawców” nie pada ani razu wprost i nie ma zdjęć montażystów.</li>
+    <li><b>Brak kontekstu.</b> Bez miejscowości, problemu klienta i efektu po zamieszkaniu post o oknach wygląda jak katalog producenta.</li>
+    <li><b>Okładka z innym adresem.</b> Klient może pojechać w złe miejsce, a Google widzi sprzeczne dane.</li>
+    <li><b>Posty nie prowadzą do kontaktu.</b> Brak linku do realizacji i do formularza. Do tego cudze treści: udostępniona promocja Sonarol −25% kłóci się z marką premium.</li>
+  </ol>
+
+  <h2 class="sec"><span class="k">C</span>Działania</h2>
+  <table class="t act">
+    <thead><tr><th style="width:36%">Działanie</th><th style="width:25%">Efekt</th><th>Kto</th><th>Czas</th><th class="c">Prior.</th><th>Termin</th></tr></thead>
+    <tbody>
+      <tr><td>Poprawić profil: okładka z realizacją lub ekipą, <span class="nw">e-mail</span> biuro@, adres, godziny, opis z „własne ekipy · Płock i okolice”, przypięty post „Kim jesteśmy”; rozmyć tablicę na zdjęciu z 09.08</td><td>Spójne dane i jasny wyróżnik</td><td>biuro</td><td>30 min</td><td class="c"><span class="p p1">P1</span></td><td>tydz. 3</td></tr>
+      <tr><td>Rytm: 2 posty i 1 rolka tygodniowo (wtorek realizacja, czwartek porada, weekend rolka), plan w Meta Business Suite razem z Instagramem</td><td>Profil żyje, rośnie zasięg</td><td>biuro, Paweł</td><td><span class="nw">30–45</span> min / tydz.</td><td class="c"><span class="p p1">P1</span></td><td>od tydz. 2</td></tr>
+      <tr><td>Ściąga dla montażystów: zdjęcie przed, krótkie wideo w trakcie, ten sam kadr po, notatka z miejscowością, zgoda klienta</td><td>Materiał na posty bez dodatkowej pracy biura</td><td>Bartosz, montażyści</td><td>5 min / zlecenie</td><td class="c"><span class="p p1">P1</span></td><td>tydz. 2</td></tr>
+      <tr><td>Pięć tematów na zmianę: ekipa przy pracy, przed i po, jak montujemy, odbiór i opinia, doradztwo</td><td>Co najmniej co drugi post z ekipą w kadrze</td><td>biuro</td><td>–</td><td class="c"><span class="p p2">P2</span></td><td>od tydz. 2</td></tr>
+      <tr><td>Post z realizacją kończy się linkiem do realizacji na stronie (z oznaczeniem UTM)</td><td>Ruch na stronę, mierzalny</td><td>biuro</td><td>–</td><td class="c"><span class="p p2">P2</span></td><td>od startu strony</td></tr>
+      <tr><td>Posty producentów najwyżej raz w miesiącu, z komentarzem, bez rabatów</td><td>Spójny ton marki</td><td>biuro</td><td>–</td><td class="c"><span class="p p2">P2</span></td><td>stale</td></tr>
+      <tr><td>Krótki adres strony, np. facebook.com/interwindows</td><td>Łatwy link na wizytówkę, stronę i karty</td><td>Paweł</td><td>10 min</td><td class="c"><span class="p p3">P3</span></td><td>po decyzji</td></tr>
+    </tbody>
+  </table>
+  <p class="small muted">Opinie zbieramy przede wszystkim w Google. Rekomendacje na Facebooku to dodatek.</p>
+</section>
+
+<!-- ======================= 5. INSTAGRAM ======================= -->
+<section class="flow">
+  <div class="chead"><p class="eyebrow">ROZDZIAŁ 5</p>
+  <h1 class="ch">Instagram</h1>
+  <div class="verdict"><span class="st popr"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5.2" fill="none" stroke="#a5650f" stroke-width="1.6"/><path d="M6 .8 A5.2 5.2 0 0 1 6 11.2 Z" fill="#a5650f"/></svg>do poprawy</span><span>89 obserwujących, 26 postów, ostatni 13.08.2026, czyli 75 dni przerwy. Opis profilu nie mówi, czym się wyróżniacie.</span></div></div>
+  <div class="cols2">
+    <div>
+      <h2 class="sec"><span class="k">A</span>Stan obecny</h2>
+      <ul class="facts small">
+        <li>Widok publiczny bez logowania, 27.10.2026. Z 12 widocznych postów: 3 w lutym, 2 w marcu, 2 w maju (w tym rolka), 1 w lipcu, 4 w sierpniu. Konto publikowało także wtedy, gdy Facebook milczał.</li>
+        <li>Opis: „Okna • Drzwi • Bramy • Rolety”, „Sprzedaż + montaż z doświadczeniem”, „Płock i okolice”, dwa telefony (Paweł 697 886 093, Bartosz <span class="diff">606 643 641</span>), link do strony. Bez adresu i bez słowa o własnych ekipach.</li>
+        <li>Podpięty do wizytówki Google i linkowany z obecnej strony.</li>
+        <li><b>Nie analizowano</b> zasięgów, reakcji i 14 starszych postów (wymagają zalogowania).</li>
+      </ul>
+    </div>
+    <div>
+      <h2 class="sec"><span class="k">B</span>Co jest do poprawienia</h2>
+      <ol class="issues small">
+        <li><b>75 dni przerwy</b>, jak na Facebooku.</li>
+        <li><b>Opis jak u każdej firmy.</b> „Sprzedaż + montaż z doświadczeniem” nie mówi o własnych ekipach.</li>
+        <li><b>Dwa numery i brak adresu.</b> Główny numer firmy jest jeden: 697 886 093.</li>
+        <li><b>Mało rolek.</b> Jedna wśród 12 widocznych postów, a na Facebooku to format o największym zasięgu.</li>
+      </ol>
+    </div>
+  </div>
+  <h2 class="sec"><span class="k">C</span>Działania</h2>
+  <table class="t act">
+    <thead><tr><th style="width:52%">Działanie</th><th>Kto</th><th>Czas</th><th class="c">Prior.</th><th>Termin</th></tr></thead>
+    <tbody>
+      <tr><td>Nowy opis profilu: „Okna · drzwi · bramy · rolety / Montaż tylko własnymi ekipami / Płock, ul. Przemysłowa 22 · 697 886 093” i przycisk kontaktu z adresem</td><td>biuro</td><td>15 min</td><td class="c"><span class="p p1">P1</span></td><td>tydz. 3</td></tr>
+      <tr><td>Publikować razem z Facebookiem przez Meta Business Suite: te same albumy i rolki</td><td>biuro</td><td>–</td><td class="c"><span class="p p1">P1</span></td><td>od tydz. 2</td></tr>
+      <tr><td>Rolki <span class="nw">15–30</span> s z pracy ekipy: osadzanie okna, roleta w ruchu, uszczelnienie z bliska</td><td>montażyści nagrywają, biuro publikuje</td><td>–</td><td class="c"><span class="p p2">P2</span></td><td>1 tygodniowo</td></tr>
+      <tr><td>Więcej hasztagów niż na Facebooku, zawsze z miejscowością realizacji</td><td>biuro</td><td>–</td><td class="c"><span class="p p3">P3</span></td><td>stale</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ======================= 6. NAP ======================= -->
+<section class="chapter">
+  <div class="chead"><p class="eyebrow">ROZDZIAŁ 6</p>
+  <h1 class="ch">Spójność danych firmy (NAP)</h1>
+  <div class="verdict"><span class="st pilne"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="6" fill="#9b2c33"/><rect x="5.2" y="2.4" width="1.6" height="4.8" rx=".8" fill="#fff"/><circle cx="6" cy="9.25" r=".95" fill="#fff"/></svg>pilne</span><span>Google porównuje nazwę, adres i telefon firmy w różnych miejscach. Dziś każde źródło mówi coś innego.</span></div></div>
+
+  <h2 class="sec" style="margin-top:1mm"><span class="k">A</span>Stan obecny: co jest gdzie</h2>
+  <table class="t nap">
+    <thead><tr><th style="width:20mm">Źródło</th><th style="width:36mm">Nazwa</th><th style="width:33mm">Adres</th><th>Telefon</th><th style="width:27mm">E-mail</th><th style="width:22mm">Strona</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Rejestr VAT</td><td>pełna nazwa prawna wersalikami (w rejestrach poprawna)</td><td>ul. Przemysłowa 22, <span class="nw">09-400</span> Płock</td><td>–</td><td>–</td><td>–</td></tr>
+      <tr><td class="k">Obecna strona</td><td><span class="diff">Inter Windows s.c.</span> (tytuł); w stopce nazwa prawna; w opisie logo <span class="diff">InterWindows</span></td><td>ul. Przemysłowa 22, <span class="nw">09-400</span> Płock (częściowo na obrazku)</td><td><span class="nw">697-886-093</span>, w nagłówku też <span class="diff"><span class="nw">797-566-365</span></span>, w kontaktach <span class="diff"><span class="nw">606-643-641</span></span></td><td><span class="diff">biuro(małpa)</span> interwindows.pl, pełny adres na obrazku</td><td>działa z www i bez</td></tr>
+      <tr><td class="k">Wizytówka Google</td><td><span class="diff">Inter Windows s.c. Bartosz Bezdziek, Paweł Majchrzak</span></td><td>Przemysłowa 22, <span class="diff"><span class="nw">09-401</span></span> Płock</td><td>697 886 093</td><td>–</td><td>www, bez UTM</td></tr>
+      <tr><td class="k">Facebook</td><td>Inter Windows</td><td>brak w „Informacjach”; na okładce <span class="diff">ul. Jerzego Pniewskiego 42, <span class="nw">09-410</span> Płock</span></td><td>697 886 093; WhatsApp <span class="diff">606 643 641</span></td><td><span class="diff">pawel@</span> interwindows.pl</td><td>interwindows.pl</td></tr>
+      <tr><td class="k">Instagram</td><td>Inter Windows (@inter_windows)</td><td>brak, tylko „Płock i okolice”</td><td>697 886 093 i <span class="diff">606 643 641</span></td><td>–</td><td>www.interwindows.pl</td></tr>
+      <tr><td class="k">GoWork.pl</td><td>wpis z rejestru</td><td>z kodem <span class="nw">09-400</span></td><td colspan="3" class="muted">nie sprawdzano</td></tr>
+      <tr><td class="k">Infobel</td><td colspan="5" class="muted">wpis istnieje (Google pokazuje z niego 6 opinii 5/5), danych nie sprawdzano</td></tr>
+      <tr class="target"><td>Wzorzec</td><td>Inter Windows</td><td>ul. Przemysłowa 22, <span class="nw">09-400</span> Płock</td><td>+48 697 886 093</td><td>biuro@ interwindows.pl</td><td>https://www. interwindows.pl/</td></tr>
+    </tbody>
+  </table>
+  <p class="small muted"><span class="diff">Pogrubione i podkreślone</span> = różni się od wzorca. Inne rozbieżności: „20 lat doświadczenia” na stronie i „dziewiętnastoletnie” w Google; na stronie raz „PCV”, raz „PVC”.</p>
+  <p class="small"><span class="flag">DECYZJA</span> zapis „Inter Windows” czy „InterWindows” · <span class="flag">POTWIERDZIĆ</span> kod <span class="nw">09-400</span> w wyszukiwarce Poczty Polskiej · <span class="flag">WYJAŚNIĆ</span> skąd adres Pniewskiego 42 · <span class="flag">DECYZJA</span> który numer ma WhatsApp (pozostałe numery tylko na stronie /kontakt/)</p>
+
+  <div class="cols-62">
+    <div>
+      <h2 class="sec"><span class="k">B</span>Co jest do poprawienia</h2>
+      <ol class="issues">
+        <li><b>Trzy kody pocztowe.</b> Dla Google to sygnał, że dane mogą być nieaktualne.</li>
+        <li><b>Drugi adres na Facebooku.</b> Pniewskiego 42 nie występuje nigdzie indziej. Klient może tam pojechać.</li>
+        <li><b>Nazwa w sześciu wersjach.</b> Długa nazwa z imionami ucina się na mapie.</li>
+        <li><b>Trzy numery i dwa <span class="nw">e-maile</span>.</b> Klient nie wie, gdzie dzwonić, a Google nie wie, który numer jest główny. Dane na obrazku i „(małpa)” na stronie są dla Google nieczytelne.</li>
+      </ol>
+    </div>
+    <div>
+      <div class="box" style="margin-top:5.5mm">
+        <h3>Wzorzec: kopiować zawsze stąd</h3>
+        <p class="small" style="line-height:1.55">
+          <b>Inter Windows</b><br>
+          ul. Przemysłowa 22, <span class="nw">09-400</span> Płock<br>
+          +48 697 886 093<br>
+          biuro@interwindows.pl<br>
+          https://www.interwindows.pl/<br>
+          pn–pt 8:<span class="nw">00–16</span>:00, sob 8:<span class="nw">00–13</span>:00 <span class="flag">POTWIERDZIĆ</span><br>
+          <span class="muted">NIP i REGON oraz nazwa prawna tylko tam, gdzie są wymagane</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="sec"><span class="k">C</span>Działania</h2>
+  <table class="t act">
+    <thead><tr><th style="width:38%">Działanie</th><th style="width:23%">Efekt</th><th>Kto</th><th>Czas</th><th class="c">Prior.</th><th>Termin</th></tr></thead>
+    <tbody>
+      <tr><td>Zatwierdzić wzorzec: nazwa, kod, numer główny, <span class="nw">e-mail</span>, godziny</td><td>Jedna wersja danych firmy</td><td>Paweł, Bartosz</td><td>15 min</td><td class="c"><span class="p p1">P1</span></td><td>tydz. 1</td></tr>
+      <tr><td>Wizytówka Google: nazwa i kod pocztowy, razem, jednego dnia</td><td>Google ma te same dane co rejestr</td><td>Paweł</td><td>30 min</td><td class="c"><span class="p p1">P1</span></td><td>tydz. 2</td></tr>
+      <tr><td>Facebook i Instagram: adres, <span class="nw">e-mail</span> biuro@, nowa okładka, jeden numer</td><td>Klient trafia pod właściwy adres</td><td>biuro</td><td>45 min</td><td class="c"><span class="p p1">P1</span></td><td>tydz. 3</td></tr>
+      <tr><td>Nowa strona: dane w stopce tekstem, identyczne z wizytówką</td><td>Google czyta dane ze strony</td><td>wykonawca strony</td><td>–</td><td class="c"><span class="p p1">P1</span></td><td>dzień startu</td></tr>
+      <tr><td>Katalogi (Bing, Apple, Aleo, Panorama Firm, PKT.pl, Firmy.net, Cylex, Infobel, GoWork): wpisywać z wzorca, nie z pamięci; zapisywać w arkuszu adres profilu, login i datę</td><td>Razem z Google, FB, IG i stroną: 13 miejsc z identycznymi danymi</td><td>biuro</td><td>4 h łącznie</td><td class="c"><span class="p p2">P2</span></td><td>tydz. <span class="nw">3–6</span></td></tr>
+      <tr><td>Kontrola danych we wszystkich miejscach</td><td>Wyłapane błędy typu „22a” czy „<span class="nw">09-401</span>”</td><td>Paweł, biuro</td><td>1 h</td><td class="c"><span class="p p2">P2</span></td><td>tydz. 9</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ======================= 7. OPINIE ======================= -->
+<section class="flow">
+  <div class="chead"><p class="eyebrow">ROZDZIAŁ 7</p>
+  <h1 class="ch">Opinie</h1>
+  <div class="verdict"><span class="st pilne"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="6" fill="#9b2c33"/><rect x="5.2" y="2.4" width="1.6" height="4.8" rx=".8" fill="#fff"/><circle cx="6" cy="9.25" r=".95" fill="#fff"/></svg>pilne</span><span>Jakość bardzo dobra, liczba za mała. Opinie najmocniej decydują o kolejności w Mapach. Zimą montaży jest mniej, dlatego kampania rusza w listopadzie.</span></div></div>
+  <div class="tiles">
+    <div class="tile"><div class="n">9</div><div class="l">opinii w Google</div></div>
+    <div class="tile"><div class="n">5,0</div><div class="l">średnia ocena</div></div>
+    <div class="tile"><div class="n">0</div><div class="l">odpowiedzi właściciela</div></div>
+    <div class="tile"><div class="n">&lt; 1</div><div class="l">nowa opinia miesięcznie</div></div>
+  </div>
+
+  <h2 class="sec"><span class="k">A</span>Stan obecny</h2>
+  <div class="cols2">
+    <ul class="facts small">
+      <li><b>Google:</b> 9 opinii, 5,0. Najnowsze sprzed ok. 2, 6 i 9 miesięcy. Brak odpowiedzi.</li>
+      <li><b>Facebook:</b> 0 rekomendacji. <b>Infobel:</b> 6 opinii 5/5 (widoczne w panelu Google).</li>
+      <li><b>Obecna strona:</b> 6 referencji (Płock, Gąbin, Słubice, Gostynin), wszystkie 5/5, bez podanego źródła i bez potwierdzonych zgód autorów.</li>
+    </ul>
+    <ul class="facts small">
+      <li><b>Konkurencja:</b> prawie nikt nie zbiera opinii regularnie. U większości firm okiennych najnowsza opinia ma <span class="nw">4–11</span> miesięcy. Co tydzień dostaje je tylko sieć Co w Oknie.</li>
+      <li><b>35 opinii po 90 dniach</b> to więcej niż ma każda firma z pierwszej trójki w Mapach dla „okna Płock” (8, 25, 34) i więcej niż mediana pierwszej dziesiątki (ok. 26).</li>
+    </ul>
+  </div>
+  <figure>
+    <div class="ft">Liczba opinii w Google: stan i cele</div>
+    <svg viewBox="0 0 680 190" role="img" aria-label="Liczba opinii w Google: stan i cele" xmlns="http://www.w3.org/2000/svg" font-family="PJS, sans-serif"><defs><pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="#dfe4ef"/><line x1="0" y1="0" x2="0" y2="5" stroke="#1e3466" stroke-width="1.6"/></pattern></defs><line x1="34" y1="146" x2="520" y2="146" stroke="#c9ced8" stroke-width="1"/><text x="26" y="149.4" font-size="9" fill="#6b7183" text-anchor="end">0</text><line x1="34" y1="115.5" x2="520" y2="115.5" stroke="#e3e6ec" stroke-width="1"/><text x="26" y="118.9" font-size="9" fill="#6b7183" text-anchor="end">25</text><line x1="34" y1="85" x2="520" y2="85" stroke="#e3e6ec" stroke-width="1"/><text x="26" y="88.4" font-size="9" fill="#6b7183" text-anchor="end">50</text><line x1="34" y1="54.5" x2="520" y2="54.5" stroke="#e3e6ec" stroke-width="1"/><text x="26" y="57.9" font-size="9" fill="#6b7183" text-anchor="end">75</text><line x1="34" y1="24" x2="520" y2="24" stroke="#e3e6ec" stroke-width="1"/><text x="26" y="27.4" font-size="9" fill="#6b7183" text-anchor="end">100</text><line x1="34" y1="42.3" x2="528" y2="42.3" stroke="#9b2c33" stroke-width="1.2"/><text x="534" y="40.3" font-size="10" fill="#141824" font-weight="600">85 – DOMAR-BUD dziś</text><text x="534" y="53.3" font-size="9" fill="#6b7183">najwięcej opinii wśród</text><text x="534" y="64.3" font-size="9" fill="#6b7183">firm okiennych w Płocku</text><path d="M67.6,146 V138 A3,3 0 0 1 70.6,135 H94.6 A3,3 0 0 1 97.6,138 V146 Z" fill="#1e3466"/><text x="82.6" y="129" font-size="11" text-anchor="middle" fill="#141824" font-weight="700">9</text><text x="82.6" y="161" font-size="9.5" text-anchor="middle" fill="#3c4254">dziś</text><text x="82.6" y="173" font-size="9" text-anchor="middle" fill="#6b7183">27.10.2026</text><path d="M164.8,146 V124.6 A3,3 0 0 1 167.8,121.6 H191.8 A3,3 0 0 1 194.8,124.6 V146 Z" fill="url(#hatch)"/><text x="179.8" y="115.6" font-size="11" text-anchor="middle" fill="#141824" font-weight="700">20</text><text x="179.8" y="161" font-size="9.5" text-anchor="middle" fill="#3c4254">po 30 dniach</text><path d="M262,146 V106.3 A3,3 0 0 1 265,103.3 H289 A3,3 0 0 1 292,106.3 V146 Z" fill="url(#hatch)"/><text x="277" y="97.3" font-size="11" text-anchor="middle" fill="#141824" font-weight="700">35</text><text x="277" y="161" font-size="9.5" text-anchor="middle" fill="#3c4254">po 90 dniach</text><text x="277" y="173" font-size="9" text-anchor="middle" fill="#6b7183">31.01.2027</text><path d="M359.2,146 V81.9 A3,3 0 0 1 362.2,78.9 H386.2 A3,3 0 0 1 389.2,81.9 V146 Z" fill="url(#hatch)"/><text x="374.2" y="72.9" font-size="11" text-anchor="middle" fill="#141824" font-weight="700">55</text><text x="374.2" y="161" font-size="9.5" text-anchor="middle" fill="#3c4254">po 6 miesiącach</text><path d="M456.4,146 V39.2 A3,3 0 0 1 459.4,36.2 H483.4 A3,3 0 0 1 486.4,39.2 V146 Z" fill="url(#hatch)"/><line x1="471.4" y1="36.2" x2="471.4" y2="24" stroke="#1e3466" stroke-width="1.6"/><line x1="465.4" y1="24" x2="477.4" y2="24" stroke="#1e3466" stroke-width="1.6"/><text x="471.4" y="18" font-size="11" text-anchor="middle" fill="#141824" font-weight="700">90–100</text><text x="471.4" y="161" font-size="9.5" text-anchor="middle" fill="#3c4254">po 12 miesiącach</text><rect x="534" y="112" width="10" height="10" rx="2" fill="#1e3466"/><text x="549" y="121" font-size="10" fill="#3c4254">stan dziś</text><rect x="534" y="130" width="10" height="10" rx="2" fill="url(#hatch)"/><text x="549" y="139" font-size="10" fill="#3c4254">cel (szacunek)</text></svg>
+    <figcaption>Cele z planu wizytówki. Rachunek: opinie miesięcznie = montaże w miesiącu × odsetek klientów, którzy wystawią opinię. Przy 20 montażach i <span class="nw">25–40</span>% (szacunek branżowy, nie gwarancja) daje to <span class="nw">5–8</span> opinii miesięcznie. Kampania do dawnych klientów powinna dać <span class="nw">10–15</span> opinii w pierwszym miesiącu (szacunek). <b>Do potwierdzenia: ile montaży robicie miesięcznie.</b> Przy mniej niż 15 cele na 6 i 12 miesięcy trzeba obniżyć o jedną trzecią.</figcaption>
+  </figure>
+
+  <h2 class="sec"><span class="k">B</span>Co jest do poprawienia</h2>
+  <ol class="issues">
+    <li><b>Brak stałego procesu.</b> Prośba o opinię zależy od tego, czy ktoś o niej pamięta.</li>
+    <li><b>Brak odpowiedzi.</b> Przyszli klienci czytają odpowiedzi właściciela. Dla Google to też znak, że firma dba o profil.</li>
+    <li><b>Dawni klienci nie zostali poproszeni.</b> Montaże od grudnia 2024 r. to gotowe źródło opinii. Dziś opinię wystawiło 9 osób.</li>
+    <li><b>Referencje na stronie bez źródła.</b> Prawo (dyrektywa Omnibus) wymaga informacji, skąd pochodzą opinie.</li>
+    <li><b>Ryzyko w dotychczasowych pomysłach.</b> Proszenie klientów, by wymienili imiona monterów, łamie zasady Google. Informujemy, kto montował, ale nie prosimy o konkretną treść.</li>
+  </ol>
+
+  <h3>Proces po każdym montażu</h3>
+  <div class="flow5">
+    <div class="stp"><div class="no">KROK 1</div><div class="tt">Zapowiedź</div><div class="tx">Przy pomiarze lub umowie: kto przyjedzie, odbiór z protokołem, prośba o opinię na końcu.</div><div class="who">Paweł · 30 s</div></div>
+    <div class="stp"><div class="no">KROK 2</div><div class="tt">Odbiór i karta</div><div class="tx">Po podpisaniu protokołu karta A6 z kodem QR i imionami ekipy. Bez prośby o opinię na miejscu.</div><div class="who">brygadzista · 1 min</div></div>
+    <div class="stp"><div class="no">KROK 3</div><div class="tt">SMS wieczorem</div><div class="tx">Tego samego dnia, 18:<span class="nw">00–20</span>:00: podziękowanie i link. Wpis w rejestrze.</div><div class="who">biuro lub Paweł · 2 min</div></div>
+    <div class="stp"><div class="no">KROK 4</div><div class="tt">Jedno przypomnienie</div><div class="tx">Po <span class="nw">3–5</span> dniach, tylko gdy opinii brak. Potem temat zamknięty.</div><div class="who">biuro · 1 min</div></div>
+    <div class="stp"><div class="no">KROK 5</div><div class="tt">Odpowiedź</div><div class="tx">Do 48 h od opinii, <span class="nw">2–4</span> zdania, podpis imieniem. Za każdym razem inna.</div><div class="who">Paweł lub Bartosz · <span class="nw">3–5</span> min</div></div>
+  </div>
+  <p class="small">Prośbę wyzwala <b>podpisany protokół odbioru</b>, a nie zadowolenie klienta. Link dostaje każdy, według tej samej reguły.</p>
+
+  <div class="box">
+    <div class="cols2 small">
+      <div><b>Wolno:</b> prosić o opinię każdego klienta po zakończonej pracy; wysłać link i kod QR, przypomnieć jeden raz; napisać na karcie, kto montował; dziękować i odpowiadać publicznie, także na krytykę.</div>
+      <div><b>Nie wolno:</b> nagrody i rabaty za opinie; link tylko dla zadowolonych; prośba o treść (np. imiona monterów); naciskanie na miejscu i firmowy telefon; opinie od rodziny i pracowników; normy opinii dla ekip. Skutki: usunięte opinie, zawieszenie profilu, kara UOKiK do 10% rocznego obrotu.</div>
+    </div>
+  </div>
+
+  <h2 class="sec"><span class="k">C</span>Działania</h2>
+  <table class="t act">
+    <thead><tr><th style="width:37%">Działanie</th><th style="width:24%">Efekt</th><th>Kto</th><th>Czas</th><th class="c">Prior.</th><th>Termin</th></tr></thead>
+    <tbody>
+      <tr><td>Odpowiedzieć na 9 obecnych opinii (szablony w materiałach wizytówki)</td><td>Widać, że właściciel czyta</td><td>Paweł</td><td>30 min</td><td class="c"><span class="p p1">P1</span></td><td>tydz. 1</td></tr>
+      <tr><td>Link i kod QR do opinii (test na dwóch telefonach), ok. 250 kart A6, rejestr montaży i opinii, lista dawnych klientów od 12.2024</td><td>Prośba gotowa do wręczenia, proces pod kontrolą</td><td>biuro</td><td>4 h</td><td class="c"><span class="p p1">P1</span></td><td>tydz. 1</td></tr>
+      <tr><td>Spotkanie z ekipami: odbiór z kartą, krótki skrypt, czego nie mówić</td><td>Każdy montaż kończy się prośbą</td><td>Bartosz, montażyści</td><td>30 min</td><td class="c"><span class="p p1">P1</span></td><td>tydz. 2</td></tr>
+      <tr><td>Kampania do dawnych klientów: 4 równe partie, po jednej tygodniowo (wtorek 18:00), jedno przypomnienie</td><td><span class="nw">10–15</span> opinii w pierwszym miesiącu (szacunek)</td><td>biuro, Paweł</td><td>45 min / tydz.</td><td class="c"><span class="p p1">P1</span></td><td>tydz. <span class="nw">2–5</span></td></tr>
+      <tr><td>Proces po każdym montażu (5 kroków powyżej)</td><td><span class="nw">5–8</span> opinii miesięcznie (szacunek)</td><td>montażyści, biuro, Paweł</td><td>ok. 5 min / montaż</td><td class="c"><span class="p p1">P1</span></td><td>od tydz. 2</td></tr>
+      <tr><td>Negatywna opinia: telefon do klienta w 24 h, spokojna odpowiedź w 48 h, propozycja rozwiązania</td><td>Uprzejma odpowiedź przekonuje kolejnych klientów</td><td>Paweł, Bartosz</td><td>–</td><td class="c"><span class="p p2">P2</span></td><td>gdy się pojawi</td></tr>
+      <tr><td>Opinie na nowej stronie: podpis o źródle i zgoda autora</td><td>Zgodność z prawem</td><td>biuro</td><td>30 min</td><td class="c"><span class="p p2">P2</span></td><td>przed startem</td></tr>
+      <tr><td>Bezpłatny przegląd po pierwszej zimie dla wszystkich klientów, bez związku z opinią</td><td>Odpowiedzialność za montaż, drugi kontakt</td><td>Bartosz</td><td>–</td><td class="c"><span class="p p3">P3</span></td><td>wiosna 2027, po decyzji</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ======================= 8. PLAN 90 DNI ======================= -->
+<section class="chapter">
+  <div class="chead"><p class="eyebrow">ROZDZIAŁ 8</p>
+  <h1 class="ch">Plan działań na 90 dni</h1></div>
+  <p class="lead">Start w poniedziałek 2.11.2026, koniec 31.01.2027. Najwięcej pracy jest w pierwszych dwóch tygodniach. Potem wystarcza ok. 2 godzin tygodniowo w biurze i 15 minut kontroli w poniedziałek.</p>
+
+  <h3>Plan na jednej stronie</h3>
+  <div class="legend"><span><i class="sw" style="background:#1e3466"></i>praca w tym tygodniu</span><span><i class="sw" style="background:#b7c0d6"></i>stały rytm</span><span><svg viewBox="0 0 10 10" width="8" height="8" style="vertical-align:-.2mm;margin-right:1.3mm" aria-hidden="true"><path d="M5 0 10 5 5 10 0 5Z" fill="#1e3466"/></svg> jednorazowy punkt kontrolny</span></div>
+  <table class="gantt">
+    <thead><tr><th class="l">Tydzień</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th></tr>
+    <tr><th class="l"></th><th>2.11</th><th>9.11</th><th>16.11</th><th>23.11</th><th>30.11</th><th>7.12</th><th>14.12</th><th>21.12</th><th>28.12</th><th>4.01</th><th>11.01</th><th>18.01</th><th>25.01</th></tr></thead>
+    <tbody>
+      <tr><td class="l">Porządek w wizytówce</td><td class="w on"></td><td class="w on"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td></tr><tr><td class="l">Zdjęcia do wizytówki</td><td class="w on"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w on"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td></tr><tr><td class="l">Odpowiedzi na opinie</td><td class="w on"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td></tr><tr><td class="l">Karty, kod QR, rejestr, ekipy</td><td class="w on"></td><td class="w on"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td></tr><tr><td class="l">Kampania do dawnych klientów</td><td class="w"></td><td class="w on"></td><td class="w on"></td><td class="w on"></td><td class="w on"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td></tr><tr><td class="l">Proces opinii po montażu</td><td class="w"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td></tr><tr><td class="l">Post w Google co tydzień</td><td class="w"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td></tr><tr><td class="l">Facebook i Instagram</td><td class="w"></td><td class="w lt"></td><td class="w on"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td><td class="w lt"></td></tr><tr><td class="l">Dane firmy i katalogi</td><td class="w on"></td><td class="w on"></td><td class="w on"></td><td class="w on"></td><td class="w on"></td><td class="w on"></td><td class="w on"></td><td class="w"></td><td class="w ms"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 0 10 5 5 10 0 5Z" fill="#1e3466"/></svg></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td></tr><tr><td class="l">Dane do nowej strony</td><td class="w on"></td><td class="w on"></td><td class="w on"></td><td class="w ms"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 0 10 5 5 10 0 5Z" fill="#1e3466"/></svg></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w ms"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 0 10 5 5 10 0 5Z" fill="#1e3466"/></svg></td><td class="w"></td><td class="w"></td><td class="w"></td></tr><tr><td class="l">Partnerzy, lokalne media</td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w on"></td><td class="w"></td></tr><tr><td class="l">Przegląd i pomiar pozycji</td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w ms"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 0 10 5 5 10 0 5Z" fill="#1e3466"/></svg></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w ms"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 0 10 5 5 10 0 5Z" fill="#1e3466"/></svg></td><td class="w"></td><td class="w"></td><td class="w"></td><td class="w ms"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 0 10 5 5 10 0 5Z" fill="#1e3466"/></svg></td></tr><tr><td class="l">Start nowej strony</td><td class="note" colspan="13">termin ustala wykonawca strony; zadania na ten dzień w wierszu „S” poniżej</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box">
+    <h3>Co tydzień, od tygodnia 2</h3>
+    <div class="cols2 small">
+      <ul class="facts">
+        <li><b>Poniedziałek 8:00, 15 min:</b> lista kontrolna wizytówki (Paweł).</li>
+        <li><b>Po każdym montażu:</b> karta, SMS wieczorem, przypomnienie po <span class="nw">3–5</span> dniach, wpis w rejestrze (montażyści, biuro).</li>
+        <li><b>Odpowiedź na każdą opinię</b> w ciągu 48 h (Paweł).</li>
+      </ul>
+      <ul class="facts">
+        <li><b>Google:</b> 1 post z realizacją i <span class="nw">2–3</span> nowe zdjęcia (Paweł, biuro).</li>
+        <li><b>Facebook i Instagram:</b> 2 posty i 1 rolka, zaplanowane naraz w Meta Business Suite (biuro).</li>
+        <li><b>Montażyści:</b> zdjęcia przed, w trakcie i po, notatka z miejscowością.</li>
+      </ul>
+    </div>
+  </div>
+  <p class="small muted">Podział ról to założenie do potwierdzenia: Paweł prowadzi doradztwo, kontakt z klientem i wizytówkę; Bartosz odpowiada za montaż i ekipy; „biuro” to osoba od rejestru, wiadomości i katalogów (np. Kacper Dylewski); montażyści to brygadziści ekip.</p>
+
+  <h3>Tydzień po tygodniu</h3>
+  <table class="t plan">
+    <colgroup><col style="width:10mm"><col style="width:19mm"><col><col style="width:36mm"><col style="width:17mm"></colgroup>
+    <thead><tr><th>Tydz.</th><th>Daty</th><th>Zadania</th><th>Kto</th><th>Czas</th></tr></thead>
+    <tbody>
+      <tr><td class="wk">0</td><td class="dt">do 1.11</td><td><span class="task"><span class="tag">Decyzje</span><span>Przeczytać raport, podjąć decyzje <span class="nw">1–8</span> z rozdziału 10 (nazwa, kod, godziny, numery, ekipy, gwarancja, liczba montaży).</span></span></td><td class="who">Paweł, Bartosz</td><td class="tm">1 h</td></tr>
+      <tr><td class="wk">1</td><td class="dt"><span class="nw">2–8.11</span></td><td>
+        <span class="task"><span class="tag">Wizytówka</span><span>Dostęp i role. Kategorie. Opis, usługi, produkty, atrybuty, link z UTM, Facebook. Godziny specjalne na 11.11. Zrzut statystyk z 6 miesięcy jako punkt wyjścia.</span></span>
+        <span class="task"><span class="tag">Wizytówka</span><span><span class="nw">30–40</span> zdjęć i <span class="nw">1–2</span> filmy.</span></span>
+        <span class="task"><span class="tag">Opinie</span><span>Odpowiedzi na 9 opinii. Link i kod QR, karty A6, rejestr, lista dawnych klientów.</span></span>
+        <span class="task"><span class="tag">Strona</span><span>Gwarancja na montaż i kroki procesu dla wykonawcy strony.</span></span>
+        <span class="task"><span class="tag">Dane</span><span>Wzorzec danych firmy zatwierdzony, kod sprawdzony w Poczcie Polskiej.</span></span></td>
+        <td class="who">Paweł (wizytówka, odpowiedzi), Bartosz (zdjęcia, gwarancja), biuro (karty, rejestr, lista)</td><td class="tm">ok. 10 h</td></tr>
+      <tr><td class="wk">2</td><td class="dt"><span class="nw">9–15.11</span></td><td>
+        <span class="task"><span class="tag">Opinie</span><span>Spotkanie z ekipami: karta, skrypt, ściąga zdjęciowa. Od teraz proces po każdym montażu. Kampania: partia 1 z 4.</span></span>
+        <span class="task"><span class="tag">Wizytówka</span><span>Nazwa i kod pocztowy jednego dnia; nagranie weryfikacyjne, jeśli Google poprosi. Post 1.</span></span>
+        <span class="task"><span class="tag">FB / IG</span><span>Start rytmu: 2 posty i 1 rolka tygodniowo.</span></span>
+        <span class="task"><span class="tag">Strona</span><span>Dane ekip: imiona, role, staż, portrety za zgodą.</span></span></td>
+        <td class="who">Bartosz, montażyści, Paweł, biuro</td><td class="tm">ok. 3 h</td></tr>
+      <tr><td class="wk">3</td><td class="dt"><span class="nw">16–22.11</span></td><td>
+        <span class="task"><span class="tag">Opinie</span><span>Partia 2, przypomnienia do partii 1. Post 2.</span></span>
+        <span class="task"><span class="tag">Dane</span><span>Bing Places, Apple Business Connect. Arkusz wpisów.</span></span>
+        <span class="task"><span class="tag">FB / IG</span><span>Profil Facebooka (okładka, <span class="nw">e-mail</span>, adres, godziny, opis), opis Instagrama, rozmycie tablicy rejestracyjnej.</span></span>
+        <span class="task"><span class="tag">Strona</span><span>Lista min. 6 realizacji z miejscowościami i zgodami.</span></span></td>
+        <td class="who">biuro, Paweł, Bartosz</td><td class="tm">ok. 4 h</td></tr>
+      <tr><td class="wk">4</td><td class="dt"><span class="nw">23–29.11</span></td><td>
+        <span class="task"><span class="tag">Opinie</span><span>Partia 3. Post 3.</span></span>
+        <span class="task"><span class="tag">Dane</span><span>Aleo, Panorama Firm, PKT.pl; sprawdzić Infobel i GoWork.</span></span>
+        <span class="task"><span class="tag">Przegląd</span><span>Przegląd miesięczny nr 1 i ręczny pomiar pozycji. Decyzja o widełkach cen.</span></span></td>
+        <td class="who">biuro, Paweł, Bartosz</td><td class="tm">ok. 3 h</td></tr>
+      <tr><td class="wk">5</td><td class="dt">30.<span class="nw">11–6.12</span></td><td>
+        <span class="task"><span class="tag">Opinie</span><span>Partia 4 (ostatnia). Post 4.</span></span>
+        <span class="task"><span class="tag">Dane</span><span>Prośba do DAKO o wpis w „Gdzie kupić”.</span></span></td>
+        <td class="who">biuro, Paweł</td><td class="tm">1 h</td></tr>
+      <tr><td class="wk">6</td><td class="dt"><span class="nw">7–13.12</span></td><td>
+        <span class="task"><span class="tag">Wizytówka</span><span>Post 5. Godziny specjalne: <span class="nw">24–26.12</span>, 31.12, 1.01, 6.01.</span></span>
+        <span class="task"><span class="tag">Dane</span><span>Firmy.net, Cylex.</span></span></td>
+        <td class="who">Paweł, biuro</td><td class="tm">1,5 h</td></tr>
+      <tr><td class="wk">7</td><td class="dt"><span class="nw">14–20.12</span></td><td><span class="task"><span class="tag">Wizytówka</span><span>Post 6.</span></span><span class="task"><span class="tag">Dane</span><span>Maile do producentów o wpis w wyszukiwarkach dealerów.</span></span></td><td class="who">Paweł</td><td class="tm">1 h</td></tr>
+      <tr><td class="wk">8</td><td class="dt"><span class="nw">21–27.12</span></td><td><span class="task"><span class="tag">Wizytówka</span><span>Post 7: godziny pracy w okresie świątecznym. Poza tym tylko lista kontrolna.</span></span></td><td class="who">Paweł</td><td class="tm">15 min</td></tr>
+      <tr><td class="wk">9</td><td class="dt">28.<span class="nw">12–3.01</span></td><td><span class="task"><span class="tag">Przegląd</span><span>Post 8. Przegląd miesięczny nr 2 i pomiar pozycji. Kontrola danych firmy we wszystkich katalogach. Decyzja o płatnych serwisach (Oferteo, Homebook).</span></span></td><td class="who">Paweł, biuro</td><td class="tm">1,5 h</td></tr>
+      <tr><td class="wk">10</td><td class="dt"><span class="nw">4–10.01</span></td><td><span class="task"><span class="tag">Wizytówka</span><span>Post. Zdjęcia ekip przy zimowych montażach.</span></span><span class="task"><span class="tag">Strona</span><span>Zaplanować wiosenną sesję zdjęciową.</span></span></td><td class="who">Bartosz</td><td class="tm">45 min</td></tr>
+      <tr><td class="wk">11</td><td class="dt"><span class="nw">11–17.01</span></td><td><span class="task"><span class="tag">Opinie</span><span>Post. Rozmowa z ekipami: co działa w procesie opinii, co nie.</span></span></td><td class="who">Paweł, Bartosz</td><td class="tm">1 h</td></tr>
+      <tr><td class="wk">12</td><td class="dt"><span class="nw">18–24.01</span></td><td><span class="task"><span class="tag">Dane</span><span>Post. Dwa kontakty z partnerami (architekt, biuro projektowe, firma budująca domy) lub z lokalnym portalem.</span></span></td><td class="who">Paweł</td><td class="tm">1 h</td></tr>
+      <tr><td class="wk">13</td><td class="dt"><span class="nw">25–31.01</span></td><td><span class="task"><span class="tag">Przegląd</span><span>Post. Przegląd 90 dni: wyniki wobec celów z rozdziału 9, decyzja o ewentualnym teście kategorii głównej, plan na kolejny kwartał.</span></span></td><td class="who">Paweł, Bartosz</td><td class="tm">2 h</td></tr>
+      <tr class="launch"><td class="wk">S</td><td class="dt">start strony</td><td><span class="task"><span class="tag">Strona</span><span>Jeden adres www i przekierowania; Search Console, Bing Webmaster Tools, mapa strony; Google Analytics po zgodzie na cookies. Podmiana linków w wizytówce (umawianie wizyt, produkty, posty). Dane w stopce identyczne z wizytówką. Od tego dnia <span class="nw">2–4</span> realizacje miesięcznie i linki z postów do realizacji.</span></span></td><td class="who">wykonawca strony, Paweł</td><td class="tm">45 min</td></tr>
+    </tbody>
+  </table>
+  <p class="small muted">Termin startu nowej strony ustala wykonawca strony. Zależy od danych z tygodni <span class="nw">1–3</span> (ekipy, gwarancja, realizacje, polityka prywatności).</p>
+</section>
+
+<!-- ======================= 9. KPI ======================= -->
+<section class="chapter">
+  <div class="chead"><p class="eyebrow">ROZDZIAŁ 9</p>
+  <h1 class="ch">Cele i mierniki</h1></div>
+  <p class="small muted" style="margin-top:-1mm">Dalsze cele z planu wizytówki: 55 opinii po 6 miesiącach, <span class="nw">90–100</span> po roku, „okna Płock” w <span class="nw">3-paku</span>.</p>
+  <table class="t kpi">
+    <thead><tr><th style="width:17mm">Obszar</th><th>Miernik</th><th style="width:22mm">Dziś (27.10)</th><th style="width:25mm">Po 30 dniach</th><th style="width:25mm">Po 90 dniach</th><th style="width:29mm">Skąd dane</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Opinie</td><td>Liczba opinii w Google / nowe w miesiącu</td><td>9 / mniej niż 1</td><td>20 / –</td><td><b>35 / <span class="nw">5–8</span></b></td><td>wizytówka</td></tr>
+      <tr><td></td><td>Średnia ocena / odpowiedzi w ciągu 48 h</td><td>5,0 / 0%</td><td>min. 4,8 / 100%</td><td><b>min. 4,8 / 100%</b></td><td>wizytówka</td></tr>
+      <tr><td></td><td>Karta / SMS po montażu / klienci z opinią w 14 dni</td><td>–</td><td>100% / 90% / <span class="nw">25–40</span>%</td><td><b>100% / 90% / <span class="nw">25–40</span>%</b></td><td>rejestr montaży</td></tr>
+      <tr><td class="k">Wizytówka</td><td>Zdjęcia w profilu / posty</td><td>26 / ostatni 12.08</td><td>60 / 1 tygodniowo</td><td><b>100 / 1 tygodniowo</b></td><td>wizytówka</td></tr>
+      <tr><td></td><td>Połączenia, kliknięcia do strony, prośby o trasę</td><td>zrzut w tyg. 1</td><td>rosnąco</td><td><b>rosnąco m/m</b></td><td>wizytówka, „Skuteczność”</td></tr>
+      <tr><td class="k">Mapy</td><td>„okna Płock” / „montaż okien Płock”</td><td>13. / 16.</td><td>top 10 / top 10</td><td><b>top 5 / top <span class="nw">3–5</span></b></td><td>ręczny pomiar, 4 punkty</td></tr>
+      <tr><td></td><td>„drzwi zewnętrzne”, „bramy garażowe”, „rolety zewnętrzne Płock”</td><td>brak</td><td>top 20</td><td><b>top 10</b></td><td>ręczny pomiar</td></tr>
+      <tr><td class="k">Strona</td><td>Wyświetlenia i kliknięcia ok. 30 fraz</td><td>brak pomiaru</td><td>–</td><td><b>pomiar działa</b></td><td>Search Console</td></tr>
+      <tr><td></td><td>Formularze, kliknięcia w telefon, konfiguracje</td><td>brak formularza</td><td>–</td><td><b>liczone co miesiąc</b></td><td>Google Analytics</td></tr>
+      <tr><td></td><td>Zapytania „z Google / Map / Facebooka”</td><td>nienotowane</td><td>każde notowane</td><td><b>każde notowane</b></td><td>pytanie „Skąd Pan/Pani o nas wie?”</td></tr>
+      <tr><td class="k">Facebook</td><td>Posty i rolki w miesiącu</td><td>0 (wrz.–paź.)</td><td>8 + 4</td><td><b>8 + 4</b></td><td>Meta Business Suite</td></tr>
+      <tr><td></td><td>Mediana reakcji, komentarzy i udostępnień / wyświetlenia rolki</td><td>0 / 229</td><td>ponad 5 / ponad 300</td><td><b>ponad 5 / ponad 300</b></td><td>statystyki</td></tr>
+      <tr><td></td><td>Obserwujący / posty z ekipą w kadrze</td><td>100 / 0</td><td>+20 / min. 50%</td><td><b>+20 mies. / min. 50%</b></td><td>statystyki, kontrola</td></tr>
+      <tr><td class="k">Instagram</td><td>Posty i rolki</td><td>0 od 13.08</td><td>jak Facebook</td><td><b>jak Facebook</b></td><td>Meta Business Suite</td></tr>
+      <tr><td class="k">Dane firmy</td><td>Miejsca z danymi jak we wzorcu (Google, FB, IG, strona, 9 katalogów)</td><td>nie liczono</td><td>Google, FB, IG, Bing, Apple</td><td><b>13 miejsc</b></td><td>arkusz wpisów</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="sec"><span class="k">WZÓR</span>Przegląd miesięczny (30 minut, Paweł i Bartosz, tydzień 4, 9 i 13)</h2>
+  <table class="t blank">
+    <thead><tr><th style="width:58mm">Miernik</th><th style="width:22mm">Cel</th><th>Poprz. miesiąc</th><th>Ten miesiąc</th><th>Zmiana</th><th style="width:42mm">Komentarz / działanie</th></tr></thead>
+    <tbody>
+      <tr><td>Opinie łącznie / nowe / odpowiedzi w 48 h</td><td>35 / <span class="nw">5–8</span> / 100%</td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+      <tr><td>Montaże / karty / <span class="nw">SMS-y</span> / % z opinią</td><td>100% / 90% / <span class="nw">25–40</span>%</td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+      <tr><td>Zdjęcia i posty w wizytówce</td><td><span class="nw">8–10</span> / 4</td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+      <tr><td>Połączenia / kliknięcia do strony / trasy</td><td>rosnąco</td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+      <tr><td>Formularze i konfiguracje; zapytania „z Google”</td><td>rosnąco</td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+      <tr><td>Posty i rolki FB / IG; mediana reakcji</td><td>8 + 4; ponad 5</td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+      <tr><td>„okna Płock”: biuro / Rynek / Podolszyce / Radziwie</td><td>top 5</td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+      <tr><td>Montaż, drzwi, bramy, rolety (pozycje)</td><td>wg tabeli</td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+      <tr><td><b>3 wnioski</b></td><td colspan="5" class="fill"></td></tr>
+      <tr><td><b>3 działania na kolejny miesiąc</b> (kto, do kiedy)</td><td colspan="5" class="fill"></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ======================= 10. DECYZJE ======================= -->
+<section class="chapter">
+  <div class="chead"><p class="eyebrow">ROZDZIAŁ 10</p>
+  <h1 class="ch">Decyzje do podjęcia</h1></div>
+  <p class="lead">Punkty <span class="nw">1–8</span> blokują pracę w pierwszych dwóch tygodniach. Rekomendacje są propozycją; decyzja należy do Was.</p>
+  <table class="t">
+    <thead><tr><th style="width:7mm">#</th><th style="width:66mm">Sprawa</th><th>Rekomendacja</th><th style="width:20mm">Do kiedy</th></tr></thead>
+    <tbody>
+      <tr><td class="k">1</td><td>Nazwa w Google i jeden zapis marki („Inter Windows” czy „InterWindows”)</td><td>„Inter Windows”. Zmiana w Google w tygodniu 2, gdy szyld z tą nazwą jest na budynku.</td><td>8.11</td></tr>
+      <tr><td class="k">2</td><td>Kod pocztowy</td><td><span class="nw">09-400</span>, po sprawdzeniu w wyszukiwarce kodów Poczty Polskiej.</td><td>8.11</td></tr>
+      <tr><td class="k">3</td><td>Godziny biura, szyld, ekspozycja. Czy klient może przyjść bez umawiania?</td><td>Wpisać tylko godziny, w których ktoś naprawdę jest na miejscu. Od tego zależy, czy adres zostaje widoczny.</td><td>8.11</td></tr>
+      <tr><td class="k">4</td><td>Numery telefonów: który ma WhatsApp; czy 606 643 641 i 797 566 365 mają być publiczne</td><td>Jeden numer główny wszędzie (697 886 093). Pozostałe tylko na stronie /kontakt/.</td><td>8.11</td></tr>
+      <tr><td class="k">5</td><td>Gwarancja na montaż, odbiór z protokołem, wywóz starej stolarki</td><td>Wprowadzić i zapisać. To dowód wyróżnika i podstawa prośby o opinię.</td><td>8.11</td></tr>
+      <tr><td class="k">6</td><td>Ekipy: liczba, imiona, role, staż, zdjęcia (pisemne zgody)</td><td>Pokazać z imienia. Bez tego sekcja „własne ekipy” zostaje na kartach zastępczych.</td><td>15.11</td></tr>
+      <tr><td class="k">7</td><td>Ile montaży robicie średnio w miesiącu</td><td>Podać liczbę. Przy mniej niż 15 cele opinii na 6 i 12 miesięcy spadają o jedną trzecią.</td><td>8.11</td></tr>
+      <tr><td class="k">8</td><td>Role: kto prowadzi wizytówkę, kto jest „biurem”</td><td>Paweł: wizytówka i odpowiedzi. Biuro: rejestr, wiadomości, katalogi, Facebook i Instagram.</td><td>8.11</td></tr>
+      <tr><td class="k">9</td><td>Adres ul. Pniewskiego 42, <span class="nw">09-410</span> na okładce Facebooka</td><td>Wyjaśnić, skąd się wziął. Okładkę wymienić na zdjęcie realizacji lub ekipy.</td><td>22.11</td></tr>
+      <tr><td class="k">10</td><td>Usługi do wpisania: ciepły montaż, drzwi HS/HST, demontaż i utylizacja, serwis okien innych firm</td><td>Wpisywać tylko to, co naprawdę robicie.</td><td>8.11</td></tr>
+      <tr><td class="k">11</td><td>„20 lat doświadczenia”, liczby 500+ klientów i 650+ projektów</td><td>Jedna liczba wszędzie. Na stronie tylko potwierdzone, jako doświadczenie wspólników.</td><td>15.11</td></tr>
+      <tr><td class="k">12</td><td>Data otwarcia w Google: grudzień 2024 czy lipiec 2025</td><td>Data faktycznego startu firmy.</td><td>8.11</td></tr>
+      <tr><td class="k">13</td><td>Widełki cen „od … zł” na stronie</td><td>Tak. Klienci szukają „okna Płock cennik”.</td><td>29.11</td></tr>
+      <tr><td class="k">14</td><td>Krótki adres strony na Facebooku</td><td>Tak, np. facebook.com/interwindows.</td><td>22.11</td></tr>
+      <tr><td class="k">15</td><td>Adres interwindows.pl/opinia/ przekierowujący na link Google</td><td>Tak. Kod QR na kartach przetrwa ewentualną zmianę linku przez Google.</td><td>start strony</td></tr>
+      <tr><td class="k">16</td><td>Płatne serwisy: Oferteo, Homebook, narzędzia do pomiaru pozycji</td><td>Najpierw darmowe profile. Decyzja po 2 miesiącach.</td><td>3.01</td></tr>
+      <tr><td class="k">17</td><td>Bezpłatny przegląd po pierwszej zimie dla wszystkich klientów</td><td>Tak, niezależnie od opinii. Pasuje do marki premium.</td><td>31.01</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ======================= ZAŁĄCZNIK ======================= -->
+<section class="chapter">
+  <div class="chead"><p class="eyebrow">ZAŁĄCZNIK</p>
+  <h1 class="ch">Gotowe teksty</h1></div>
+  <p class="lead">Najważniejsze wzory do użycia od pierwszego tygodnia. W miejsce <span class="ph">{LINK}</span> wkleić link do opinii z wizytówki (zwykle zaczyna się od https://g.page/r/…). Pozostałe teksty (opis firmy, 15 usług, 10 produktów, opisy do katalogów, <span class="nw">e-mail</span> po montażu, odpowiedzi na opinie, posty <span class="nw">4–8</span>, szablony na Facebooka) są w dokumentach <b>wizytowka-google-materialy.md</b> i <b>facebook-analiza.md</b>.</p>
+
+  <div class="cols2">
+    <div>
+      <div class="tpl">
+        <div class="h">KARTA A6 · STRONA 1 (Z KODEM QR)</div>
+        <p><b>INTER WINDOWS</b></p>
+        <p>Dziękujemy za zaufanie.</p>
+        <p>Montaż wykonała nasza ekipa: ......................................<br><span class="muted small">(imiona wpisuje brygadzista)</span></p>
+        <p>Bez podwykonawców. Ten sam zespół od pomiaru do odbioru.</p>
+        <p class="ph">[KOD QR, min. 3 × 3 cm]</p>
+        <p>Jak oceniają Państwo naszą pracę? Szczera opinia w Google, także krytyczna, pomaga innym wybrać firmę, a nam pracować coraz lepiej. Wystarczy zeskanować kod aparatem telefonu.</p>
+      </div>
+      <div class="tpl">
+        <div class="h">KARTA A6 · STRONA 2</div>
+        <p><b>Gdyby cokolwiek wymagało regulacji</b><br>Prosimy o telefon: 697 886 093 (poniedziałek–piątek <span class="nw">8–16</span>, sobota <span class="nw">8–13</span>), biuro@interwindows.pl</p>
+        <p>Regulacje i poprawki wykonują nasi monterzy, nie firma zewnętrzna.</p>
+        <p>Data montażu: ............... Zakres: ...............................</p>
+        <p class="small">Inter Windows · ul. Przemysłowa 22, <span class="nw">09-400</span> Płock · www.interwindows.pl</p>
+      </div>
+      <div class="tpl">
+        <div class="h">SMS TEGO SAMEGO WIECZORU (18:<span class="nw">00–20</span>:00)</div>
+        <p>Dzień dobry, tu Paweł Majchrzak z Inter Windows. Dziękujemy za dzisiejszy montaż i zaufanie. Jeśli znajdzie Pan chwilę, będziemy wdzięczni za szczerą opinię w Google, własnymi słowami: <span class="ph">{LINK}</span> W razie pytań jestem pod tym numerem. Pozdrawiam</p>
+      </div>
+    </div>
+    <div>
+      <div class="tpl">
+        <div class="h">PRZYPOMNIENIE PO <span class="nw">3–5</span> DNIACH (JEDNO, TYLKO GDY OPINII BRAK)</div>
+        <p>Dzień dobry, tu Paweł z Inter Windows. Przypominam się jeden raz w sprawie opinii o montażu z <span class="ph">{dzień}</span>. Jeśli to nie kłopot, link jest tutaj: <span class="ph">{LINK}</span> Jeśli opinia już jest albo nie ma Pan na to ochoty, proszę zignorować tę wiadomość. Dziękujemy i pozdrawiamy.</p>
+      </div>
+      <div class="tpl">
+        <div class="h">SMS DO DAWNYCH KLIENTÓW (4 PARTIE, RAZ W TYGODNIU)</div>
+        <p>Dzień dobry, tu Paweł Majchrzak z Inter Windows z Płocka. W <span class="ph">{miesiąc i rok}</span> montowaliśmy u Pana <span class="ph">{okna / drzwi / bramę}</span>. Mam jedną prośbę: jeśli znajdzie Pan minutę, będziemy wdzięczni za szczerą opinię w Google o naszej pracy: <span class="ph">{LINK}</span> A jeśli od tamtej pory coś wymaga regulacji, proszę dać znać, przyjedziemy. Dziękujemy.</p>
+      </div>
+      <div class="tpl">
+        <div class="h">POST W GOOGLE 1 (TYDZIEŃ 2) · ZDJĘCIE: EKIPA PRZY MONTAŻU</div>
+        <p><b>Montują nasi ludzie. Zawsze.</b> W Inter Windows okna, drzwi, rolety i bramy montują wyłącznie nasze ekipy. Nie oddajemy montażu podwykonawcom, więc od pomiaru do odbioru wiadomo, kto pracuje w Twoim domu i kto za to odpowiada. Po montażu sprawdzamy razem z Tobą szczelność i regulację, sprzątamy i pokazujemy, jak korzystać z nowej stolarki. Pracujemy w Płocku i okolicach do około 50 km. Pomiar i wycena są bezpłatne.</p>
+      </div>
+    </div>
+  </div>
+  <div class="cols2">
+    <div class="tpl">
+      <div class="h">POST W GOOGLE 2 (TYDZIEŃ 3) · ZDJĘCIE: MONTAŻ DUŻEJ SZYBY ROBOTEM</div>
+      <p><b>Realizacja: duże przeszklenia w <span class="ph">{miejscowość}</span>.</b> Tafle o wymiarach <span class="ph">{szer. × wys.}</span> montowaliśmy przy użyciu robota z przyssawką próżniową, który pozwala precyzyjnie ustawić ciężkie szkło bez ryzyka uszkodzenia. Montaż wykonała nasza ekipa w <span class="ph">{liczba}</span> dni. Przy dużych przeszkleniach o efekcie decydują milimetry, dlatego takich prac nie zlecamy nikomu z zewnątrz.</p>
+    </div>
+    <div class="tpl">
+      <div class="h">POST W GOOGLE 3 (TYDZIEŃ 4) · <span class="flag">POTWIERDZIĆ, ŻE TAK PRACUJECIE</span></div>
+      <p><b>Czy okna można wymieniać zimą?</b> Tak, jeśli montaż jest dobrze zaplanowany. Przy niskich temperaturach używamy materiałów montażowych przeznaczonych do pracy w chłodzie, a okna wymieniamy pomieszczenie po pomieszczeniu, żeby dom się nie wychładzał. Przed decyzją przyjedziemy na bezpłatny pomiar i powiemy uczciwie, czy w Twoim przypadku lepiej zaczekać do wiosny.</p>
+    </div>
+  </div>
+  <p class="small muted">Zasady postów w Google: jedno własne zdjęcie poziome, bez napisów na zdjęciu; bez hasztagów, wykrzykników i numeru telefonu w treści (telefon jest w przycisku); przycisk „Więcej informacji” z linkiem do strony albo „Zadzwoń”. Dla klientki: „Pani” zamiast „Pan”.</p>
+</section>
+
+</body>
+</html>
