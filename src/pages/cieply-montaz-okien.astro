@@ -1,0 +1,287 @@
+---
+// /cieply-montaz-okien/ – educational page about layered ("warm") installation (docs/seo-plan.md §4.2–4.3).
+// P1*: rendered with `noindex` (and therefore left out of sitemap.xml) until the client confirms that
+// the crews do layered installation. Then: remove `noindex`, restore the plan's meta description,
+// fill in the materials section (docs/do-uzupelnienia.md, "Podstrony SEO i poradnik").
+// The copy explains the method; it does not claim which systems the crews use.
+import { url } from '../lib/url';
+import { rich } from '../lib/rich';
+import { service } from '../lib/schema';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import PageHero from '../components/PageHero.astro';
+import LayersDiagram from '../components/seo/LayersDiagram.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import QuoteForm from '../components/QuoteForm.astro';
+import { aiImage, aiSrc, aiSrcSmall } from '../data/ai-zdjecia';
+
+const NOINDEX = true; // → false after the client confirms layered installation
+
+const path = '/cieply-montaz-okien/';
+const seo = {
+  title: 'Ciepły montaż okien Płock – montaż warstwowy',
+  // plan §4.2 ends with "Wykonujemy go własną ekipą w Płocku i okolicach." – restore after confirmation
+  description:
+    'Ciepły, warstwowy montaż okien: taśmy, izolacja i szczelne połączenie z murem. Na czym polega, kiedy ma sens i ile kosztuje. Sprawdź, czy warto.',
+  h1: 'Ciepły montaż okien w Płocku',
+};
+const TBC = 'Treść czeka na potwierdzenie przez Inter Windows';
+const hero = aiImage('ai-montaz-tasma');
+const levelAi = aiImage('ai-montaz-poziomowanie');
+
+const toc = [
+  { id: 'na-czym-polega', label: 'Na czym polega' },
+  { id: 'kiedy-warto', label: 'Kiedy ma sens' },
+  { id: 'materialy', label: 'Materiały' },
+  { id: 'przy-wymianie', label: 'Przy wymianie okien' },
+  { id: 'w-warstwie-ocieplenia', label: 'W warstwie ocieplenia' },
+  { id: 'cena', label: 'Ile kosztuje' },
+  { id: 'faq', label: 'Pytania i odpowiedzi' },
+];
+
+const when = [
+  '**W nowym domu energooszczędnym**, w którym ściany, dach i okna są dobrze ocieplone. Tam nieszczelny styk okna z murem staje się jednym z najsłabszych miejsc przegrody.',
+  '**W domu z wentylacją mechaniczną z rekuperacją**, która działa najlepiej w szczelnym budynku.',
+  '**Przy dużych przeszkleniach i drzwiach tarasowych**: im dłuższy obwód ramy, tym więcej metrów połączenia z murem.',
+  '**Gdy okno stoi w warstwie ocieplenia lub na jej krawędzi.** Wtedy uszczelnienie warstwowe jest właściwie konieczne.',
+  '**Przy termomodernizacji**, gdy wymiana okien idzie razem z ociepleniem elewacji.',
+];
+
+const ask = [
+  'jaką metodą okna będą osadzone i dlaczego właśnie tak,',
+  'z jakich materiałów składa się uszczelnienie i czy pochodzą z jednego systemu,',
+  'jak zostanie przygotowane ościeże przed naklejeniem taśm,',
+  'kto wykona obróbki, które zakryją taśmę od wewnątrz i od zewnątrz,',
+  'czy koszt ciepłego montażu jest w wycenie wskazany osobno.',
+];
+
+const costFactors = [
+  'łączna długość obwodu okien w metrach bieżących,',
+  'rodzaj materiałów: osobne taśmy wewnętrzne i zewnętrzne albo taśmy wielofunkcyjne,',
+  'stan ościeży i ilość pracy przy ich wyrównaniu,',
+  'montaż w warstwie ocieplenia: konsole lub ramy montażowe,',
+  'zakres obróbek wewnętrznych i zewnętrznych.',
+];
+
+const faq = [
+  {
+    q: 'Czy ciepły montaż jest potrzebny w każdym domu?',
+    a: 'Nie w każdym, ale w nowym domu energooszczędnym to dziś dobra praktyka. Przy wymianie pojedynczych okien w nieocieplonym budynku decyzja zależy od stanu ościeży i planów ocieplenia elewacji.',
+  },
+  {
+    q: 'Czy sama pianka nie wystarczy?',
+    a: 'Pianka dobrze izoluje, dopóki jest sucha i osłonięta. Bez zabezpieczenia od wewnątrz nasiąka parą wodną z domu, od zewnątrz deszczem, a promieniowanie UV ją niszczy. Taśmy w ciepłym montażu chronią ją przed tymi czynnikami.',
+  },
+  {
+    q: 'Czy ciepły montaż można zrobić przy wymianie okien?',
+    a: 'Tak, ale wymaga starannego przygotowania ościeża po demontażu: wyrównania, oczyszczenia i często uzupełnienia tynku, bo taśmy potrzebują gładkiego, suchego i nośnego podłoża. Więcej o samej wymianie na stronie [wymiana okien](/wymiana-okien/).',
+  },
+  {
+    q: 'Czym różni się ciepły montaż od montażu w warstwie ocieplenia?',
+    a: 'Ciepły montaż to sposób uszczelnienia szczeliny między oknem a murem. Montaż w warstwie ocieplenia dotyczy miejsca okna: rama jest wysunięta przed mur na konsolach lub ramach montażowych. Montaż w warstwie ocieplenia zawsze łączy się z uszczelnieniem warstwowym.',
+  },
+  {
+    q: 'Jak rozpoznać, że okno było zamontowane na ciepło?',
+    a: 'Po montażu taśmy zakrywają obróbki, więc najlepiej zobaczyć je w trakcie prac. Zapytaj wykonawcę o zdjęcia warstw uszczelnienia, zanim zostaną zakryte tynkiem lub listwą.',
+  },
+];
+
+const related = [
+  { href: '/montaz-okien/', label: 'Montaż okien', icon: 'montaz' },
+  { href: '/wymiana-okien/', label: 'Wymiana okien', icon: 'demontaz' },
+  { href: '/okna-pcv/', label: 'Okna PCV', icon: 'okna-pcv' },
+  { href: '/okna/', label: 'Okna na wymiar', icon: 'okna-aluminiowe' },
+];
+
+const schema = service({ name: seo.h1, serviceType: 'Ciepły montaż okien', path, description: seo.description });
+---
+
+<Base title={seo.title} description={seo.description} updated="2026-10-27" noindex={NOINDEX} schema={schema}>
+  <PageHero
+    title={seo.h1}
+    eyebrow="Ciepły montaż"
+    lead="Ciepły montaż to sposób uszczelnienia styku okna z murem trzema warstwami. Chroni izolację przed wilgocią i ogranicza straty ciepła wokół ramy, czyli tam, gdzie zwykły montaż bywa najsłabszym miejscem okna. Wyjaśniamy, na czym polega, kiedy się opłaca i o co pytać przy wycenie."
+    breadcrumbs={[{ name: 'Montaż okien', path: '/montaz-okien/' }, { name: 'Ciepły montaż okien' }]}
+    image={{ src: aiSrc(hero), srcSmall: aiSrcSmall(hero), alt: hero.alt, width: hero.width, height: hero.height }}
+  >
+    <a class="btn" href="#wycena"><Icon name="arrow" class="arrow" /> Umów bezpłatny pomiar</a>
+    <a class="btn btn--ghost" href={url('/montaz-okien/')}>Jak montujemy</a>
+  </PageHero>
+
+  <section class="section section--soft">
+    <div class="container">
+      <nav class="page-toc reveal" aria-label="Na tej stronie">
+        <span class="page-toc__label">Na tej stronie</span>
+        <div class="toc">{toc.map((t) => <a class="chip" href={`#${t.id}`}>{t.label}</a>)}</div>
+      </nav>
+
+      <div class="content">
+        <section class="content-section" id="na-czym-polega">
+          <div class="content-section__head reveal">
+            <span class="eyebrow">Zasada</span>
+            <h2>Na czym polega: trzy warstwy uszczelnienia</h2>
+          </div>
+          <div class="content-section__body rich reveal">
+            <p>
+              W tradycyjnym montażu szczelinę między ramą a murem wypełnia się pianką poliuretanową i na tym praca się kończy. Pianka dobrze izoluje, ale tylko wtedy,
+              gdy jest sucha. Od wewnątrz nasiąka parą wodną z domu, od zewnątrz deszczem, a niezabezpieczoną niszczy promieniowanie UV. Wilgotna pianka gorzej izoluje,
+              a na styku okna z murem pojawia się chłód, czasem zawilgocenie i pleśń na ościeżu.
+            </p>
+            <p>Ciepły montaż dzieli to połączenie na trzy warstwy, z których każda ma jedno zadanie.</p>
+            <LayersDiagram />
+            <p>
+              Zasada jest prosta: połączenie ma być szczelniejsze od wewnątrz niż od zewnątrz. Wtedy wilgoć, która mimo wszystko dostanie się do szczeliny, ma którędy
+              wyjść. Zamiast trzech osobnych materiałów stosuje się też taśmy wielofunkcyjne, które łączą wszystkie trzy funkcje w jednym produkcie.
+            </p>
+          </div>
+        </section>
+
+        <section class="content-section" id="kiedy-warto">
+          <div class="content-section__head reveal">
+            <span class="eyebrow">Zastosowanie</span>
+            <h2>Kiedy ma największy sens</h2>
+          </div>
+          <div class="content-section__body rich reveal">
+            <ul class="bullets">{when.map((w) => <li set:html={rich(w)} />)}</ul>
+            <p>
+              Mniej zyskasz, wymieniając pojedyncze okno w nieocieplonym budynku z nierównymi ościeżami. Uszczelnienie warstwowe nadal ma tam sens, ale wymaga starannego
+              przygotowania muru, a efekt cieplny zależy też od reszty ściany.
+            </p>
+          </div>
+        </section>
+
+        <section class="content-section" id="materialy">
+          <div class="content-section__head reveal">
+            <span class="eyebrow">Materiały</span>
+            <h2>Materiały i systemy, których używamy</h2>
+          </div>
+          <div class="content-section__body rich reveal">
+            <p>
+              Do ciepłego montażu stosuje się taśmy paroszczelne i paroprzepuszczalne, taśmy rozprężne, membrany i pianki niskoprężne. Systemy oferuje kilku producentów
+              chemii budowlanej. Ważniejsze od marki jest to, żeby elementy pochodziły z jednego systemu, były dobrane do szerokości szczeliny i rodzaju muru i były
+              nakładane na czyste, suche i równe ościeże.
+            </p>
+            <p class="note">
+              Materiały, które zastosujemy w Twoim domu, zapisujemy w ofercie.
+              <span class="tbc" title={TBC}>do potwierdzenia</span>
+            </p>
+            <h3>O co zapytać przy wycenie</h3>
+            <ul class="bullets">{ask.map((a) => <li>{a}</li>)}</ul>
+          </div>
+        </section>
+
+        <section class="content-section" id="przy-wymianie">
+          <div class="content-section__head reveal">
+            <span class="eyebrow">Starszy dom</span>
+            <h2>Ciepły montaż przy wymianie okien w starszym domu</h2>
+          </div>
+          <div class="content-section__body rich reveal">
+            <p>
+              Przy wymianie okien warunki są trudniejsze niż na nowej budowie. Po demontażu starej ramy ościeże bywa nierówne, z ubytkami tynku i resztkami zaprawy, a taśmy
+              wymagają gładkiego, nośnego i suchego podłoża. Dlatego ościeże trzeba najpierw wyrównać i oczyścić, czasem uzupełnić zaprawą.
+            </p>
+            <p>
+              W domach, które czeka ocieplenie elewacji, warto zgrać kolejność prac: najpierw okna z uszczelnieniem przygotowanym pod ocieplenie, potem izolacja, która
+              nachodzi na ramę. Docieplenie ościeża zewnętrznego ogranicza mostek termiczny wokół okna.
+            </p>
+            <p>
+              Od strony wnętrza taśmę zakrywa obróbka, na przykład tynk, płyta lub listwa. Jej zakres trzeba ustalić przed montażem. Więcej o samej usłudze na stronie{' '}
+              <a href={url('/wymiana-okien/')}>wymiana okien</a>.
+            </p>
+          </div>
+        </section>
+
+        <section class="content-section" id="w-warstwie-ocieplenia">
+          <div class="content-section__head reveal">
+            <span class="eyebrow">Dom energooszczędny</span>
+            <h2>Montaż w warstwie ocieplenia</h2>
+          </div>
+          <div class="content-section__body rich reveal">
+            <figure class="photo side-img">
+              <img
+                src={url(aiSrcSmall(levelAi))}
+                srcset={`${url(aiSrcSmall(levelAi))} 800w, ${url(aiSrc(levelAi))} 1600w`}
+                sizes="(min-width: 960px) 280px, 100vw"
+                alt={levelAi.alt}
+                width={levelAi.width}
+                height={levelAi.height}
+                loading="lazy"
+              />
+            </figure>
+            <p>
+              Najdalej idącym wariantem jest osadzenie okna w warstwie ocieplenia, przed murem nośnym. Rama opiera się na konsolach lub ramach montażowych przykręconych do muru,
+              a ocieplenie elewacji otacza ją z trzech stron. Okno znajduje się wtedy w strefie, w której temperatura jest najbardziej wyrównana, więc straty ciepła na styku
+              z murem są najmniejsze.
+            </p>
+            <p>
+              To rozwiązanie dla domów energooszczędnych i pasywnych z grubym ociepleniem. Wymaga projektu: konsol o nośności dobranej do ciężaru okna, zwłaszcza przy dużych
+              przeszkleniach, przemyślanego parapetu zewnętrznego i uszczelnienia, które pracuje razem z elewacją. Najlepiej zaplanować je w stanie surowym, przed wykonaniem
+              ocieplenia.
+            </p>
+            <p>
+              Montaż w warstwie ocieplenia zawsze łączy się z uszczelnieniem warstwowym. Ciepły montaż w murze jest rozwiązaniem prostszym i tańszym, które w wielu domach daje
+              dobry efekt.
+            </p>
+          </div>
+        </section>
+
+        <section class="content-section" id="cena">
+          <div class="content-section__head reveal">
+            <span class="eyebrow">Wycena</span>
+            <h2>Ile kosztuje ciepły montaż</h2>
+          </div>
+          <div class="content-section__body rich reveal">
+            <p>
+              Ciepły montaż jest droższy od tradycyjnego, bo dochodzą materiały i więcej pracy przy przygotowaniu ościeża. Koszt liczy się zwykle od metra bieżącego obwodu
+              okna, więc rośnie razem z liczbą i wielkością okien. Na cenę wpływają:
+            </p>
+            <ul class="bullets">{costFactors.map((c) => <li>{c}</li>)}</ul>
+            <p>
+              Wycenę montażu razem z oknami przygotowujemy po bezpłatnym pomiarze. Jeśli wybierasz okna do nowego domu, zobacz też <a href={url('/okna-pcv/')}>okna PCV</a>,{' '}
+              które w połączeniu z ciepłym montażem dobrze sprawdzają się w domach energooszczędnych.
+            </p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <Faq items={faq} title="Pytania o ciepły montaż" eyebrow="FAQ" />
+
+  <CtaBand
+    eyebrow="Pomiar"
+    title="Porozmawiajmy o montażu w Twoim domu"
+    text="Na bezpłatnym pomiarze sprawdzimy ściany i ościeża i doradzimy, jaki sposób osadzenia ma sens w Twoim budynku."
+    primary={{ label: 'Umów bezpłatny pomiar', href: '#wycena' }}
+    secondary={{ label: 'Montaż okien', href: '/montaz-okien/' }}
+  />
+
+  <QuoteForm title="Umów bezpłatny pomiar" />
+
+  <section class="section section--tight">
+    <div class="container">
+      <div class="section-head"><span class="eyebrow">Zobacz też</span><h2>Powiązane strony</h2></div>
+      <div class="related">
+        {related.map((r) => <a href={url(r.href)}><Icon name={r.icon} class="icon" />{r.label}</a>)}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-toc {
+    display: grid; gap: 12px;
+    padding: 24px 28px;
+    margin-bottom: clamp(48px, 6vw, 80px);
+    background: var(--bg);
+    border: 1px solid var(--line);
+  }
+  .page-toc__label { font-size: .8rem; font-weight: 600; color: var(--muted); }
+  .content-section { border-top-color: var(--line-strong); }
+  .content-section h3 { font-size: 1.05rem; font-weight: 600; margin: 28px 0 10px; }
+  .note { padding: 14px 18px; background: var(--bg); border-left: 2px solid var(--accent); color: var(--ink); }
+  .note .tbc { margin-left: 6px; }
+  .side-img { aspect-ratio: 4 / 5; margin: 0 0 20px; }
+  @media (min-width: 700px) { .side-img { float: right; width: 240px; margin: 4px 0 16px 28px; } }
+</style>

@@ -1,0 +1,143 @@
+---
+// Dark page hero in the mood of the approved home section "Własne ekipy montażowe" (index.astro #montaz):
+// darkened background photo, big headline, checklist (pledges), layered photos with a captioned proof shot.
+// Renders breadcrumbs (+ BreadcrumbList JSON-LD) and the page's only <h1>. Buttons go into the default slot.
+//   <DarkHero title="Montaż okien w Płocku" titleEm="zawsze naszą ekipą" breadcrumbs={[{ name: 'Montaż okien' }]}
+//             pledges={[{ title: '…', text: '…' }]} bg={…} photo={…} proof={…}>
+//     <a class="btn btn--light" href="#wycena">Umów pomiar</a>
+//   </DarkHero>
+import { url } from '../../lib/url';
+import { rich } from '../../lib/rich';
+import type { Crumb } from '../../lib/schema';
+import Breadcrumbs from '../Breadcrumbs.astro';
+import Icon from '../Icon.astro';
+
+interface Img {
+  src: string;
+  srcSmall?: string;
+  alt: string;
+  width: number;
+  height: number;
+}
+interface Props {
+  /** H1 text; `titleEm` is appended in the accent colour (same text for search engines) */
+  title: string;
+  titleEm?: string;
+  eyebrow?: string;
+  /** rich() markup allowed */
+  lead?: string;
+  breadcrumbs: Crumb[];
+  pledges?: { title: string; text: string }[];
+  /** decorative background (alt is empty) */
+  bg: { src: string; srcSmall?: string; width: number; height: number };
+  photo: Img;
+  proof?: Img & { caption: string };
+}
+const { title, titleEm, eyebrow, lead, breadcrumbs, pledges = [], bg, photo, proof } = Astro.props;
+---
+
+<section class="dark on-dark dark-hero">
+  <div class="dark-hero__bg" aria-hidden="true">
+    <img
+      src={url(bg.src)}
+      srcset={bg.srcSmall ? `${url(bg.srcSmall)} 800w, ${url(bg.src)} ${bg.width}w` : undefined}
+      sizes="100vw"
+      alt=""
+      width={bg.width}
+      height={bg.height}
+      loading="eager"
+    />
+  </div>
+  <div class="container">
+    <Breadcrumbs items={breadcrumbs} />
+    <div class="crews dark-hero__grid">
+      <div>
+        {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+        <h1>{title}{titleEm && <> <em>{titleEm}</em></>}</h1>
+        {lead && <p class="lead" set:html={rich(lead)} />}
+        {pledges.length > 0 && (
+          <ul class="pledges">
+            {pledges.map((p) => (
+              <li>
+                <Icon name="check" class="" />
+                <div><strong>{p.title}</strong><span>{p.text}</span></div>
+              </li>
+            ))}
+          </ul>
+        )}
+        {Astro.slots.has('default') && <div class="btn-row"><slot /></div>}
+      </div>
+      <div class="crews__media dark-hero__media">
+        <div class="photo dark-hero__photo">
+          <img
+            src={url(photo.srcSmall ?? photo.src)}
+            srcset={photo.srcSmall ? `${url(photo.srcSmall)} 800w, ${url(photo.src)} 1600w` : undefined}
+            sizes="(min-width: 960px) 45vw, 100vw"
+            alt={photo.alt}
+            width={photo.width}
+            height={photo.height}
+            fetchpriority="high"
+          />
+        </div>
+        {proof && (
+          <figure class="dark-hero__proof" data-fab-avoid>
+            <div class="photo">
+              <img src={url(proof.srcSmall ?? proof.src)} alt={proof.alt} width={proof.width} height={proof.height} />
+            </div>
+            <figcaption>{proof.caption}</figcaption>
+          </figure>
+        )}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .dark-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding-top: clamp(28px, 4vw, 48px);
+    padding-bottom: clamp(64px, 8vw, 120px);
+  }
+  .dark-hero__bg { position: absolute; inset: 0; z-index: -1; }
+  .dark-hero__bg img { width: 100%; height: 100%; object-fit: cover; object-position: 70% 40%; }
+  .dark-hero__bg::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--dark) 95%, transparent) 0%, color-mix(in srgb, var(--dark) 88%, transparent) 45%, color-mix(in srgb, var(--dark) 72%, transparent) 100%);
+  }
+
+  /* breadcrumbs on dark */
+  .dark-hero :global(.breadcrumbs) { color: rgba(255, 255, 255, .6); }
+  .dark-hero :global(.breadcrumbs a:hover),
+  .dark-hero :global(.breadcrumbs [aria-current]) { color: #fff; }
+
+  .dark-hero h1 {
+    color: #fff;
+    font-size: clamp(2.3rem, 4.4vw, 3.8rem);
+    line-height: 1.06;
+    margin-bottom: 24px;
+  }
+  .dark-hero h1 em { color: var(--accent-on-dark); }
+  .dark-hero .lead { max-width: 600px; }
+  .dark-hero .pledges { margin: 32px 0 36px; }
+
+  .dark-hero__media { padding-bottom: 72px; }
+  .dark-hero__photo { aspect-ratio: 4 / 3; }
+  .dark-hero__proof {
+    position: absolute; left: -28px; bottom: 0;
+    width: 46%; margin: 0;
+    background: var(--ink);
+    padding: 10px 10px 12px;
+    border: 1px solid color-mix(in srgb, var(--accent-on-dark) 35%, transparent);
+  }
+  .dark-hero__proof .photo { aspect-ratio: 4 / 5; }
+  .dark-hero__proof figcaption { margin-top: 10px; font-size: .78rem; line-height: 1.45; color: var(--accent-on-dark); }
+
+  @media (max-width: 959px) {
+    .dark-hero__grid { gap: 48px; }
+    .dark-hero__media { padding-bottom: 0; }
+    .dark-hero__proof { position: relative; left: auto; width: 62%; margin: -56px 0 0 auto; }
+  }
+</style>

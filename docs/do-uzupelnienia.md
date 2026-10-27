@@ -139,3 +139,39 @@ _(do uzupełnienia)_
 ## Konfigurator (`/konfigurator/`)
 
 _(do uzupełnienia)_
+
+## Podstrony SEO i poradnik
+
+Dotyczy `/montaz-okien/`, `/wymiana-okien/`, `/cieply-montaz-okien/`, `/obszar-dzialania/`, `/poradnik/` i 4 artykułów (stan 27.10.2026; puste sekcje „Montaż okien”, „Obszar działania” i „Poradnik” powyżej opisuje ta sekcja). Niepotwierdzone elementy mają na stronie znacznik „do potwierdzenia” albo „do uzupełnienia”. Po potwierdzeniu usuń znacznik w pliku strony (`tbc: true` / `confirmed: false` → `true`).
+
+**Ciepły montaż**
+- [ ] **[PILNE] Czy ekipy robią ciepły (warstwowy) montaż i montaż w warstwie ocieplenia? Jakie materiały i systemy (taśmy, pianki, konsole)?** Po potwierdzeniu: w `src/pages/cieply-montaz-okien.astro` ustawić `NOINDEX = false` (strona wróci do sitemap.xml), przywrócić meta description z planu SEO §4.2 (z „Wykonujemy go własną ekipą…”), uzupełnić sekcję „Materiały i systemy, których używamy”. Na `/montaz-okien/` usunąć znacznik w sekcji „Metody montażu” i przywrócić meta z planu (dziś bez „montaż tradycyjny, warstwowy i w warstwie ocieplenia, odbiór z protokołem”).
+- [ ] Wskazówka: na zdjęciach `przeszklenie-narozne-antracyt-widok-z-wnetrza` i `okno-narozne-antracyt-podbitka` widać elementy, które mogą być ciepłym montażem (izolacyjne podparcie pod oknem, taśmy). Warto dopytać i ewentualnie opisać je jako dowód.
+- [ ] **[ZDJĘCIE]** `/cieply-montaz-okien/`: ilustracje AI `ai-montaz-tasma` (hero) i `ai-montaz-poziomowanie` – podmienić na zdjęcia warstw z własnego montażu.
+
+**Montaż: odbiór, gwarancja, porządek (`/montaz-okien/`)**
+- [ ] Sprawdzenie okien z klientem, **protokół odbioru** (kto podpisuje), instruktaż – karty w sekcji „Odbiór, gwarancja na montaż i przegląd po pierwszej zimie”.
+- [ ] **Gwarancja na montaż**: okres i warunki (karta pokazuje „Okres gwarancji: do uzupełnienia”).
+- [ ] **Przegląd po pierwszej zimie** – czy firma chce to oferować (propozycja z SEO §6.3).
+- [ ] Ramka „Jak to sprawdzić”: zapis w umowie „montaż wykonują wyłącznie pracownicy Inter Windows” i monterzy z imienia i nazwiska (karty ekipy to nadal placeholdery z `src/data/ekipa.ts`).
+- [ ] „Jak chronimy dom w czasie prac”: zabezpieczanie podłóg i mebli, wymiana okna po oknie, sprzątanie i wywóz starej stolarki.
+- [ ] **[ZDJĘCIE]** Tło hero `/montaz-okien/` to ilustracja AI `ai-montaz-ekipa-dojazd` (pod ciemną nakładką), a kroki procesu używają ilustracji AI z `src/data/montaz.ts` – podmienić na zdjęcia ekipy przy pracy.
+
+**Wymiana okien (`/wymiana-okien/`)**
+- [ ] Demontaż starych okien, sprzątanie i **wywóz / utylizacja** starej stolarki. Meta description nie zawiera słowa „utylizacja” (plan SEO §4.2 je ma) – przywrócić po potwierdzeniu.
+- [ ] Zakres obróbek ościeży (tynk, płyta, listwy, malowanie?) i parapetów – dziś „zakres ustalamy na pomiarze”.
+- [ ] Orientacyjne czasy wymiany na stronie („kilka godzin na okno, mieszkanie zwykle w jeden dzień, dom w jeden do kilku dni”) – potwierdzić z ekipą albo zmienić.
+
+**Obszar działania (`/obszar-dzialania/`, dane: `src/data/obszar.ts`)**
+- [ ] Odległości i czasy dojazdu pochodzą z planu SEO §2.3 (OSRM, zaokrąglone) – sprawdzić. Raciąż (pow. płoński) i Płońsk pominięte – czy tam też jeździcie?
+- [ ] Czy pomiar jest bezpłatny także poza Płockiem, dopłaty za dojazd, maksymalny zasięg, typowy termin pomiaru (karta „Bezpłatny pomiar i wycena” ma znacznik).
+- [ ] Kolumna z realizacjami w tabeli miejscowości – dopiero gdy realizacje dostaną miejscowości (SEO §3.3). Stron miejscowości (Gostynin, Gąbin, Sierpc) nie tworzymy, dopóki nie spełnią warunków z §3.3.
+
+**Poradnik (`/poradnik/`, dane: `src/data/poradnik.ts`)**
+- [ ] Na start 4 artykuły P1 z planu §3.5: ile kosztuje wymiana okien, okna aluminiowe czy PCV, HST czy PSK, żaluzje fasadowe czy rolety (linkują do nich już strona główna i strony kategorii).
+- [ ] **[TREŚĆ] „Ile kosztuje wymiana okien”: zgoda na widełki cen z realizacji** (ramka „Przykładowe koszty z naszych realizacji – do uzupełnienia”). Do tego czasu title i meta są zmienione względem planu §4.4 („…Ceny z Płocka”, „Widełki cen z naszych realizacji…”) – po dodaniu widełek przywrócić.
+- [ ] Autor artykułów to dziś „Inter Windows” (organizacja, także w JSON-LD). Plan §3.5 zaleca autora z imienia i nazwiska z biogramem – jeśli Paweł Majchrzak lub Bartosz Bezdziek się zgodzą.
+- [ ] HST czy PSK: artykuł opisuje systemy z oferty DAKO (HST, SmartMove, SkyLine, harmonijkowe) z zastrzeżeniem „dostępność potwierdzamy przy wycenie” – potwierdzić, co sprzedajecie i montujecie (patrz sekcja 3).
+- [ ] Żaluzje czy rolety: profile lamel Z90 / C80 – czy są u waszych dostawców.
+- [ ] Przegląd merytoryczny przez właściciela przed publikacją (m.in. VAT 8% przy montażu w domu do 300 m² / mieszkaniu do 150 m², ulga termomodernizacyjna, Czyste Powietrze i wymóg Uw ≤ 0,9 W/(m²·K)). Data publikacji: 27.10.2026.
+- [ ] **[ZDJĘCIE]** Nagłówki artykułów to ilustracje AI (`ai-poradnik-okno-zima`, `ai-poradnik-salon-probki`, `ai-hst-taras`, `ai-poradnik-dom-zmierzch`); w treści są wyłącznie własne zdjęcia z realizacji. Podmienić nagłówki na własne zdjęcia, gdy będą.

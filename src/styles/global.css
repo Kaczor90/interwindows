@@ -111,9 +111,7 @@
 }
 
 /* mono theme: a few inverted hover states that are not expressible with tokens alone */
-:root[data-theme='mono'] .btn--brand:hover,
-:root[data-theme='mono'] .nav__cta:hover,
-:root[data-theme='mono'] .nav__cta[aria-current='page'] { background: #fff; color: #000; border-color: #000; --btn-bg: #fff; --btn-fg: #000; --btn-border: #000; }
+:root[data-theme='mono'] .btn--brand:hover { background: #fff; color: #000; border-color: #000; --btn-bg: #fff; --btn-fg: #000; --btn-border: #000; }
 :root[data-theme='mono'] .fab:hover .fab__btn { background: #fff; color: #000; box-shadow: inset 0 0 0 1px #000, 0 14px 30px -12px rgba(0, 0, 0, .5); }
 :root[data-theme='mono'] .chip:hover { background: #000; border-color: #000; color: #fff; }
 
@@ -232,35 +230,7 @@ p { margin: 0 0 1em; }
    but below everything inside it */
 .has-lines { position: relative; isolation: isolate; }
 
-/* left rail with vertical tagline (desktop only) */
-.rail { display: none; }
-@media (min-width: 1280px) {
-  .rail {
-    display: flex;
-    position: fixed;
-    inset: 0 auto 0 0;
-    width: var(--rail);
-    z-index: 40;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 28px;
-    border-right: 1px solid var(--line);
-    background: var(--bg);
-  }
-  .rail__text {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: .2em;
-    text-transform: uppercase;
-    color: var(--muted);
-    white-space: nowrap;
-  }
-  .rail__text b { color: var(--ink); font-weight: 700; }
-  .rail__line { width: 1px; height: 64px; background: var(--ink); }
-}
+/* left rail: see src/components/Rail.astro (navigation, scrollspy, progress; desktop ≥ 1280 px) */
 
 /* ---------- typography helpers ---------- */
 
@@ -365,6 +335,30 @@ p { margin: 0 0 1em; }
 .btn--outline-dark:hover { --btn-bg: #fff; --btn-fg: var(--ink); --btn-border: #fff; }
 
 .btn--sm { min-height: 42px; padding: 0 20px; font-size: .85rem; }
+.btn--lg { min-height: 58px; padding: 0 34px; font-size: .98rem; }
+
+/* calm call-to-action rows between sections (data-cta names on every link for later analytics) */
+.cta-row {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px 32px;
+  margin-top: 28px;
+  padding: clamp(22px, 3vw, 30px) clamp(22px, 3vw, 34px);
+  background: var(--bg);
+  border: 1px solid var(--line);
+}
+.cta-row__text { max-width: 560px; }
+.cta-row__text strong { display: block; color: var(--ink); font-size: 1.08rem; font-weight: 600; letter-spacing: -0.015em; line-height: 1.4; }
+.cta-row__text span { display: block; margin-top: 4px; color: var(--muted); font-size: .88rem; }
+.cta-row__text a { color: var(--navy); text-decoration: underline; text-decoration-color: var(--link-line); text-underline-offset: 3px; white-space: nowrap; }
+.cta-row__text a:hover { color: var(--ink); text-decoration-color: currentColor; }
+.cta-inline {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 28px;
+  margin-top: clamp(32px, 4vw, 48px);
+  padding-top: 26px;
+  border-top: 1px solid var(--line-strong);
+}
+.cta-inline p { margin: 0; color: var(--ink); font-size: 1.02rem; font-weight: 600; letter-spacing: -0.01em; }
+.cta-inline p span { color: var(--muted); font-weight: 400; }
+.cta-inline .btn-row { gap: 10px 22px; }
 .btn-row { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: center; }
 
 .link-arrow {
@@ -440,13 +434,14 @@ p { margin: 0 0 1em; }
   min-height: 42px;
   border: 1px solid var(--navy);
   border-radius: 999px;
-  background: var(--navy);
+  background: var(--bg);
   font-size: .85rem; font-weight: 600;
-  color: #fff;
+  color: var(--navy);
   transition: background .25s var(--ease), border-color .25s var(--ease);
 }
 .nav__cta svg { width: 16px; height: 16px; }
-.nav__cta:hover, .nav__cta[aria-current='page'] { background: var(--ink); border-color: var(--ink); }
+/* outlined, so it stays visible next to the filled "Bezpłatna wycena" button without competing with it */
+.nav__cta:hover, .nav__cta[aria-current='page'] { background: var(--navy); border-color: var(--navy); color: #fff; }
 
 .dropdown {
   position: absolute;
@@ -490,18 +485,43 @@ p { margin: 0 0 1em; }
 .dropdown__foot a { border: 0; padding: 0; font-size: .84rem; font-weight: 600; }
 
 .header-actions { display: flex; align-items: center; gap: 6px; }
+/* phone: icon in a circle on phones, icon + number from 560 px (number hidden again where space is tight) */
 .header-phone {
-  display: none;
-  align-items: center; gap: 10px;
-  font-weight: 600; font-size: .9rem;
+  display: inline-grid; place-items: center;
+  width: 42px; height: 42px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
   color: var(--ink);
-  padding: 0 8px 0 6px;
   white-space: nowrap;
 }
+.header-phone span { display: none; }
 .header-phone svg { width: 16px; height: 16px; }
 .header-phone:hover { color: var(--navy); }
-@media (min-width: 560px) { .header-phone { display: inline-flex; } }
+@media (min-width: 560px) {
+  .header-phone { display: inline-flex; align-items: center; gap: 10px; width: auto; height: auto; border: 0; border-radius: 0; padding: 0 10px 0 6px; font-weight: 600; font-size: .9rem; }
+  .header-phone span { display: inline; }
+}
 @media (min-width: 1100px) and (max-width: 1239px) { .header-phone span { display: none; } }
+/* very narrow phones (360 px): slightly smaller logo so logo, phone, quote and menu still fit */
+@media (max-width: 379px) {
+  .logo img { height: 33px; }
+  .header-actions { gap: 4px; }
+  .header-quote { padding: 0 13px; }
+}
+/* primary quote button next to the phone */
+.header-quote { min-height: 42px; padding: 0 18px; }
+.header-quote__short { display: none; }
+@media (max-width: 559px) {
+  .header-quote { padding: 0 16px; }
+  .header-quote__long { display: none; }
+  .header-quote__short { display: inline; }
+}
+/* a little less air between menu items where the header gets crowded */
+@media (min-width: 1100px) and (max-width: 1339px) {
+  .nav__link { padding-inline: 11px; }
+  .nav__link::after { left: 11px; right: 11px; }
+  .nav__cta { margin-left: 10px; padding: 0 16px; }
+}
 
 .menu-toggle {
   width: 46px; height: 46px;
@@ -1282,6 +1302,8 @@ a.photo:hover img, a:hover > .photo img { transform: scale(1.03); }
   color: var(--ink);
   transition: opacity .3s, transform .3s;
 }
+/* on phones the sticky CTA bar (Zadzwoń | Bezpłatna wycena) replaces the floating button */
+@media (max-width: 899px) { .fab { display: none; } }
 .fab__label {
   background: #fff;
   border-radius: 999px;

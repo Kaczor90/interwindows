@@ -1,0 +1,77 @@
+---
+// Slim sticky contact bar for phones (< 900 px): "Zadzwoń | Bezpłatna wycena".
+// Shown after the visitor scrolls past the page hero; hidden while the quote form (#wycena) or the
+// footer is in view and while the mobile menu is open. On phones it replaces the floating call button.
+// Rendered once by Base.astro.
+import { url } from '../lib/url';
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+---
+
+<div class="cta-bar" aria-label="Szybki kontakt">
+  <a class="btn btn--ghost" href={site.phoneHref} data-cta="bar-telefon"><Icon name="phone" class="" /> Zadzwoń</a>
+  <a class="btn" href={url('/kontakt/#wycena')} data-quote-link data-cta="bar-wycena">Bezpłatna wycena</a>
+</div>
+
+<style>
+  .cta-bar {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 46;
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 8px;
+    padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+    background: var(--bg);
+    border-top: 1px solid var(--line);
+    box-shadow: 0 -12px 30px -22px rgba(20, 24, 36, .45);
+    transform: translateY(110%);
+    visibility: hidden;
+    transition: transform .35s var(--ease), visibility .35s;
+  }
+  .cta-bar :global(.btn) { min-height: 46px; padding: 0 14px; font-size: .86rem; }
+  :global(html.has-cta-bar) .cta-bar { transform: none; visibility: visible; }
+  @media (min-width: 900px) { .cta-bar { display: none; } }
+  @media print { .cta-bar { display: none; } }
+</style>
+
+<script>
+  const bar = document.querySelector<HTMLElement>('.cta-bar');
+  const root = document.documentElement;
+  const mobile = window.matchMedia('(max-width: 899px)');
+  if (bar) {
+    const state = { pastHero: false, formOrFooter: false };
+    const update = () => {
+      const show = mobile.matches && state.pastHero && !state.formOrFooter && !root.classList.contains('menu-open');
+      root.classList.toggle('has-cta-bar', show);
+    };
+
+    // past the hero: the first .hero / .page-hero (or the first 480 px when a page has neither)
+    const hero = document.querySelector('.hero, .page-hero');
+    if (hero) {
+      new IntersectionObserver(([e]) => {
+        state.pastHero = !e.isIntersecting && e.boundingClientRect.top < 0;
+        update();
+      }).observe(hero);
+    } else {
+      const onScroll = () => {
+        state.pastHero = window.scrollY > 480;
+        update();
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    }
+
+    // hide near the form and the footer
+    const near = new Map<Element, boolean>();
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => near.set(e.target, e.isIntersecting));
+      state.formOrFooter = [...near.values()].some(Boolean);
+      update();
+    });
+    document.querySelectorAll('#wycena, .site-footer').forEach((el) => io.observe(el));
+
+    mobile.addEventListener('change', update);
+    new MutationObserver(update).observe(root, { attributes: true, attributeFilter: ['class'] });
+  }
+</script>

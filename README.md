@@ -37,7 +37,9 @@ node scripts/images.mjs          # przetworzenie zdjęć z _tresci/ do public/im
 | Adres odbiorcy formularza | `public/kontakt.php` (stała `RECIPIENT`) |
 | Przekierowania, HTTPS, www, cache | `public/.htaccess` |
 
-Podgląd motywów w przeglądarce bez przebudowy: dopisz `?motyw=mono` albo `?motyw=profil` do adresu.
+W trybie dev i w podglądzie (PUBLIC_PREVIEW) w lewym dolnym rogu jest przełącznik „Profil | Mono” (zapamiętuje wybór, synchronizuje się z `?motyw=mono` / `?motyw=profil`). Build produkcyjny go nie zawiera i używa wyłącznie `theme` z `site.ts`.
+
+CTA: przyciski mają atrybuty `data-cta="…"` (pod analitykę). Na telefonach (< 900 px) pływający przycisk zastępuje pasek `CtaBar` (Zadzwoń | Bezpłatna wycena), widoczny po przewinięciu hero i ukryty przy formularzu i stopce. Linki z `data-quote-link` same przełączają się na `#wycena`, jeśli strona ma formularz.
 Zrzuty porównawcze: `docs/podglad-palet/`.
 
 ## SEO – jak działa

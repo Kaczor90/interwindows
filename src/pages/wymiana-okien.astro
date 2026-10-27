@@ -1,0 +1,370 @@
+---
+// /wymiana-okien/ – window replacement in houses and flats (docs/seo-plan.md §4.2–4.3).
+// No prices and no invented durations: price factors only; time ranges are marked "do potwierdzenia".
+// Unconfirmed parts of the service (protection, demolition, disposal, cleaning) carry the tag too –
+// list in docs/do-uzupelnienia.md ("Podstrony SEO i poradnik").
+import { url } from '../lib/url';
+import { rich } from '../lib/rich';
+import { service } from '../lib/schema';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import PageHero from '../components/PageHero.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
+import PhotoStrip from '../components/PhotoStrip.astro';
+import InstallBlock from '../components/InstallBlock.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import QuoteForm from '../components/QuoteForm.astro';
+import type { Step } from '../data/montaz';
+import { photoByFile, photoSrc, photoSrcSmall } from '../data/realizacje-zdjecia';
+
+const path = '/wymiana-okien/';
+const seo = {
+  title: 'Wymiana okien Płock – demontaż, montaż, obróbki',
+  // plan §4.2 lists "demontaż, utylizacja, montaż…" – disposal is not confirmed yet, so it is left out
+  description:
+    'Wymieniamy okna w domach i mieszkaniach w Płocku i okolicy: demontaż, montaż, obróbki i parapety. Sprawnie, czysto, własną ekipą.',
+  h1: 'Wymiana okien w Płocku – sprawnie i bez bałaganu',
+};
+const TBC = 'Treść czeka na potwierdzenie przez Inter Windows';
+const hero = photoByFile('okno-biale-szprosy-widok-z-wnetrza')!;
+
+const toc = [
+  { id: 'kiedy-warto', label: 'Kiedy wymiana się opłaca' },
+  { id: 'zakres', label: 'Co obejmuje usługa' },
+  { id: 'dzien-montazu', label: 'Dzień montażu' },
+  { id: 'w-domu', label: 'Wymiana w domu' },
+  { id: 'w-bloku', label: 'Wymiana w bloku' },
+  { id: 'cena', label: 'Ile kosztuje' },
+  { id: 'dofinansowanie', label: 'Dofinansowanie' },
+  { id: 'faq', label: 'Pytania i odpowiedzi' },
+];
+
+const scope: { title: string; text: string; tbc?: boolean }[] = [
+  { title: 'Pomiar i doradztwo', text: 'Mierzymy każdy otwór, oglądamy ościeża i doradzamy system, szyby i kolor. Pomiar i wycena są bezpłatne.' },
+  { title: 'Demontaż starych okien', text: 'Wyjmujemy stare okna razem z ościeżnicami i przygotowujemy otwór pod nową ramę.', tbc: true },
+  { title: 'Montaż własną ekipą', text: 'Osadzenie, kotwienie, uszczelnienie i regulacja. Metodę montażu dobieramy do ściany i ocieplenia.' },
+  { title: 'Obróbki ościeży', text: 'Wykończenie ościeży po demontażu, od wewnątrz i od zewnątrz. Zakres i materiał ustalamy na pomiarze.' },
+  { title: 'Parapety', text: 'Parapety wewnętrzne i zewnętrzne dobieramy i montujemy razem z oknami, jeśli są w zamówieniu.' },
+  { title: 'Sprzątanie i wywóz', text: 'Po pracy sprzątamy, a stara stolarka wyjeżdża razem z nami.', tbc: true },
+];
+
+const daySteps: Step[] = [
+  {
+    title: 'Zabezpieczenie wnętrza',
+    text: 'Zanim zaczniemy demontaż, osłaniamy podłogi i meble przy oknach. Pył z ościeży nie powinien rozejść się po domu.',
+    icon: 'dom',
+    confirmed: false,
+  },
+  {
+    title: 'Demontaż starego okna',
+    text: 'Wycinamy starą ramę, usuwamy resztki pianki i zaprawy i sprawdzamy stan muru pod spodem.',
+    icon: 'demontaz',
+    confirmed: false,
+  },
+  {
+    title: 'Osadzenie nowego okna',
+    text: 'Ramę ustawiamy na podkładkach, poziomujemy, kotwimy w murze i wypełniamy szczelinę. Okna wymienia się po kolei, więc pokój nie stoi długo otwarty.',
+    icon: 'montaz',
+    confirmed: true,
+  },
+  {
+    title: 'Uszczelnienie, obróbki i parapety',
+    text: 'Zabezpieczamy styk ramy z murem metodą ustaloną na pomiarze, wykańczamy ościeża i montujemy parapety w uzgodnionym zakresie.',
+    icon: 'ekipa',
+    confirmed: true,
+  },
+  {
+    title: 'Regulacja, sprzątanie i odbiór',
+    text: 'Regulujemy skrzydła, sprawdzamy okucia i szczelność, sprzątamy i razem z Tobą odbieramy pracę. Stare okna zabieramy ze sobą.',
+    icon: 'odbior',
+    confirmed: false,
+  },
+];
+
+const signs = [
+  '**Przeciąg przy zamkniętym oknie** i chłód przy ramie, którego nie usuwa regulacja okuć.',
+  '**Para na szybie lub ramie od wewnątrz**, czasem z pleśnią w narożnikach ościeża.',
+  '**Zaparowanie między szybami**: pakiet szybowy stracił szczelność i izoluje gorzej niż kiedyś.',
+  '**Opór przy otwieraniu**, opadające skrzydło, pęknięte lub stwardniałe uszczelki.',
+  '**Hałas z ulicy**, który przeszkadza mimo zamkniętych okien.',
+  '**Plan ocieplenia elewacji**: okna najlepiej wymienić przed robotami elewacyjnymi, a nie po nich.',
+];
+
+const priceFactors = [
+  'liczba okien, ich wymiary, kształt i podział na skrzydła,',
+  'materiał i system profili: [okna PCV](/okna-pcv/), [aluminiowe](/okna-aluminiowe/) lub [drewniane](/okna-drewniane/),',
+  'pakiet szyb: dwie czy trzy szyby, szkło akustyczne, bezpieczne lub przeciwsłoneczne,',
+  'kolor i okleina, jednostronna lub dwustronna,',
+  'okucia i dodatki: zabezpieczenia, mikrowentylacja, nawiewniki,',
+  'metoda montażu: tradycyjny, [ciepły montaż](/cieply-montaz-okien/) albo w warstwie ocieplenia,',
+  'zakres prac: demontaż, obróbki, parapety, rolety lub moskitiery,',
+  'dostęp: piętro, praca od strony elewacji, duże przeszklenia wymagające sprzętu.',
+];
+
+const prep = [
+  'Odsuń meble od okien, tak żeby ekipa miała wokół każdego okna wolne miejsce do pracy.',
+  'Zdejmij firany, zasłony, karnisze i rolety wewnętrzne, a z parapetów kwiaty i drobiazgi.',
+  'Zapewnij dostęp do gniazdka elektrycznego w każdym pomieszczeniu.',
+  'Ustal, gdzie ekipa może zaparkować i rozładować okna. W bloku warto uprzedzić sąsiadów i administrację.',
+];
+
+const faq = [
+  {
+    q: 'Czy wymiana okien w bloku wymaga zgody spółdzielni lub wspólnoty?',
+    a: 'Wiele spółdzielni i wspólnot ma zasady dotyczące wyglądu okien od strony elewacji: koloru ram, podziału, czasem koloru parapetu. Zanim zamówisz okna, sprawdź regulamin budynku albo zapytaj zarządcę, czy wymianę trzeba zgłosić.',
+  },
+  {
+    q: 'Czy przy wymianie okien zniszczą się ściany?',
+    a: 'Przy demontażu starej ramy tynk przy ościeżu często się kruszy, zwłaszcza w starszych domach. Dlatego wykończenie ościeży planujemy z góry: na pomiarze ustalamy, jakie obróbki będą potrzebne i w jakim zakresie je wykonamy.',
+  },
+  {
+    q: 'Czy można wymieniać okna zimą?',
+    a: 'Tak. Przy niskich temperaturach stosuje się materiały przeznaczone do pracy w mrozie, a w zamieszkałym domu okna wymienia się po kolei, więc każdy pokój jest otwarty krótko.',
+  },
+  {
+    q: 'Czy pomiar i wycena są płatne?',
+    a: 'Nie. Pomiar u Ciebie i wycena są bezpłatne i niezobowiązujące. Wstępny projekt możesz wcześniej przygotować w [konfiguratorze okien](/konfigurator/).',
+  },
+  {
+    q: 'Kto wymienia okna: wasza ekipa czy podwykonawca?',
+    a: 'Wyłącznie nasza ekipa. Nie przekazujemy montażu podwykonawcom, więc za pomiar, okna i montaż odpowiada jedna firma. Więcej na stronie [montaż okien](/montaz-okien/).',
+  },
+  {
+    q: 'Czy po wymianie okien trzeba zadbać o wentylację?',
+    a: 'Tak. Nowe okna są szczelne, a w domach i blokach z wentylacją grawitacyjną powietrze musi mieć skąd napływać. Dlatego warto od razu zaplanować nawiewniki okienne albo okucia z mikrowentylacją.',
+  },
+];
+
+const related = [
+  { href: '/montaz-okien/', label: 'Montaż okien', icon: 'montaz' },
+  { href: '/cieply-montaz-okien/', label: 'Ciepły montaż okien', icon: 'montaz' },
+  { href: '/poradnik/ile-kosztuje-wymiana-okien/', label: 'Poradnik: ile kosztuje wymiana okien', icon: 'doc' },
+  { href: '/okna-pcv/', label: 'Okna PCV', icon: 'okna-pcv' },
+  { href: '/konfigurator/', label: 'Konfigurator okien', icon: 'konfigurator' },
+  { href: '/obszar-dzialania/', label: 'Obszar działania', icon: 'mapa' },
+];
+
+const schema = service({ name: seo.h1, serviceType: 'Wymiana okien', path, description: seo.description });
+---
+
+<Base title={seo.title} description={seo.description} updated="2026-10-27" schema={schema}>
+  <PageHero
+    title={seo.h1.replace(' – ', ' – ')}
+    eyebrow="Wymiana okien"
+    lead="Wymieniamy okna w domach i mieszkaniach w Płocku i okolicy. Doradzamy, mierzymy i montujemy **własną ekipą**: od demontażu starych okien po obróbki i parapety. Wycenę dostajesz po bezpłatnym pomiarze."
+    breadcrumbs={[{ name: 'Wymiana okien' }]}
+    image={{ src: photoSrc(hero), srcSmall: photoSrcSmall(hero), alt: hero.alt, width: hero.width, height: hero.height }}
+    highlights={['Bezpłatny pomiar i wycena', 'Montaż wyłącznie własną ekipą', 'Domy jednorodzinne i mieszkania', 'Obróbki i parapety w jednym zleceniu']}
+  >
+    <a class="btn" href="#wycena"><Icon name="arrow" class="arrow" /> Umów bezpłatny pomiar</a>
+    <a class="btn btn--ghost" href={url('/konfigurator/')}>Skonfiguruj okno</a>
+  </PageHero>
+
+  <section class="section section--soft">
+    <div class="container">
+      <nav class="page-toc reveal" aria-label="Na tej stronie">
+        <span class="page-toc__label">Na tej stronie</span>
+        <div class="toc">{toc.map((t) => <a class="chip" href={`#${t.id}`}>{t.label}</a>)}</div>
+      </nav>
+
+      <div class="content">
+        <section class="content-section" id="kiedy-warto">
+          <div class="content-section__head reveal">
+            <span class="eyebrow">Sygnały</span>
+            <h2>Kiedy wymiana się opłaca</h2>
+          </div>
+          <div class="content-section__body rich reveal">
+            <p>Okno rzadko psuje się z dnia na dzień. Zwykle przez kilka sezonów daje sygnały, które łatwo zrzucić na pogodę albo na stary dom:</p>
+            <ul class="bullets">{signs.map((s) => <li set:html={rich(s)} />)}</ul>
+            <p>
+              Część usterek usuwa regulacja okuć albo wymiana uszczelek. Jeśli jednak rama jest odkształcona, drewno zbutwiałe, a szyby zaparowane w środku,
+              naprawa przestaje się opłacać. Na pomiarze powiemy wprost, które okna trzeba wymienić, a które mogą jeszcze posłużyć.
+            </p>
+          </div>
+        </section>
+
+        <section class="content-section" id="zakres">
+          <div class="content-section__head reveal">
+            <span class="eyebrow">Zakres</span>
+            <h2>Co obejmuje usługa</h2>
+          </div>
+          <div class="content-section__body reveal">
+            <p>
+              Wymiana okien to więcej niż dostawa i osadzenie ram. Zakres ustalamy na pomiarze i zapisujemy w ofercie, żeby w dniu montażu nie było niespodzianek.
+            </p>
+            <div class="cards">
+              {scope.map((s) => (
+                <div class="card">
+                  <h3>{s.title}{s.tbc && <> <span class="tbc" title={TBC}>do potwierdzenia</span></>}</h3>
+                  <p>{s.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section" id="dzien-montazu">
+          <div class="content-section__head reveal">
+            <span class="eyebrow">Krok po kroku</span>
+            <h2>Dzień montażu krok po kroku</h2>
+          </div>
+          <div class="content-section__body">
+            <ProcessSteps steps={daySteps} layout="list" images={false} />
+
+            <div class="time reveal">
+              <h3>Ile trwa wymiana okien <span class="tbc" title={TBC}>do potwierdzenia</span></h3>
+              <p>
+                Wymiana jednego typowego okna z demontażem i obróbkami to zwykle kilka godzin pracy. Mieszkanie w bloku często udaje się wymienić w jeden dzień,
+                dom jednorodzinny w jeden do kilku dni. Czas wydłużają duże przeszklenia, drzwi tarasowe, nietypowe ościeża i rozbudowane obróbki.
+                Dokładny harmonogram podajemy po pomiarze.
+              </p>
+            </div>
+
+            <div class="prep reveal">
+              <h3>Jak przygotować dom lub mieszkanie</h3>
+              <ul class="bullets">{prep.map((p) => <li>{p}</li>)}</ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section" id="w-domu">
+          <div class="content-section__head reveal">
+            <span class="eyebrow">Dom jednorodzinny</span>
+            <h2>Wymiana okien w domu</h2>
+          </div>
+          <div class="content-section__body rich reveal">
+            <p>
+              W domu jednorodzinnym okien jest więcej i są bardziej zróżnicowane: okna balkonowe, drzwi tarasowe, okna na poddaszu, czasem przeszklenia od podłogi do sufitu.
+              Dlatego wymianę planujemy dla całego domu, nawet jeśli prace mają być rozłożone na etapy.
+            </p>
+            <p>
+              Najważniejsze pytanie to ocieplenie. Jeśli elewacja ma być docieplona, okna warto wymienić wcześniej i osadzić tak, żeby nowa warstwa izolacji mogła nachodzić
+              na ramę. Wtedy dobrze sprawdza się <a href={url('/cieply-montaz-okien/')}>ciepły montaż</a>, a przy grubym ociepleniu także montaż w warstwie ocieplenia.
+              Okno osadzone w starym miejscu muru, bez planu na elewację, po dociepleniu znajdzie się w głębokiej, zimnej wnęce.
+            </p>
+            <p>
+              W starszych domach dochodzą nierówne ościeża, stare skrzynki rolet i parapety, które nie pasują do nowej ramy. Wszystko to oglądamy na pomiarze,
+              zanim przygotujemy wycenę.
+            </p>
+          </div>
+        </section>
+
+        <section class="content-section" id="w-bloku">
+          <div class="content-section__head reveal">
+            <span class="eyebrow">Mieszkanie</span>
+            <h2>Wymiana okien w mieszkaniu w bloku</h2>
+          </div>
+          <div class="content-section__body rich reveal">
+            <p>
+              W bloku poza samym oknem liczą się zasady budynku. Elewacja należy do wspólnoty lub spółdzielni, więc przed zamówieniem sprawdź regulamin budynku: często określa kolor ram od
+              zewnątrz, podział okna, a czasem kolor parapetu zewnętrznego. Jeśli nie masz pewności, zapytaj zarządcę, zanim podpiszesz zamówienie.
+            </p>
+            <p>
+              Druga sprawa to wentylacja. W większości bloków działa wentylacja grawitacyjna, która potrzebuje dopływu powietrza z zewnątrz. Stare, nieszczelne okna zapewniały go
+              same z siebie. Nowe są szczelne, więc bez nawiewników lub mikrowentylacji powietrze przestaje się wymieniać, rośnie wilgotność, a na szybach i w narożnikach ościeży
+              pojawia się para. Nawiewnik okienny albo okucia z mikrouchyleniem warto zaplanować od razu.
+            </p>
+            <p>
+              Pozostaje logistyka: wniesienie okien na piętro, praca od strony elewacji i porządek na klatce schodowej. Te szczegóły ustalamy przy pomiarze.
+            </p>
+          </div>
+        </section>
+
+        <section class="content-section" id="cena">
+          <div class="content-section__head reveal">
+            <span class="eyebrow">Wycena</span>
+            <h2>Ile kosztuje wymiana okien w Płocku</h2>
+          </div>
+          <div class="content-section__body rich reveal">
+            <p>
+              Na koszt wymiany składają się okna i praca. Nie podajemy ceny z jednej tabeli, bo dwa okna o tym samym wymiarze mogą różnić się systemem, szybą, kolorem
+              i zakresem prac. Wycenę przygotowujemy po bezpłatnym pomiarze. Na cenę wpływają:
+            </p>
+            <ul class="bullets">{priceFactors.map((f) => <li set:html={rich(f)} />)}</ul>
+            <p>
+              Wstępny projekt przygotujesz w <a href={url('/konfigurator/')}>konfiguratorze okien</a>. Z czego składa się koszt i jak porównać oferty, opisujemy w poradniku{' '}
+              <a href={url('/poradnik/ile-kosztuje-wymiana-okien/')}>ile kosztuje wymiana okien</a>.
+            </p>
+            <div class="content-section__links">
+              <a class="link-arrow" href={url('/okna-pcv/')}>Okna PCV <Icon name="arrow" class="" /></a>
+              <a class="link-arrow" href={url('/okna-aluminiowe/')}>Okna aluminiowe <Icon name="arrow" class="" /></a>
+              <a class="link-arrow" href={url('/okna-drewniane/')}>Okna drewniane <Icon name="arrow" class="" /></a>
+              <a class="link-arrow" href={url('/drzwi-tarasowe/')}>Drzwi tarasowe <Icon name="arrow" class="" /></a>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section" id="dofinansowanie">
+          <div class="content-section__head reveal">
+            <span class="eyebrow">Finanse</span>
+            <h2>Dofinansowanie i ulga termomodernizacyjna</h2>
+          </div>
+          <div class="content-section__body rich reveal">
+            <p>
+              Właściciele i współwłaściciele domów jednorodzinnych mogą odliczyć wydatki na termomodernizację, w tym na okna i drzwi zewnętrzne, w ramach ulgi
+              termomodernizacyjnej w PIT. Wymianę stolarki obejmuje też program Czyste Powietrze, zwykle jako część szerszej termomodernizacji domu.
+            </p>
+            <p>
+              Warunki obu rozwiązań, limity i wymagane dokumenty zmieniają się, dlatego sprawdź je u źródła: w urzędzie skarbowym lub u doradcy podatkowego, a w przypadku
+              programu w gminnym punkcie konsultacyjnym Czystego Powietrza. W programie okna muszą spełniać aktualne warunki techniczne, czyli mieć współczynnik Uw nie wyższy
+              niż 0,9 W/(m²·K). Jeśli planujesz dofinansowanie, powiedz o tym przy wycenie. Dobierzemy okna z odpowiednimi parametrami.
+            </p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight" id="realizacje">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">Z naszych montaży</span>
+          <h2>Realizacje w Płocku i okolicach</h2>
+        </div>
+        <a class="link-arrow" href={url('/realizacje/')}>Wszystkie realizacje <Icon name="arrow" class="" /></a>
+      </div>
+      <PhotoStrip tags={['widok-z-wnetrza', 'okna']} exclude={[hero.file]} />
+    </div>
+  </section>
+
+  <InstallBlock product="nowe okna" />
+
+  <Faq items={faq} title="Pytania o wymianę okien" eyebrow="FAQ" />
+
+  <CtaBand
+    eyebrow="Konfigurator okien"
+    title="Przygotuj projekt okien przed pomiarem"
+    text="Wybierz typ, wymiary, podział, kolor i szyby. Doradca przygotuje wycenę wymiany i umówi bezpłatny pomiar."
+    primary={{ label: 'Otwórz konfigurator', href: '/konfigurator/' }}
+    secondary={{ label: 'Wolę rozmowę z doradcą', href: '#wycena' }}
+  />
+
+  <QuoteForm title="Umów pomiar przed wymianą okien" />
+
+  <section class="section section--tight">
+    <div class="container">
+      <div class="section-head"><span class="eyebrow">Zobacz też</span><h2>Powiązane strony</h2></div>
+      <div class="related">
+        {related.map((r) => <a href={url(r.href)}><Icon name={r.icon} class="icon" />{r.label}</a>)}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-toc {
+    display: grid; gap: 12px;
+    padding: 24px 28px;
+    margin-bottom: clamp(48px, 6vw, 80px);
+    background: var(--bg);
+    border: 1px solid var(--line);
+  }
+  .page-toc__label { font-size: .8rem; font-weight: 600; color: var(--muted); }
+  .content-section { border-top-color: var(--line-strong); }
+  .content-section h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 10px; }
+  .content-section .cards h3 { font-size: 1rem; margin-bottom: 0; }
+  .time, .prep { margin-top: 32px; padding-top: 28px; border-top: 1px solid var(--line-strong); }
+  .time .tbc, .cards .tbc { margin-left: 6px; }
+</style>

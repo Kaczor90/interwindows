@@ -1,15 +1,24 @@
 ---
-// Call-to-action band. tone "dark" (default) = ink panel with brass rings, "light" = white panel.
+// Call-to-action band.
+//   tone "dark" (default) = dark panel with thin rings; "light" = white panel.
+//   image = full-width dark section with a darkened photo behind (same mood as the home
+//           "Własne ekipy montażowe" section) – use for the big closing CTA of a page.
 //   <CtaBand title="Umów bezpłatny pomiar" text="…"
-//            primary={{ label: 'Umów pomiar', href: '/kontakt/#wycena' }}
-//            secondary={{ label: 'Zadzwoń: 697 886 093', href: 'tel:+48697886093' }} />
-// `wrap={false}` renders only the band (place it inside your own container).
+//            primary={{ label: 'Bezpłatna wycena', href: '#wycena', cta: 'band-wycena' }}
+//            secondary={{ label: 'Zadzwoń: 697 886 093', href: 'tel:+48697886093', cta: 'band-telefon' }}
+//            image={{ src: '/img/hero-dom.webp', srcSmall: '/img/hero-dom-960.webp' }} />
+// `wrap={false}` renders only the panel (place it inside your own container; ignored with `image`).
+// `cta` values end up in data-cta attributes (for analytics later).
 import { url } from '../lib/url';
 import Icon from './Icon.astro';
 
 interface Link {
   label: string;
   href: string;
+  /** data-cta name */
+  cta?: string;
+  /** icon in front of the label (default: arrow for primary, none for secondary) */
+  icon?: string;
 }
 interface Props {
   title: string;
@@ -19,12 +28,42 @@ interface Props {
   secondary?: Link;
   tone?: 'dark' | 'light';
   wrap?: boolean;
+  image?: { src: string; srcSmall?: string; position?: string };
 }
-const { title, text, eyebrow, primary, secondary, tone = 'dark', wrap = true } = Astro.props;
-const dark = tone === 'dark';
+const { title, text, eyebrow, primary, secondary, tone = 'dark', wrap = true, image } = Astro.props;
+const dark = tone === 'dark' || !!image;
+const primaryIcon = primary.icon ?? 'arrow';
 ---
 
-{wrap ? (
+{image ? (
+  <section class="section dark on-dark band-photo">
+    <div class="band-photo__bg" aria-hidden="true">
+      <img
+        src={url(image.src)}
+        srcset={image.srcSmall ? `${url(image.srcSmall)} 960w, ${url(image.src)} 1600w` : undefined}
+        sizes="100vw"
+        alt=""
+        loading="lazy"
+        style={image.position ? `object-position:${image.position}` : undefined}
+      />
+    </div>
+    <div class="container band-photo__inner reveal">
+      <div>
+        {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+        <h2>{title}</h2>
+        {text && <p class="lead">{text}</p>}
+      </div>
+      <div class="band__actions">
+        <a class="btn btn--light" href={url(primary.href)} data-cta={primary.cta}><Icon name={primaryIcon} class="arrow" /> {primary.label}</a>
+        {secondary && (
+          <a class="btn btn--outline-dark" href={url(secondary.href)} data-cta={secondary.cta}>
+            {secondary.icon && <Icon name={secondary.icon} class="" />} {secondary.label}
+          </a>
+        )}
+      </div>
+    </div>
+  </section>
+) : wrap ? (
   <section class="section section--tight">
     <div class="container">
       <div class:list={['band reveal', dark ? 'dark on-dark' : 'band--light']}>
@@ -36,8 +75,12 @@ const dark = tone === 'dark';
           {text && <p>{text}</p>}
         </div>
         <div class="band__actions">
-          <a class:list={['btn', { 'btn--light': dark }]} href={url(primary.href)}><Icon name="arrow" class="arrow" /> {primary.label}</a>
-          {secondary && <a class:list={['btn', dark ? 'btn--outline-dark' : 'btn--ghost']} href={url(secondary.href)}>{secondary.label}</a>}
+          <a class:list={['btn', { 'btn--light': dark }]} href={url(primary.href)} data-cta={primary.cta}><Icon name={primaryIcon} class="arrow" /> {primary.label}</a>
+          {secondary && (
+            <a class:list={['btn', dark ? 'btn--outline-dark' : 'btn--ghost']} href={url(secondary.href)} data-cta={secondary.cta}>
+              {secondary.icon && <Icon name={secondary.icon} class="" />} {secondary.label}
+            </a>
+          )}
         </div>
       </div>
     </div>
@@ -52,8 +95,12 @@ const dark = tone === 'dark';
       {text && <p>{text}</p>}
     </div>
     <div class="band__actions">
-      <a class:list={['btn', { 'btn--light': dark }]} href={url(primary.href)}><Icon name="arrow" class="arrow" /> {primary.label}</a>
-      {secondary && <a class:list={['btn', dark ? 'btn--outline-dark' : 'btn--ghost']} href={url(secondary.href)}>{secondary.label}</a>}
+      <a class:list={['btn', { 'btn--light': dark }]} href={url(primary.href)} data-cta={primary.cta}><Icon name={primaryIcon} class="arrow" /> {primary.label}</a>
+      {secondary && (
+        <a class:list={['btn', dark ? 'btn--outline-dark' : 'btn--ghost']} href={url(secondary.href)} data-cta={secondary.cta}>
+          {secondary.icon && <Icon name={secondary.icon} class="" />} {secondary.label}
+        </a>
+      )}
     </div>
   </div>
 )}
@@ -63,4 +110,17 @@ const dark = tone === 'dark';
   .band__actions {
     position: relative;
   }
+  /* photo variant: darkened photo behind, content as in the home "Własne ekipy" section */
+  .band-photo { position: relative; isolation: isolate; overflow: hidden; padding-block: clamp(72px, 9vw, 128px); }
+  .band-photo__bg { position: absolute; inset: 0; z-index: -1; }
+  .band-photo__bg img { width: 100%; height: 100%; object-fit: cover; }
+  .band-photo__bg::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--dark) 94%, transparent) 0%, color-mix(in srgb, var(--dark) 84%, transparent) 50%, color-mix(in srgb, var(--dark) 70%, transparent) 100%);
+  }
+  .band-photo__inner { display: grid; gap: 32px; align-items: end; }
+  @media (min-width: 900px) { .band-photo__inner { grid-template-columns: 1.5fr 1fr; } }
+  .band-photo h2 { font-size: clamp(2.1rem, 3.8vw, 3.2rem); line-height: 1.08; max-width: 680px; }
+  .band-photo .lead { margin: 20px 0 0; max-width: 560px; }
 </style>

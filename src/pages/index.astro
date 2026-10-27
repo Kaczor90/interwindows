@@ -6,6 +6,7 @@ import ProcessSteps from '../components/ProcessSteps.astro';
 import CrewGrid from '../components/CrewGrid.astro';
 import Brands from '../components/Brands.astro';
 import QuoteForm from '../components/QuoteForm.astro';
+import CtaBand from '../components/CtaBand.astro';
 import { site } from '../data/site';
 import { categories } from '../data/oferta';
 import { photoByFile, photoSrc, photoSrcSmall } from '../data/realizacje-zdjecia';
@@ -75,6 +76,7 @@ const guides = [
   title="Okna i drzwi Płock – montaż własną ekipą | Inter Windows"
   description="Okna PCV, aluminiowe i drewniane, drzwi, rolety i bramy dla wymagających. Płock i okolice, montaż wyłącznie naszą ekipą, bez podwykonawców."
   updated="2026-10-27"
+  footerCta={false}
 >
   <!-- old one-page anchors → new subpages (docs/seo-plan.md §5.1) -->
   <script is:inline define:vars={{ base }}>
@@ -89,11 +91,11 @@ const guides = [
         <span class="eyebrow">Płock i okolice · montaż własną ekipą</span>
         <h1>Okna i drzwi w Płocku montowane wyłącznie przez <em>naszą ekipę</em></h1>
         <div class="hero__actions">
-          <a class="call-link" href={site.phoneHref}>
+          <a class="call-link" href={site.phoneHref} data-cta="hero-telefon">
             <span class="call-link__circle"><Icon name="phone" class="" /></span>
             <span><small>Zadzwoń do nas</small>{site.phone}</span>
           </a>
-          <a class="btn" href="#wycena"><Icon name="arrow" class="arrow" /> Bezpłatna wycena</a>
+          <a class="btn" href="#wycena" data-cta="hero-wycena"><Icon name="arrow" class="arrow" /> Bezpłatna wycena</a>
         </div>
         <div class="hero__notes">
           <p>
@@ -174,11 +176,17 @@ const guides = [
           </article>
         ))}
       </div>
-      <div class="offer-more reveal">
-        <p>Na zamówienie także moskitiery, rolety wewnętrzne, pergole i parapety.</p>
+      <div class="cta-row reveal">
+        <div class="cta-row__text">
+          <strong>Nie wiesz, który system wybrać? Umów bezpłatną konsultację.</strong>
+          <span>
+            Doradzimy przy projekcie lub na budowie. Na zamówienie także moskitiery, rolety wewnętrzne, pergole i parapety.{' '}
+            <a href={url('/okna/')} data-cta="oferta-jak-wybrac">Jak wybrać okna</a>
+          </span>
+        </div>
         <div class="btn-row">
-          <a class="link-arrow" href={url('/okna/')}>Jak wybrać okna <Icon name="arrow" class="" /></a>
-          <a class="link-arrow" href={url('/kontakt/#wycena')}>Zapytaj doradcę <Icon name="arrow" class="" /></a>
+          <a class="btn" href="#wycena" data-cta="oferta-konsultacja"><Icon name="arrow" class="arrow" /> Umów bezpłatną konsultację</a>
+          <a class="btn btn--ghost" href={url('/konfigurator/')} data-cta="oferta-konfigurator"><Icon name="sliders" class="arrow" /> Skonfiguruj okno online</a>
         </div>
       </div>
     </div>
@@ -213,8 +221,8 @@ const guides = [
           </li>
         </ul>
         <div class="btn-row">
-          <a class="btn btn--light" href={url('/montaz-okien/')}><Icon name="arrow" class="arrow" /> Jak montujemy</a>
-          <a class="link-arrow" href="#ekipy">Poznaj montażystów <Icon name="arrow" class="" /></a>
+          <a class="btn btn--light" href="#wycena" data-cta="montaz-pomiar"><Icon name="arrow" class="arrow" /> Umów pomiar z naszym zespołem</a>
+          <a class="link-arrow" href={url('/montaz-okien/')} data-cta="montaz-jak-montujemy">Jak montujemy <Icon name="arrow" class="" /></a>
         </div>
       </div>
       <div class="crews__media reveal">
@@ -258,6 +266,13 @@ const guides = [
         </p>
       </div>
       <ProcessSteps />
+      <div class="cta-inline reveal">
+        <p>Pierwszy krok jest bezpłatny. <span>Pomiar u Ciebie i wycena bez zobowiązań.</span></p>
+        <div class="btn-row">
+          <a class="btn" href="#wycena" data-cta="proces-wycena"><Icon name="arrow" class="arrow" /> Bezpłatna wycena</a>
+          <a class="link-arrow" href={site.phoneHref} data-cta="proces-telefon"><Icon name="phone" class="" /> {site.phone}</a>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -275,7 +290,7 @@ const guides = [
       </div>
       <CrewGrid />
       <div class="btn-row" style="margin-top:36px">
-        <a class="btn btn--ghost" href={url('/montaz-okien/')}><Icon name="arrow" class="arrow" /> Więcej o montażu</a>
+        <a class="btn btn--ghost" href={url('/montaz-okien/')} data-cta="ekipa-montaz"><Icon name="arrow" class="arrow" /> Więcej o montażu</a>
         <a class="link-arrow" href={url('/o-firmie/')}>O firmie <Icon name="arrow" class="" /></a>
       </div>
     </div>
@@ -295,7 +310,7 @@ const guides = [
             <li><b>04</b><span>Szyby i dodatki, a potem wysyłka do doradcy</span></li>
           </ol>
           <div class="btn-row">
-            <a class="btn" href={url('/konfigurator/')}><Icon name="sliders" class="arrow" /> Skonfiguruj okno</a>
+            <a class="btn btn--brand btn--lg" href={url('/konfigurator/')} data-cta="konfigurator-zapowiedz"><Icon name="sliders" class="arrow" /> Skonfiguruj okno</a>
             <span class="small muted">Wymiary i tak sprawdzimy na bezpłatnym pomiarze.</span>
           </div>
         </div>
@@ -351,7 +366,7 @@ const guides = [
           <span class="eyebrow">Realizacje</span>
           <h2>Realizacje z Płocka i okolic</h2>
         </div>
-        <a class="btn btn--ghost" href={url('/realizacje/')}><Icon name="arrow" class="arrow" /> Zobacz wszystkie realizacje</a>
+        <a class="btn btn--ghost" href={url('/realizacje/')} data-cta="realizacje-wszystkie"><Icon name="arrow" class="arrow" /> Zobacz wszystkie realizacje</a>
       </div>
       <div class="mosaic">
         {mosaic.map((p, i) => (
@@ -370,11 +385,18 @@ const guides = [
         ))}
       </div>
       <p class="source-note">Zdjęcia z montaży wykonanych przez nasze ekipy, prosto z placu budowy.</p>
+      <div class="cta-inline reveal">
+        <p>Chcesz taki efekt u siebie? <span>Przyjedziemy, zmierzymy i przygotujemy wycenę.</span></p>
+        <div class="btn-row">
+          <a class="btn" href="#wycena" data-cta="realizacje-wycena"><Icon name="arrow" class="arrow" /> Bezpłatna wycena</a>
+          <a class="link-arrow" href={site.phoneHref} data-cta="realizacje-telefon"><Icon name="phone" class="" /> {site.phone}</a>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- OPINIE (component owned by the testimonials agent) -->
-  <Testimonials />
+  <Testimonials id="opinie" />
 
   <Brands title="Producenci, z którymi pracujemy" />
 
@@ -433,6 +455,15 @@ const guides = [
       </div>
     </div>
   </section>
+
+  <CtaBand
+    eyebrow="Pomiar i wycena bez zobowiązań"
+    title="Porozmawiajmy o oknach do Twojego domu"
+    text="Zadzwoń albo zostaw numer w formularzu poniżej. Przyjedziemy na pomiar i przygotujemy wycenę, a montaż wykona nasz zespół."
+    primary={{ label: 'Bezpłatna wycena', href: '#wycena', cta: 'band-wycena' }}
+    secondary={{ label: site.phone, href: site.phoneHref, cta: 'band-telefon', icon: 'phone' }}
+    image={{ src: '/img/hero-dom.webp', srcSmall: '/img/hero-dom-960.webp', position: 'center 40%' }}
+  />
 
   <QuoteForm />
 </Base>

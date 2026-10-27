@@ -1,0 +1,129 @@
+---
+// Palette switcher for comparing the two colour themes live ("Profil | Mono").
+// Rendered by Base.astro ONLY in dev and preview builds (PUBLIC_PREVIEW=true); production builds use
+// `theme` from src/data/site.ts and contain neither this control nor the switching script.
+// The choice is stored in localStorage ('iw-theme') and mirrored in the ?motyw= URL parameter;
+// the inline script in Base.astro <head> applies it before the first paint.
+// Desktop (≥ 1280 px): small pill next to the side rail. Below 1280 px: a round icon button in the
+// bottom-left corner (above the mobile CtaBar) that expands on tap.
+import Icon from './Icon.astro';
+---
+
+<div class="theme-switch">
+  <button class="theme-switch__toggle" type="button" aria-expanded="false" aria-controls="theme-switch-options" aria-label="Paleta kolorów (podgląd)">
+    <Icon name="contrast" class="" />
+  </button>
+  <div class="theme-switch__options" id="theme-switch-options" role="group" aria-label="Podgląd palety kolorów">
+    <span class="theme-switch__label" aria-hidden="true">Paleta</span>
+    <button type="button" data-theme-set="profil" aria-pressed="false">Profil</button>
+    <button type="button" data-theme-set="mono" aria-pressed="false">Mono</button>
+  </div>
+</div>
+
+<style>
+  .theme-switch {
+    position: fixed;
+    left: calc(var(--rail) + 16px);
+    bottom: 16px;
+    z-index: 47;
+    display: flex; align-items: center; gap: 8px;
+    font-size: .74rem;
+    transition: bottom .3s var(--ease);
+  }
+  .theme-switch__options {
+    display: inline-flex; align-items: center; gap: 2px;
+    padding: 4px;
+    background: var(--bg);
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    box-shadow: var(--shadow-sm);
+  }
+  .theme-switch__label { padding: 0 8px 0 10px; color: var(--muted); font-weight: 600; }
+  .theme-switch__options button {
+    min-height: 32px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink);
+    font: 600 .74rem/1 var(--font);
+    cursor: pointer;
+  }
+  .theme-switch__options button:hover { background: var(--bg-soft); }
+  .theme-switch__options button[aria-pressed='true'] { background: var(--ink); color: #fff; }
+  .theme-switch__toggle { display: none; }
+
+  /* below 1280 px: collapsed to a small round button; options open next to it */
+  @media (max-width: 1279px) {
+    .theme-switch { left: 12px; bottom: 12px; }
+    .theme-switch__toggle {
+      display: grid; place-items: center;
+      width: 40px; height: 40px;
+      border: 1px solid var(--line-strong);
+      border-radius: 50%;
+      background: var(--bg);
+      color: var(--ink);
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+    }
+    .theme-switch__toggle :global(svg) { width: 18px; height: 18px; }
+    .theme-switch__toggle[aria-expanded='true'] { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .theme-switch__options { display: none; }
+    .theme-switch.is-open .theme-switch__options { display: inline-flex; }
+    .theme-switch__label { display: none; }
+    .theme-switch__options button { min-height: 32px; padding: 0 12px; }
+  }
+  /* stay above the mobile sticky CTA bar while it is shown */
+  :global(html.has-cta-bar) .theme-switch { bottom: calc(74px + env(safe-area-inset-bottom)); }
+  :global(html.menu-open) .theme-switch { display: none; }
+  @media print { .theme-switch { display: none; } }
+</style>
+
+<script>
+  const KEY = 'iw-theme';
+  const root = document.documentElement;
+  const box = document.querySelector<HTMLElement>('.theme-switch');
+  const toggle = box?.querySelector<HTMLButtonElement>('.theme-switch__toggle');
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-theme-set]')];
+  const sync = () => buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.themeSet === root.dataset.theme)));
+  const setOpen = (open: boolean) => {
+    box?.classList.toggle('is-open', open);
+    toggle?.setAttribute('aria-expanded', String(open));
+  };
+
+  toggle?.addEventListener('click', () => {
+    const open = !box?.classList.contains('is-open');
+    setOpen(open);
+    if (open) buttons.find((b) => b.getAttribute('aria-pressed') === 'true')?.focus();
+  });
+  document.addEventListener('click', (e) => {
+    if (box?.classList.contains('is-open') && !box.contains(e.target as Node)) setOpen(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && box?.classList.contains('is-open')) {
+      setOpen(false);
+      toggle?.focus();
+    }
+  });
+
+  buttons.forEach((b) =>
+    b.addEventListener('click', () => {
+      const theme = b.dataset.themeSet!;
+      root.dataset.theme = theme;
+      try {
+        localStorage.setItem(KEY, theme);
+      } catch {
+        /* storage blocked (private mode) – the switch still works for this page view */
+      }
+      const u = new URL(location.href);
+      u.searchParams.set('motyw', theme);
+      history.replaceState(history.state, '', u);
+      sync();
+      if (toggle && getComputedStyle(toggle).display !== 'none') {
+        setOpen(false);
+        toggle.focus();
+      }
+    }),
+  );
+  sync();
+</script>

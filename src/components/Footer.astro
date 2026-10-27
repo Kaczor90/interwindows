@@ -40,8 +40,8 @@ const company = [
           <h2>Porozmawiajmy o oknach do Twojego domu</h2>
         </div>
         <div class="btn-row">
-          <a class="btn btn--light" href={url('/kontakt/#wycena')}><Icon name="arrow" class="arrow" /> Umów bezpłatny pomiar</a>
-          <a class="btn btn--outline-dark" href={site.phoneHref}><Icon name="phone" class="" /> {site.phone}</a>
+          <a class="btn btn--light" href={url('/kontakt/#wycena')} data-quote-link data-cta="footer-wycena"><Icon name="arrow" class="arrow" /> Umów bezpłatny pomiar</a>
+          <a class="btn btn--outline-dark" href={site.phoneHref} data-cta="footer-telefon"><Icon name="phone" class="" /> {site.phone}</a>
         </div>
       </div>
     )}

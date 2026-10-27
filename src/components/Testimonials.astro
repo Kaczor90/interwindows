@@ -1,4 +1,346 @@
 ---
-// Stub created by the base-build agent so the site builds. The testimonials agent owns this file
-// and replaces it with the real component (reviews from src/data/opinie.ts).
+// Client reviews: centred head + columns of review cards scrolling vertically in an infinite loop
+// (after the 21st.dev "testimonial-v2" the client liked), built with CSS only.
+//
+//   <Testimonials />
+//   <Testimonials title="Opinie klientów" lead="…" limit={6} id="opinie" class="section--soft" />
+//
+// Props: title, lead, limit (first n reviews from src/data/opinie.ts, in their order),
+//        id (section anchor, none by default), class (extra section classes, e.g. section--soft).
+//
+// How it works
+// • Reviews are split into 1 / 2 / 3 columns at build time (three layouts, CSS shows the one for the
+//   viewport: 1 column < 768 px, 2 from 768 px, 3 from 1024 px). Columns are balanced by estimated
+//   card height.
+// • Each column holds its list twice and slides translateY(0 → -50%) in a loop. If a column is shorter
+//   than its window, its reviews are repeated inside the copy so the loop never shows a gap.
+//   Only the first occurrence of each review is exposed: repeats and the second copy are
+//   aria-hidden and not focusable, so screen readers get one list.
+// • Pauses on hover, focus-within and via the "Wstrzymaj przewijanie" button (the only JS).
+//   Keyboard focus on a card, or prefers-reduced-motion, switches to a static grid of all reviews
+//   (no animation, no repeats).
+// • No stars, no average and no Review/aggregateRating schema (docs/seo-plan.md §5.3).
+import Icon from './Icon.astro';
+import { opinie, type Opinia } from '../data/opinie';
+import { site } from '../data/site';
+
+interface Props {
+  title?: string;
+  lead?: string;
+  limit?: number;
+  id?: string;
+  class?: string;
+}
+
+const list = typeof Astro.props.limit === 'number' ? opinie.slice(0, Math.max(0, Astro.props.limit)) : opinie;
+const allGoogle = list.every((o) => o.source === 'google');
+
+const {
+  title = 'Co mówią klienci po montażu',
+  lead = allGoogle
+    ? 'Przytaczamy bez zmian opinie, które klienci zostawili w wizytówce Inter Windows w Google.'
+    : 'Przytaczamy bez zmian opinie klientów, podpisane imieniem i pierwszą literą nazwiska.',
+  id,
+  class: className,
+} = Astro.props;
+
+const headingId = `${id ?? 'opinie'}-tytul`;
+
+type Item = Opinia & { index: number; role: string; initials: string; tone: number };
+
+const initialsOf = (name: string) =>
+  name
+    .split(/\s+/)
+    .filter(Boolean)
+    .filter((w, i, all) => i === 0 || i === all.length - 1)
+    .map((w) => w.replace(/[^\p{L}]/gu, '').charAt(0).toLocaleUpperCase('pl'))
+    .join('');
+
+const roleOf = (o: Opinia) => {
+  const parts = [o.town, o.product].filter(Boolean);
+  if (parts.length) return parts.join(' · ');
+  return o.source === 'google' ? 'Opinia z Google' : 'Opinia klienta';
+};
+
+const items: Item[] = list.map((o, index) => ({ ...o, index, role: roleOf(o), initials: initialsOf(o.author), tone: index % 3 }));
+
+// --- column layouts -------------------------------------------------------------------------------
+// Card height estimate (px): padding + footer + gap, plus text lines at the WIDEST card of the layout
+// (chars per line), so the estimate errs low and the "copy taller than window" rule stays safe.
+const LINE = 26;
+const CHROME = 160;
+const WINDOW = { 1: 620, 2: 740, 3: 740 } as Record<number, number>;
+const SAFETY = 140;
+// px per second for columns 1–3: calm, slightly different speeds (≈ 45–75 s per loop)
+const SPEED = [21, 17, 19];
+
+const layout = (cols: number, cpl: number) => {
+  const est = (o: Item) => CHROME + Math.ceil(o.text.length / cpl) * LINE;
+  const columns = Array.from({ length: Math.min(cols, items.length) }, () => ({ items: [] as Item[], height: 0 }));
+  [...items]
+    .sort((a, b) => est(b) - est(a) || a.index - b.index)
+    .forEach((o) => {
+      const target = columns.reduce((min, c) => (c.height < min.height ? c : min));
+      target.items.push(o);
+      target.height += est(o);
+    });
+  return columns.map((c, ci) => {
+    c.items.sort((a, b) => a.index - b.index);
+    const repeat = Math.max(1, Math.ceil((WINDOW[cols] + SAFETY) / c.height));
+    const duration = Math.round((c.height * repeat) / SPEED[ci % SPEED.length]);
+    // one copy = the column's reviews `repeat` times; only the first pass of copy 1 is "real"
+    const copy = Array.from({ length: repeat }, (_, r) => c.items.map((o) => ({ o, first: r === 0 }))).flat();
+    return { copy, duration };
+  });
+};
+
+const layouts = [
+  { cols: 1, columns: layout(1, 58) },
+  { cols: 2, columns: layout(2, 50) },
+  { cols: 3, columns: layout(3, 42) },
+];
 ---
+
+{items.length > 0 && (
+  <section class:list={['section', 't', className]} id={id} aria-labelledby={headingId} data-opinie>
+    <div class="container">
+      <header class="t-head reveal">
+        <span class="eyebrow">Opinie klientów</span>
+        <h2 id={headingId}>{title}</h2>
+        {lead && <p class="lead">{lead}</p>}
+      </header>
+
+      {layouts.map(({ cols, columns }) => (
+        <div class={`t-layout t-layout--${cols}`} style={`--cols:${columns.length}`}>
+          {columns.map((col) => (
+            <div class="t-col" style={`--dur:${col.duration}s`}>
+              <div class="t-track">
+                {[0, 1].map((copyNo) => (
+                  <ul class="t-list" role={copyNo === 0 ? 'list' : undefined} aria-hidden={copyNo === 1 ? 'true' : undefined}>
+                    {col.copy.map(({ o, first }) => {
+                      const real = copyNo === 0 && first;
+                      return (
+                        <li class:list={['t-item', { 't-dup': !real }]} aria-hidden={copyNo === 0 && !real ? 'true' : undefined}>
+                          <figure class="t-card" tabindex={real ? 0 : undefined}>
+                            <blockquote class="t-quote"><p>{o.text}</p></blockquote>
+                            <figcaption class="t-author">
+                              <span class={`t-avatar t-avatar--${o.tone}`} aria-hidden="true">{o.initials}</span>
+                              <span class="t-meta">
+                                <span class="t-name">{o.author}</span>
+                                <span class="t-role">{o.role}</span>
+                              </span>
+                            </figcaption>
+                          </figure>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ))}
+
+      <div class="t-foot">
+        <a class="link-arrow" href={site.googleMapsUrl} target="_blank" rel="noopener">
+          Zobacz opinie w Google <Icon name="external" class="" /><span class="sr-only"> (otwiera się w nowej karcie)</span>
+        </a>
+        <button type="button" class="t-toggle" data-opinie-toggle>
+          <span class="t-toggle__state t-toggle__state--run">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12" /></svg>
+            Wstrzymaj przewijanie
+          </span>
+          <span class="t-toggle__state t-toggle__state--paused">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" /></svg>
+            Wznów przewijanie
+          </span>
+        </button>
+      </div>
+    </div>
+  </section>
+)}
+
+<script>
+  // the only JS: pause / resume button (hover, focus and reduced motion are handled in CSS)
+  document.querySelectorAll<HTMLElement>('[data-opinie]').forEach((root) => {
+    root.querySelector('[data-opinie-toggle]')?.addEventListener('click', () => root.classList.toggle('is-paused'));
+  });
+</script>
+
+<style>
+  /* ---------- head (site eyebrow + H2 scale, centred as in the reference) ---------- */
+  .t-head {
+    max-width: 680px;
+    margin: 0 auto clamp(40px, 5.5vw, 64px);
+    text-align: center;
+  }
+  .t-head .lead { margin: 18px auto 0; max-width: 560px; }
+
+  /* ---------- layouts: 1 column < 768 px, 2 from 768 px, 3 from 1024 px ---------- */
+  .t-layout {
+    display: none;
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+    /* columns get side padding so the hover lift and shadow are not clipped; this pulls the outer
+       cards back flush with the container */
+    margin-inline: -12px;
+  }
+  .t-layout--1 { display: grid; }
+  @media (min-width: 768px) {
+    .t-layout--1 { display: none; }
+    .t-layout--2 { display: grid; }
+  }
+  @media (min-width: 1024px) {
+    .t-layout--2 { display: none; }
+    .t-layout--3 { display: grid; }
+  }
+
+  .t-col {
+    position: relative;
+    max-height: 740px;
+    padding-inline: 12px;
+    overflow: hidden;
+    overflow: clip;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent);
+  }
+  .t-layout--1 .t-col { max-height: 620px; }
+
+  .t-track {
+    display: flex;
+    flex-direction: column;
+    animation: iw-opinie-scroll var(--dur, 60s) linear infinite;
+    will-change: transform;
+  }
+  @keyframes iw-opinie-scroll {
+    from { transform: translateY(0); }
+    to { transform: translateY(-50%); }
+  }
+
+  /* paused: hover, focus inside, or the button */
+  .t-layout:hover .t-track,
+  .t-layout:focus-within .t-track,
+  .t.is-paused .t-track { animation-play-state: paused; }
+
+  /* both copies have identical padding, so they are exactly the same height and -50% loops seamlessly;
+     top + bottom padding = the 20px gap, so the seam between copies looks like any other gap
+     (the 12px on top keeps a lifted card from being clipped in the static grid) */
+  .t-list {
+    list-style: none;
+    margin: 0;
+    padding: 12px 0 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .t-layout--1 .t-list { max-width: 520px; width: 100%; margin-inline: auto; }
+
+  /* ---------- card ---------- */
+  .t-card {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding: clamp(24px, 2.4vw, 30px);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    transition: transform .45s var(--ease), box-shadow .45s var(--ease), border-color .3s;
+  }
+  .t-card:hover,
+  .t-card:focus-visible {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: var(--shadow);
+    border-color: var(--line-strong);
+  }
+  .t-card:focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; }
+
+  .t-quote { margin: 0; }
+  .t-quote p { margin: 0; font-size: .95rem; line-height: 1.7; color: var(--text); }
+
+  .t-author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+  }
+  .t-avatar {
+    width: 40px;
+    height: 40px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    font-size: .76rem;
+    font-weight: 600;
+    letter-spacing: .03em;
+    line-height: 1;
+  }
+  /* monograms in theme colours (navy / soft / accent ring; black–grey–black in the mono theme) */
+  .t-avatar--0 { background: var(--navy); color: #fff; }
+  .t-avatar--1 { background: var(--bg-soft); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-strong); }
+  .t-avatar--2 { background: var(--bg); color: var(--accent); box-shadow: inset 0 0 0 1.5px var(--accent); }
+
+  .t-meta { display: grid; gap: 1px; min-width: 0; }
+  .t-name { font-size: .9rem; font-weight: 600; line-height: 1.35; color: var(--ink); letter-spacing: -0.005em; }
+  .t-role { font-size: .8rem; line-height: 1.4; color: var(--muted); }
+
+  /* ---------- foot: Google link + pause button ---------- */
+  .t-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 14px 28px;
+    margin-top: clamp(28px, 4vw, 44px);
+  }
+  .t-toggle {
+    display: none; /* shown only when JS runs (html.js) and motion is allowed */
+    align-items: center;
+    min-height: 40px;
+    padding: 0 16px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: var(--bg);
+    color: var(--muted);
+    font: 600 .8rem/1 var(--font);
+    cursor: pointer;
+    transition: color .2s, border-color .2s;
+  }
+  :global(.js) .t-toggle { display: inline-flex; }
+  .t-toggle:hover { color: var(--ink); border-color: var(--ink); }
+  .t-toggle__state { display: inline-flex; align-items: center; gap: 8px; }
+  .t-toggle__state--paused,
+  .t.is-paused .t-toggle__state--run { display: none; }
+  .t.is-paused .t-toggle__state--paused { display: inline-flex; }
+  .t-toggle svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .t-toggle__state--paused svg { fill: currentColor; stroke-width: 1.2; }
+
+  /* ---------- static grid: keyboard focus on a card (no layout change on mouse clicks) ---------- */
+  .t-layout:has(.t-card:focus-visible) .t-col {
+    max-height: none;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .t-layout:has(.t-card:focus-visible) .t-track { animation: none; }
+  .t-layout:has(.t-card:focus-visible) .t-dup,
+  .t-layout:has(.t-card:focus-visible) .t-list[aria-hidden='true'] { display: none; }
+
+  /* ---------- static grid: reduced motion (all reviews once, nothing moves) ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    .t-col {
+      max-height: none;
+      overflow: visible;
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+    .t-track { animation: none; }
+    .t-dup,
+    .t-list[aria-hidden='true'] { display: none; }
+    .t-card:hover,
+    .t-card:focus-visible { transform: none; }
+    :global(.js) .t-toggle { display: none; }
+  }
+</style>

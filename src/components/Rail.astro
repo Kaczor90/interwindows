@@ -1,0 +1,258 @@
+---
+// Left side rail (desktop ≥ 1280 px only) – a quiet navigation tool, rendered once by Base.astro:
+//   · vertical links: INTER WINDOWS → /, OKNA, DRZWI, BRAMY, ROLETY (current section: aria-current)
+//   · home page only: scrollspy dots for the main sections (active one via IntersectionObserver)
+//   · scroll-progress line (CSS scroll-driven animation, small JS fallback) and a "do góry" button
+//   · quick actions: phone and configurator, with labels shown on hover/focus
+import { url } from '../lib/url';
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+
+interface Props {
+  /** current path without the base, e.g. '/okna-pcv/' */
+  path: string;
+}
+const { path } = Astro.props;
+const isHome = path === '/';
+
+const links = [
+  { label: 'Okna', href: '/okna/', section: ['/okna/', '/okna-pcv/', '/okna-aluminiowe/', '/okna-drewniane/', '/drzwi-tarasowe/'] },
+  { label: 'Drzwi', href: '/drzwi-zewnetrzne/', section: ['/drzwi-zewnetrzne/', '/drzwi-wewnetrzne/'] },
+  { label: 'Bramy', href: '/bramy-garazowe/', section: ['/bramy-garazowe/'] },
+  { label: 'Rolety', href: '/rolety-zewnetrzne/', section: ['/rolety-zewnetrzne/', '/zaluzje-fasadowe/'] },
+];
+const current = (href: string, section: string[]) => (path === href ? 'page' : section.some((s) => path.startsWith(s)) ? 'true' : undefined);
+
+// home page sections (ids must exist in src/pages/index.astro)
+const spy = [
+  { id: 'oferta', label: 'Oferta' },
+  { id: 'montaz', label: 'Montaż' },
+  { id: 'realizacje', label: 'Realizacje' },
+  { id: 'opinie', label: 'Opinie' },
+  { id: 'wycena', label: 'Wycena' },
+];
+---
+
+<nav class="rail" aria-label="Nawigacja boczna">
+  {isHome && (
+    <ol class="rail__spy" aria-label="Sekcje strony głównej">
+      {spy.map((s) => (
+        <li>
+          <a href={`#${s.id}`} data-spy={s.id}>
+            <span class="rail__dot" aria-hidden="true"></span>
+            <span class="rail__tip">{s.label}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  )}
+
+  <ul class="rail__links">
+    <li><a class="rail__brand" href={url('/')} aria-current={isHome ? 'page' : undefined}>Inter Windows</a></li>
+    {links.map((l) => (
+      <li><a href={url(l.href)} aria-current={current(l.href, l.section)}>{l.label}</a></li>
+    ))}
+  </ul>
+
+  <div class="rail__bottom">
+    <span class="rail__progress" aria-hidden="true"><span></span></span>
+    <button class="rail__btn rail__top" type="button" data-rail-top>
+      <Icon name="arrow-up" class="" />
+      <span class="rail__tip">Do góry</span>
+    </button>
+    <a class="rail__btn" href={site.phoneHref} data-cta="rail-telefon">
+      <Icon name="phone" class="" />
+      <span class="rail__tip">Zadzwoń: {site.phone}</span>
+    </a>
+    <a class="rail__btn" href={url('/konfigurator/')} data-cta="rail-konfigurator">
+      <Icon name="sliders" class="" />
+      <span class="rail__tip">Konfigurator okien</span>
+    </a>
+  </div>
+</nav>
+
+<style>
+  .rail { display: none; }
+
+  @media (min-width: 1280px) {
+    .rail {
+      display: flex;
+      position: fixed;
+      inset: 0 auto 0 0;
+      width: var(--rail);
+      z-index: 40;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      padding: calc(var(--header-h) + 8px) 0 20px;
+      overflow: hidden;
+      border-right: 1px solid var(--line);
+      background: var(--bg);
+    }
+    /* leave room for the palette switcher (dev/preview only) next to the rail's bottom */
+    :global(html.has-theme-switch) .rail { padding-bottom: 84px; }
+
+    /* ---- scrollspy (home) ---- */
+    .rail__spy { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+    .rail__spy a {
+      position: relative;
+      display: grid; place-items: center;
+      width: var(--rail); height: 22px;
+    }
+    .rail__dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      border: 1.5px solid var(--muted);
+      transition: background .25s, border-color .25s, transform .25s var(--ease);
+    }
+    .rail__spy a:hover .rail__dot { border-color: var(--ink); }
+    .rail__spy a.is-active .rail__dot { background: var(--ink); border-color: var(--ink); transform: scale(1.25); }
+
+    /* ---- vertical links ---- */
+    .rail__links {
+      list-style: none; margin: auto 0; padding: 0;
+      display: flex; align-items: center;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-size: 10.5px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .rail__links li { display: flex; align-items: center; }
+    .rail__links li + li::before { content: '·'; color: var(--muted); padding-block: 2px; }
+    .rail__links a {
+      display: inline-block;
+      padding: 5px 7px;
+      color: var(--muted);
+      transition: color .2s;
+    }
+    .rail__links a:hover { color: var(--ink); }
+    .rail__links .rail__brand { color: var(--ink); font-weight: 700; }
+    .rail__links a[aria-current] { color: var(--ink); font-weight: 700; }
+    .rail__links a[aria-current='page'] { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+
+    /* ---- bottom: progress, back to top, quick actions ---- */
+    .rail__bottom { display: grid; justify-items: center; gap: 8px; }
+    .rail__progress { position: relative; display: block; width: 1px; height: 48px; background: var(--line-strong); margin-bottom: 4px; }
+    .rail__progress span {
+      position: absolute; inset: 0;
+      background: var(--ink);
+      transform: scaleY(var(--rail-progress, 0));
+      transform-origin: top;
+    }
+    @supports (animation-timeline: scroll()) {
+      .rail__progress span { animation: rail-progress linear both; animation-timeline: scroll(root block); }
+    }
+    @keyframes rail-progress {
+      from { transform: scaleY(0); }
+      to { transform: scaleY(1); }
+    }
+
+    .rail__btn {
+      position: relative;
+      display: grid; place-items: center;
+      width: 34px; height: 34px;
+      border: 1px solid var(--line-strong);
+      border-radius: 50%;
+      background: var(--bg);
+      color: var(--ink);
+      cursor: pointer;
+      padding: 0;
+      transition: background .2s, color .2s, border-color .2s, opacity .3s, visibility .3s;
+    }
+    .rail__btn :global(svg) { width: 15px; height: 15px; }
+    .rail__btn:hover { background: var(--ink); border-color: var(--ink); color: #fff; }
+    .rail__top { opacity: 0; visibility: hidden; }
+    .rail__top.is-visible { opacity: 1; visibility: visible; }
+
+    /* ---- labels (tooltips to the right of the rail) ---- */
+    .rail__tip {
+      position: absolute;
+      left: calc(100% + 10px); top: 50%;
+      transform: translate(-4px, -50%);
+      padding: 6px 10px;
+      background: var(--ink); color: #fff;
+      font-size: .74rem; font-weight: 600; letter-spacing: 0; text-transform: none;
+      white-space: nowrap;
+      border-radius: var(--radius);
+      opacity: 0; visibility: hidden;
+      pointer-events: none;
+      transition: opacity .2s, transform .2s var(--ease), visibility .2s;
+    }
+    .rail__spy .rail__tip { left: calc(100% + 4px); }
+    a:hover > .rail__tip, a:focus-visible > .rail__tip,
+    button:hover > .rail__tip, button:focus-visible > .rail__tip { opacity: 1; visibility: visible; transform: translate(0, -50%); }
+
+    /* shorter screens: tighter spacing, then drop the scrollspy */
+    @media (max-height: 820px) {
+      .rail { gap: 10px; }
+      .rail__links { font-size: 9.5px; letter-spacing: .16em; }
+      .rail__links a { padding-block: 4px; }
+      .rail__spy a { height: 20px; }
+      .rail__progress { height: 32px; }
+      .rail__btn { width: 30px; height: 30px; }
+    }
+    @media (max-height: 760px) {
+      .rail__spy, .rail__progress { display: none; }
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rail__dot, .rail__tip, .rail__btn { transition: none; }
+  }
+</style>
+
+<script>
+  const rail = document.querySelector<HTMLElement>('.rail');
+  if (rail) {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    // scroll progress fallback for browsers without scroll-driven animations; "do góry" visibility
+    const bar = rail.querySelector<HTMLElement>('.rail__progress');
+    const top = rail.querySelector<HTMLButtonElement>('[data-rail-top]');
+    const native = CSS.supports('animation-timeline: scroll()');
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        if (!native && bar) bar.style.setProperty('--rail-progress', String(max > 0 ? Math.min(1, window.scrollY / max) : 0));
+        top?.classList.toggle('is-visible', window.scrollY > 600);
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    top?.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: reduce.matches ? 'auto' : 'smooth' });
+      // keep keyboard users oriented: move focus to the start of the page
+      rail.querySelector<HTMLAnchorElement>('.rail__brand')?.focus({ preventScroll: true });
+    });
+
+    // scrollspy (home page only): highlight the section that crosses the middle of the viewport
+    const spyLinks = [...rail.querySelectorAll<HTMLAnchorElement>('[data-spy]')];
+    if (spyLinks.length) {
+      const setActive = (id: string | null) =>
+        spyLinks.forEach((a) => {
+          const on = a.dataset.spy === id;
+          a.classList.toggle('is-active', on);
+          if (on) a.setAttribute('aria-current', 'location');
+          else a.removeAttribute('aria-current');
+        });
+      const visible = new Map<string, boolean>();
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => visible.set(e.target.id, e.isIntersecting));
+          // last section (in page order) that crosses the middle band wins
+          const active = spyLinks.map((a) => a.dataset.spy!).filter((id) => visible.get(id)).pop() ?? null;
+          setActive(active);
+        },
+        { rootMargin: '-45% 0px -50% 0px' },
+      );
+      spyLinks.forEach((a) => {
+        const section = document.getElementById(a.dataset.spy!);
+        if (section) io.observe(section);
+      });
+    }
+  }
+</script>

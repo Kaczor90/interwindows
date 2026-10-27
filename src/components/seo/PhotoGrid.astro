@@ -1,0 +1,64 @@
+---
+// Captioned grid of OWN realization photos (src/data/realizacje-zdjecia.ts) – proof that the crew
+// really does the work. Captions default to the photo's alt text + the month it was taken.
+// Never pass AI illustrations here.
+//   <PhotoGrid files={['montaz-szyby-minidzwig-przyssawka-01', 'dostawa-przeszklen-samochod']} />
+import { url } from '../../lib/url';
+import { photoByFile, photoSrc, photoSrcSmall } from '../../data/realizacje-zdjecia';
+
+interface Props {
+  files: string[];
+  /** optional caption overrides, keyed by file name */
+  captions?: Record<string, string>;
+  columns?: 3 | 4;
+}
+const { files, captions = {}, columns = 3 } = Astro.props;
+const photos = files.map((f) => {
+  const p = photoByFile(f);
+  if (!p) throw new Error(`Brak zdjęcia realizacji: ${f}`);
+  return p;
+});
+const month = (iso: string) => new Date(`${iso}T12:00:00`).toLocaleDateString('pl-PL', { month: 'long', year: 'numeric' });
+---
+
+<ul class:list={['pgrid', `pgrid--${columns}`]} role="list">
+  {photos.map((p) => (
+    <li class="reveal">
+      <figure>
+        <div class="photo pgrid__img">
+          <img
+            src={url(photoSrcSmall(p))}
+            srcset={`${url(photoSrcSmall(p))} 800w, ${url(photoSrc(p))} 1600w`}
+            sizes={`(min-width: 900px) ${columns === 4 ? 25 : 33}vw, (min-width: 560px) 50vw, 100vw`}
+            alt={p.alt}
+            width={p.width}
+            height={p.height}
+            loading="lazy"
+          />
+        </div>
+        <figcaption>
+          <span>{captions[p.file] ?? p.alt}</span>
+          <time datetime={p.date}>{month(p.date)}</time>
+        </figcaption>
+      </figure>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .pgrid { list-style: none; margin: 0; padding: 0; display: grid; gap: 28px 20px; }
+  @media (min-width: 560px) { .pgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 900px) {
+    .pgrid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .pgrid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+  figure { margin: 0; }
+  .pgrid__img { aspect-ratio: 4 / 3; }
+  figcaption {
+    display: flex; justify-content: space-between; gap: 16px;
+    margin-top: 12px; padding-top: 10px;
+    border-top: 1px solid var(--line);
+    font-size: .84rem; line-height: 1.45; color: var(--ink);
+  }
+  time { flex: none; color: var(--muted); font-size: .78rem; }
+</style>

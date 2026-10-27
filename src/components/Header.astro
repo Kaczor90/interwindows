@@ -55,7 +55,7 @@ const label = (c: (typeof categories)[number]) => (c.slug === 'okna' ? 'Okna –
             </li>
           ) : item.kind === 'cta' ? (
             <li class="nav__item nav__item--cta">
-              <a class="nav__cta" href={url(item.href)} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+              <a class="nav__cta" href={url(item.href)} aria-current={isCurrent(item.href) ? 'page' : undefined} data-cta="header-konfigurator">
                 <Icon name="sliders" class="" />{item.label}
               </a>
             </li>
@@ -69,7 +69,11 @@ const label = (c: (typeof categories)[number]) => (c.slug === 'okna' ? 'Okna –
     </nav>
 
     <div class="header-actions">
-      <a class="header-phone" href={site.phoneHref} aria-label={`Zadzwoń: ${site.phone}`}><Icon name="phone" class="" /><span>{site.phone}</span></a>
+      <a class="header-phone" href={site.phoneHref} aria-label={`Zadzwoń: ${site.phone}`} data-cta="header-telefon"><Icon name="phone" class="" /><span>{site.phone}</span></a>
+      <!-- href switches to the form on the current page (#wycena) via the script below, when there is one -->
+      <a class="btn btn--sm header-quote" href={url('/kontakt/#wycena')} data-quote-link data-cta="header-wycena">
+        <span class="header-quote__long">Bezpłatna wycena</span><span class="header-quote__short">Wycena</span>
+      </a>
       <button class="menu-toggle" type="button" aria-label="Otwórz menu" aria-expanded="false" aria-controls="mobile-menu">
         <Icon name="menu" class="" />
       </button>
@@ -109,13 +113,18 @@ const label = (c: (typeof categories)[number]) => (c.slug === 'okna' ? 'Okna –
       )}
     </ul>
     <div class="mobile-menu__cta">
-      <a class="btn" href={site.phoneHref}><Icon name="phone" class="" /> Zadzwoń: {site.phone}</a>
-      <a class="btn btn--ghost" href={url('/kontakt/#wycena')}>Umów bezpłatny pomiar</a>
+      <a class="btn" href={site.phoneHref} data-cta="menu-telefon"><Icon name="phone" class="" /> Zadzwoń: {site.phone}</a>
+      <a class="btn btn--ghost" href={url('/kontakt/#wycena')} data-quote-link data-cta="menu-wycena">Bezpłatna wycena</a>
     </div>
   </div>
 </div>
 
 <script>
+  // quote links ([data-quote-link], header, menu, sticky bar) jump to the form on the current page when there is one
+  if (document.getElementById('wycena')) {
+    document.querySelectorAll<HTMLAnchorElement>('[data-quote-link]').forEach((a) => (a.href = '#wycena'));
+  }
+
   const menu = document.getElementById('mobile-menu');
   const openBtn = document.querySelector<HTMLButtonElement>('.header-actions .menu-toggle');
   const closeBtn = menu?.querySelector<HTMLButtonElement>('[data-close]');

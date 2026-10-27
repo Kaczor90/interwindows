@@ -20,6 +20,9 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import GridLines from '../components/GridLines.astro';
+import CtaBar from '../components/CtaBar.astro';
+import Rail from '../components/Rail.astro';
+import ThemeSwitch from '../components/ThemeSwitch.astro';
 import { site, theme } from '../data/site';
 
 interface Props {
@@ -52,12 +55,14 @@ const canonical = new URL(path, site.productionUrl).toString();
 // og:image from the site actually being served, so shared preview links get a thumbnail too
 const ogImage = new URL(url(image), Astro.site).toString();
 const isPreview = import.meta.env.PUBLIC_PREVIEW === 'true';
+// palette switcher (Profil | Mono) only in dev and preview builds; production uses `theme` from site.ts
+const themeSwitch = import.meta.env.DEV || isPreview;
 const robots = isPreview ? 'noindex, nofollow' : noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large';
 const extraSchema = schema ? (Array.isArray(schema) ? schema : [schema]) : [];
 ---
 
 <!doctype html>
-<html lang="pl" data-theme={theme} data-noindex={noindex ? '' : undefined}>
+<html lang="pl" class={themeSwitch ? 'has-theme-switch' : undefined} data-theme={theme} data-noindex={noindex ? '' : undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -84,11 +89,21 @@ const extraSchema = schema ? (Array.isArray(schema) ? schema : [schema]) : [];
     {updated && <meta property="og:updated_time" content={updated} />}
     <meta name="twitter:card" content="summary_large_image" />
 
-    <script is:inline>
-      document.documentElement.classList.add('js');
-      // palette comparison for the client: ?motyw=mono / ?motyw=profil (not stored, default comes from site.ts)
-      (function () { var m = new URLSearchParams(location.search).get('motyw'); if (m === 'mono' || m === 'profil') document.documentElement.dataset.theme = m; })();
-    </script>
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    {themeSwitch && (
+      <script is:inline>
+        // dev/preview only: palette chosen in the switcher (localStorage) or via ?motyw=, applied before paint
+        (function () {
+          var ok = function (v) { return v === 'profil' || v === 'mono'; };
+          var t = new URLSearchParams(location.search).get('motyw');
+          try {
+            if (ok(t)) localStorage.setItem('iw-theme', t);
+            else t = localStorage.getItem('iw-theme');
+          } catch (e) {}
+          if (ok(t)) document.documentElement.dataset.theme = t;
+        })();
+      </script>
+    )}
     <script type="application/ld+json" set:html={JSON.stringify(businessGraph())} />
     {extraSchema.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
   </head>
@@ -97,10 +112,7 @@ const extraSchema = schema ? (Array.isArray(schema) ? schema : [schema]) : [];
 
     <GridLines />
 
-    <aside class="rail" aria-hidden="true">
-      <span class="rail__text"><b>Inter Windows</b> &nbsp;·&nbsp; okna &nbsp;·&nbsp; drzwi &nbsp;·&nbsp; bramy &nbsp;·&nbsp; rolety</span>
-      <span class="rail__line"></span>
-    </aside>
+    <Rail path={path} />
 
     <div class="site">
       <Header />
@@ -110,7 +122,11 @@ const extraSchema = schema ? (Array.isArray(schema) ? schema : [schema]) : [];
       <Footer cta={footerCta} />
     </div>
 
-    <a class="fab" href={site.phoneHref} aria-label={`Zadzwoń: ${site.phone}`}>
+    <CtaBar />
+    {themeSwitch && <ThemeSwitch />}
+
+    <!-- floating call button (desktop/tablet; on phones the sticky CtaBar replaces it) -->
+    <a class="fab" href={site.phoneHref} aria-label={`Zadzwoń: ${site.phone}`} data-cta="fab-telefon">
       <span class="fab__label">Zadzwoń: {site.phone}</span>
       <span class="fab__btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"></path></svg></span>
     </a>

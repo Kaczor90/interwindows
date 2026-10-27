@@ -1,0 +1,469 @@
+---
+// /montaz-okien/ – the key differentiator page: own crews, never subcontractors (docs/seo-plan.md §4.2–4.3,
+// docs/konkurencja-i-konfiguratory.md §1.3 and §5: prove it with process, people, photos and handover).
+// Unconfirmed items (protocol, warranty, methods) carry a "do potwierdzenia" tag and are listed in
+// docs/do-uzupelnienia.md ("Podstrony SEO i poradnik").
+import { url } from '../lib/url';
+import { service } from '../lib/schema';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import DarkHero from '../components/seo/DarkHero.astro';
+import PhotoGrid from '../components/seo/PhotoGrid.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
+import CrewGrid from '../components/CrewGrid.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import QuoteForm from '../components/QuoteForm.astro';
+import Testimonials from '../components/Testimonials.astro';
+import { aiImage, aiSrc, aiSrcSmall } from '../data/ai-zdjecia';
+import { photoByFile, photoSrc, photoSrcSmall } from '../data/realizacje-zdjecia';
+
+const path = '/montaz-okien/';
+const seo = {
+  title: 'Montaż okien Płock – własne ekipy, bez podwykonawców',
+  // plan §4.2 also names "montaż tradycyjny, warstwowy i w warstwie ocieplenia, odbiór z protokołem" –
+  // left out until the client confirms them (docs/do-uzupelnienia.md)
+  description:
+    'Okna montują u nas wyłącznie nasi monterzy, nigdy podwykonawcy. Pomiar, dobór sposobu osadzenia i montaż w Płocku i okolicach.',
+  // non-breaking space keeps the dash at the end of the first line
+  h1: 'Montaż okien w Płocku –',
+  h1Em: 'zawsze naszą ekipą',
+};
+
+// hero: AI background under a heavy overlay (as on the home page), own photos in front
+const bg = aiImage('ai-montaz-ekipa-dojazd');
+const heroPhoto = photoByFile('okno-narozne-antracyt-podbitka')!;
+const proofPhoto = photoByFile('montaz-szyby-przyssawka-prozniowa-02')!;
+
+const reasons = [
+  {
+    icon: 'odbior',
+    title: 'Jedna odpowiedzialność',
+    text: 'Firma, która doradza i mierzy, odpowiada też za montaż. Jeśli coś wymaga poprawki, nie usłyszysz, że to sprawa podwykonawcy.',
+  },
+  {
+    icon: 'pomiar',
+    title: 'Montaż zaplanowany na pomiarze',
+    text: 'Sposób osadzenia, obróbki i parapety ustalamy na miejscu, zanim zamówimy okna. Ekipa przyjeżdża z gotowym planem, a nie zgaduje na budowie.',
+  },
+  {
+    icon: 'montaz',
+    title: 'Sprzęt dobrany do skali',
+    text: 'Ciężkie tafle szkła osadzamy minidźwigiem i przyssawką próżniową. Zdjęcia z takich montaży pokazujemy niżej, z datami.',
+  },
+  {
+    icon: 'ekipa',
+    title: 'Właściciele blisko montażu',
+    text: 'Paweł Majchrzak i Bartosz Bezdziek od 20 lat pracują przy oknach, drzwiach i bramach i osobiście czuwają nad jakością osadzenia.',
+  },
+];
+
+const proofs: { title: string; text: string; tbc?: boolean }[] = [
+  { title: 'Zdjęcia z naszych budów', text: 'Publikujemy zdjęcia z montaży wykonanych przez nasze ekipy, z miesiącem wykonania.' },
+  { title: 'Opinie klientów', text: 'Klienci piszą w nich o pracy ekipy: o punktualności, porządku i staranności montażu.' },
+  { title: 'Monterzy z imienia i nazwiska', text: 'Przedstawiamy ludzi, którzy przyjadą do Ciebie, z rolą w zespole i stażem.', tbc: true },
+  { title: 'Zapis w umowie', text: 'Montaż wykonują wyłącznie pracownicy Inter Windows. Zapisujemy to w umowie.', tbc: true },
+];
+
+const methods = [
+  {
+    tag: 'Metoda 1',
+    title: 'Montaż tradycyjny',
+    text: 'Rama kotwiona w murze, szczelina wypełniona pianką, od wewnątrz i od zewnątrz wykończona obróbką. Pianka musi być osłonięta przed wilgocią i słońcem, inaczej z czasem traci izolacyjność.',
+  },
+  {
+    tag: 'Metoda 2',
+    title: 'Ciepły montaż (warstwowy)',
+    text: 'Szczelinę uszczelniają trzy warstwy: paroszczelna od wnętrza, izolacyjna w środku i paroprzepuszczalna od zewnątrz. Chronią piankę przed wilgocią i ograniczają straty ciepła wokół ramy.',
+  },
+  {
+    tag: 'Metoda 3',
+    title: 'Montaż w warstwie ocieplenia',
+    text: 'Okno wysunięte przed mur, w lico ocieplenia, na konsolach lub ramach montażowych. Stosowany w domach energooszczędnych i pasywnych z grubą warstwą izolacji.',
+  },
+];
+
+const handover: { icon: string; title: string; text: string; tbc?: boolean }[] = [
+  { icon: 'odbior', title: 'Sprawdzenie okien razem z Tobą', text: 'Przed odjazdem ekipy sprawdzamy działanie skrzydeł i okuć, szczelność i wykończenie.', tbc: true },
+  { icon: 'doc', title: 'Protokół odbioru', text: 'Spisujemy zakres prac i ewentualne uwagi. Protokół podpisuje brygadzista i Ty.', tbc: true },
+  { icon: 'doradztwo', title: 'Instrukcja użytkowania', text: 'Pokazujemy, jak korzystać z okuć, jak dbać o uszczelki i kiedy smarować okucia.', tbc: true },
+  { icon: 'gwarancja', title: 'Gwarancja na montaż', text: 'Za montaż odpowiadamy sami, osobno od gwarancji producenta okien. Okres gwarancji: do uzupełnienia.', tbc: true },
+  { icon: 'ekipa', title: 'Przegląd po pierwszej zimie', text: 'Po pierwszym sezonie grzewczym ekipa, która montowała okna, sprawdza je i w razie potrzeby reguluje.', tbc: true },
+];
+
+const workSafety: { text: string; tbc?: boolean }[] = [
+  { text: 'Przed demontażem osłaniamy podłogi i meble przy oknach.', tbc: true },
+  { text: 'Okna wymieniamy po kolei, więc pokój nie stoi otwarty dłużej, niż trwa montaż jednego okna.', tbc: true },
+  { text: 'Po pracy sprzątamy, a stara stolarka wyjeżdża razem z nami.', tbc: true },
+];
+
+const products = [
+  { href: '/drzwi-zewnetrzne/', label: 'Drzwi zewnętrzne', icon: 'drzwi-zewnetrzne' },
+  { href: '/drzwi-tarasowe/', label: 'Drzwi tarasowe', icon: 'drzwi-tarasowe' },
+  { href: '/drzwi-wewnetrzne/', label: 'Drzwi wewnętrzne', icon: 'drzwi-wewnetrzne' },
+  { href: '/bramy-garazowe/', label: 'Bramy garażowe', icon: 'bramy-garazowe' },
+  { href: '/rolety-zewnetrzne/', label: 'Rolety zewnętrzne', icon: 'rolety-zewnetrzne' },
+  { href: '/zaluzje-fasadowe/', label: 'Żaluzje fasadowe', icon: 'zaluzje-fasadowe' },
+];
+
+const faq = [
+  {
+    q: 'Czy montaż wykonują podwykonawcy?',
+    a: 'Nie. Okna, drzwi, rolety i bramy, które u nas zamawiasz, montują wyłącznie monterzy Inter Windows. Nie zlecamy montażu firmom zewnętrznym, także przy dużych przeszkleniach.',
+  },
+  {
+    q: 'Czy pomiar przed montażem jest płatny?',
+    a: 'Nie. Pomiar i wycena są bezpłatne i niezobowiązujące. Na pomiarze sprawdzamy otwory i ustalamy sposób osadzenia, parapety i obróbki, zanim cokolwiek zamówimy.',
+  },
+  {
+    q: 'Jaką metodą montujecie okna?',
+    a: 'Metodę dobieramy do budynku: rodzaju ściany, ocieplenia i miejsca okna w murze. W nowym domu warto rozważyć [ciepły montaż](/cieply-montaz-okien/) albo montaż w warstwie ocieplenia, a przy wymianie okien w zamieszkałym domu liczy się też stan ościeży i wykończenie wnętrz. Wybór omawiamy na pomiarze.',
+  },
+  {
+    q: 'Czy montujecie okna zimą?',
+    a: 'Tak. Wśród zdjęć z naszych budów są montaże z grudnia i lutego. Przy niskich temperaturach stosuje się materiały przeznaczone do pracy w mrozie, zgodnie z warunkami z kart producentów.',
+  },
+  {
+    q: 'Czy montujecie też drzwi, bramy i rolety?',
+    a: 'Tak. Drzwi zewnętrzne i wewnętrzne, drzwi tarasowe, rolety, żaluzje fasadowe i bramy garażowe montuje ten sam zespół. Szczegóły znajdziesz na stronach poszczególnych produktów, na przykład [bramy garażowe](/bramy-garazowe/).',
+  },
+  {
+    q: 'Gdzie montujecie?',
+    a: 'W Płocku i okolicznych gminach, także w powiatach gostynińskim i sierpeckim. Miejscowości i orientacyjne czasy dojazdu znajdziesz na stronie [obszar działania](/obszar-dzialania/).',
+  },
+];
+
+const related = [
+  { href: '/wymiana-okien/', label: 'Wymiana okien', icon: 'demontaz' },
+  { href: '/cieply-montaz-okien/', label: 'Ciepły montaż okien', icon: 'montaz' },
+  { href: '/okna/', label: 'Okna na wymiar', icon: 'okna-pcv' },
+  { href: '/obszar-dzialania/', label: 'Obszar działania', icon: 'mapa' },
+  { href: '/o-firmie/', label: 'O firmie', icon: 'partner' },
+  { href: '/poradnik/', label: 'Poradnik', icon: 'doc' },
+];
+
+const schema = service({
+  name: 'Montaż okien w Płocku – zawsze naszą ekipą',
+  serviceType: 'Montaż okien',
+  path,
+  description: seo.description,
+});
+---
+
+<Base title={seo.title} description={seo.description} updated="2026-10-27" schema={schema}>
+  <DarkHero
+    title={seo.h1}
+    titleEm={seo.h1Em}
+    eyebrow="Montaż okien · Płock i okolice"
+    lead="Okna, drzwi i bramy, które u nas zamawiasz, osadzają wyłącznie monterzy Inter Windows. Nie przekazujemy montażu podwykonawcom, więc za dobór, pomiar i osadzenie odpowiada jedna firma."
+    breadcrumbs={[{ name: 'Montaż okien' }]}
+    pledges={[
+      { title: 'Nigdy podwykonawcy', text: 'Każde zlecenie wykonuje nasz zespół, także duże przeszklenia i bramy garażowe.' },
+      { title: 'Właściciele pilnują montażu', text: 'Wspólnicy od 20 lat pracują przy stolarce i osobiście czuwają nad precyzją osadzenia.' },
+      { title: 'Sprzęt do ciężkich tafli', text: 'Duże szyby osadzamy minidźwigiem z przyssawką próżniową, bez dźwigania na siłę.' },
+    ]}
+    bg={{ src: aiSrc(bg), srcSmall: aiSrcSmall(bg), width: bg.width, height: bg.height }}
+    photo={{ src: photoSrc(heroPhoto), srcSmall: photoSrcSmall(heroPhoto), alt: heroPhoto.alt, width: heroPhoto.width, height: heroPhoto.height }}
+    proof={{
+      src: photoSrc(proofPhoto),
+      srcSmall: photoSrcSmall(proofPhoto),
+      alt: proofPhoto.alt,
+      width: proofPhoto.width,
+      height: proofPhoto.height,
+      caption: 'Z naszej budowy, marzec 2026: duża szyba na przyssawce próżniowej w drodze do otworu.',
+    }}
+  >
+    <a class="btn btn--light" href="#wycena"><Icon name="arrow" class="arrow" /> Umów bezpłatny pomiar</a>
+    <a class="link-arrow" href="#proces">Jak przebiega montaż <Icon name="arrow" class="" /></a>
+  </DarkHero>
+
+  <!-- DLACZEGO BEZ PODWYKONAWCÓW -->
+  <section class="section" id="dlaczego">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">Własne ekipy</span>
+          <h2>Dlaczego nigdy nie oddajemy montażu podwykonawcom</h2>
+        </div>
+        <p class="muted">
+          Hasło „własny montaż” zna dziś każdy klient. Dlatego zamiast je powtarzać, pokazujemy, jak pracujemy i co możesz sprawdzić sam.
+        </p>
+      </div>
+
+      <div class="why">
+        <div class="prose why__text reveal">
+          <p>
+            W branży okiennej podwykonawstwo montażu jest powszechne. Salon sprzedaje okna, a osadza je ekipa wynajęta na zlecenie,
+            często poznana dzień wcześniej. Klient widzi monterów pierwszy raz na budowie, a gdy coś wymaga poprawki, odpowiedzialność
+            rozmywa się między sprzedawcą a wykonawcą.
+          </p>
+          <p>
+            U nas montaż jest częścią naszej pracy, a nie usługą kupowaną na zewnątrz. Okno dobiera, mierzy i osadza ta sama firma.
+            Każdy montaż, także bram garażowych, rolet i dużych przeszkleń, wykonuje zespół Inter Windows.
+          </p>
+        </div>
+        <ul class="values why__values" role="list">
+          {reasons.map((r) => (
+            <li class="value reveal">
+              <Icon name={r.icon} />
+              <h3>{r.title}</h3>
+              <p>{r.text}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="proof reveal">
+        <h3 class="proof__title">Jak to sprawdzić</h3>
+        <ul class="proof__list" role="list">
+          {proofs.map((p) => (
+            <li>
+              <Icon name="check" class="" />
+              <div>
+                <strong>{p.title}{p.tbc && <> <span class="tbc" title="Treść czeka na potwierdzenie przez Inter Windows">do potwierdzenia</span></>}</strong>
+                <span class="proof__text">{p.text}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCES -->
+  <section class="section section--soft" id="proces">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">Montaż krok po kroku</span>
+          <h2>Od pomiaru do odbioru w 5 krokach</h2>
+        </div>
+        <p class="muted">Każdy etap prowadzi nasz zespół. Na pomiarze ustalamy, co i jak będzie montowane, a w dniu montażu ekipa realizuje ten plan.</p>
+      </div>
+      <ProcessSteps />
+
+      <div class="detail reveal">
+        <h3>Co dzieje się przy osadzaniu okna</h3>
+        <ol class="detail__list">
+          <li><b>Sprawdzenie otworu.</b> Ekipa kontroluje wymiary, pion i stan ościeży, zanim wstawi ramę.</li>
+          <li><b>Ustawienie i poziomowanie.</b> Rama stoi na podkładkach, w ustalonym miejscu muru, w pionie i poziomie.</li>
+          <li><b>Kotwienie.</b> Okno mocuje się do muru kotwami lub dyblami, w odstępach zgodnych z wytycznymi producenta.</li>
+          <li><b>Uszczelnienie.</b> Szczelinę między ramą a murem wypełnia się i zabezpiecza metodą ustaloną na pomiarze.</li>
+          <li><b>Regulacja.</b> Skrzydła muszą domykać się równo i bez oporu, a okucia działać płynnie.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- METODY -->
+  <section class="section" id="metody">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">Sposób osadzenia</span>
+          <h2>Metody montażu: tradycyjna, ciepły montaż, w warstwie ocieplenia</h2>
+        </div>
+        <p class="muted">
+          Sposób osadzenia dobieramy do budynku: rodzaju ściany, grubości ocieplenia, miejsca okna w murze i tego, czy dom jest w budowie, czy zamieszkały.
+        </p>
+      </div>
+      <div class="cards methods">
+        {methods.map((m) => (
+          <div class="card reveal">
+            <span class="card__tag">{m.tag}</span>
+            <h3>{m.title}</h3>
+            <p>{m.text}</p>
+          </div>
+        ))}
+      </div>
+      <p class="methods__note reveal">
+        Którą metodę wybrać w Twoim domu, omawiamy na pomiarze. Zastosowane materiały zapisujemy w ofercie.
+        <span class="tbc" title="Treść czeka na potwierdzenie przez Inter Windows">do potwierdzenia</span>
+      </p>
+      <a class="link-arrow reveal" href={url('/cieply-montaz-okien/')}>Na czym polega ciepły montaż okien <Icon name="arrow" class="" /></a>
+    </div>
+  </section>
+
+  <!-- EKIPA -->
+  <section class="section section--soft" id="ekipy">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">Ludzie</span>
+          <h2>Poznaj nasze ekipy</h2>
+        </div>
+        <p class="muted">
+          Te osoby przyjeżdżają na montaż. Pokazujemy je z imienia i nazwiska, z rolą w zespole i stażem, bo to one odpowiadają za to, jak okno będzie działać przez lata.
+        </p>
+      </div>
+      <CrewGrid />
+      <div class="btn-row" style="margin-top:36px">
+        <a class="link-arrow" href={url('/o-firmie/')}>Kim jesteśmy <Icon name="arrow" class="" /></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PORZĄDEK I ODBIÓR -->
+  <section class="section" id="odbior">
+    <div class="container">
+      <div class="handover">
+        <div class="reveal">
+          <span class="eyebrow">W trakcie prac</span>
+          <h2>Jak chronimy dom w czasie prac</h2>
+          <ul class="safety" role="list">
+            {workSafety.map((w) => (
+              <li>
+                <Icon name="check" class="" />
+                <span>{w.text}{w.tbc && <> <span class="tbc" title="Treść czeka na potwierdzenie przez Inter Windows">do potwierdzenia</span></>}</span>
+              </li>
+            ))}
+          </ul>
+          <p class="muted small">
+            Przy wymianie okien w zamieszkałym domu szczegóły dnia montażu opisujemy na stronie <a href={url('/wymiana-okien/')}>wymiana okien</a>.
+          </p>
+        </div>
+        <div>
+          <div class="reveal">
+            <span class="eyebrow">Po montażu</span>
+            <h2>Odbiór, gwarancja na montaż i przegląd po pierwszej zimie</h2>
+          </div>
+          <ul class="handover__list" role="list">
+            {handover.map((h) => (
+              <li class="reveal">
+                <Icon name={h.icon} />
+                <div>
+                  <h3>{h.title}{h.tbc && <> <span class="tbc" title="Treść czeka na potwierdzenie przez Inter Windows">do potwierdzenia</span></>}</h3>
+                  <p>{h.text}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ZDJĘCIA Z BUDÓW -->
+  <section class="section section--soft" id="z-budowy">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">Z naszych budów</span>
+          <h2>Tak wyglądają nasze montaże</h2>
+        </div>
+        <p class="muted">Zdjęcia z montaży wykonanych przez nasze ekipy, prosto z placu budowy. Pod każdym miesiąc, w którym powstało.</p>
+      </div>
+      <PhotoGrid
+        files={[
+          'montaz-szyby-minidzwig-przyssawka-01',
+          'montaz-szyby-minidzwig-przyssawka-02',
+          'dostawa-przeszklen-samochod',
+          'montaz-szyby-przyssawka-prozniowa-01',
+          'szyby-wielkoformatowe-na-stojakach-zima',
+          'bramy-segmentowe-od-wewnatrz-napedy',
+        ]}
+      />
+    </div>
+  </section>
+
+  <!-- DRZWI, BRAMY, ROLETY -->
+  <section class="section section--tight" id="inne-produkty">
+    <div class="container split" style="align-items:start">
+      <div class="reveal">
+        <span class="eyebrow">Nie tylko okna</span>
+        <h2>Montaż drzwi, bram i rolet</h2>
+      </div>
+      <div class="reveal">
+        <p class="lead">
+          Tę samą zasadę stosujemy przy każdym produkcie. Drzwi, bramy garażowe, rolety i żaluzje fasadowe osadzają monterzy z naszego zespołu.
+        </p>
+        <p>
+          Przy bramach i osłonach dużo zależy od przygotowania: wymiarów otworu, nadproża i przewodów pod napęd. Dlatego omawiamy je na pomiarze,
+          najlepiej na etapie stanu surowego, zanim powstaną tynki i elewacja.
+        </p>
+        <div class="related">
+          {products.map((p) => <a href={url(p.href)}><Icon name={p.icon} class="icon" />{p.label}</a>)}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OPINIE (component owned by the testimonials agent) -->
+  <Testimonials />
+
+  <Faq items={faq} title="Pytania o montaż okien" eyebrow="FAQ" />
+
+  <CtaBand
+    eyebrow="Konfigurator okien"
+    title="Zaprojektuj okna online. Pomiar i montaż zostaw nam."
+    text="Wybierz typ, wymiary, podział, kolor i szyby. Projekt trafi do doradcy, który przygotuje wycenę i umówi bezpłatny pomiar."
+    primary={{ label: 'Otwórz konfigurator', href: '/konfigurator/' }}
+    secondary={{ label: 'Wolę rozmowę z doradcą', href: '#wycena' }}
+  />
+
+  <QuoteForm title="Umów bezpłatny pomiar" />
+
+  <section class="section section--tight">
+    <div class="container">
+      <div class="section-head"><span class="eyebrow">Zobacz też</span><h2>Powiązane strony</h2></div>
+      <div class="related">
+        {related.map((r) => <a href={url(r.href)}><Icon name={r.icon} class="icon" />{r.label}</a>)}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .why { display: grid; gap: clamp(32px, 5vw, 64px); align-items: start; }
+  @media (min-width: 1000px) { .why { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); } }
+  .why__values { list-style: none; margin: 0; padding: 0; }
+  @media (min-width: 640px) { .values.why__values { grid-template-columns: repeat(2, 1fr); } }
+
+  .proof {
+    margin-top: clamp(40px, 5vw, 64px);
+    padding: clamp(24px, 3vw, 36px);
+    background: var(--bg-softer);
+    border: 1px solid var(--line);
+  }
+  .proof__title { font-size: 1.15rem; font-weight: 600; margin-bottom: 18px; }
+  .proof__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px 36px; }
+  @media (min-width: 800px) { .proof__list { grid-template-columns: repeat(2, 1fr); } }
+  .proof__list li { display: grid; grid-template-columns: 22px 1fr; gap: 12px; }
+  .proof__list :global(svg) { width: 18px; height: 18px; color: var(--accent); margin-top: 4px; }
+  .proof__list strong { display: block; color: var(--ink); font-weight: 600; }
+  .proof__text { font-size: .9rem; color: var(--muted); }
+  .proof__list .tbc { margin-left: 6px; font-size: .62rem; }
+
+  .detail {
+    margin-top: clamp(40px, 5vw, 64px);
+    padding: clamp(24px, 3vw, 36px);
+    background: var(--bg);
+    border: 1px solid var(--line);
+  }
+  .detail h3 { font-size: 1.15rem; font-weight: 600; margin-bottom: 16px; }
+  .detail__list { margin: 0; padding-left: 1.3em; display: grid; gap: 10px; }
+  @media (min-width: 900px) { .detail__list { display: block; columns: 2; column-gap: 48px; } }
+  .detail__list li { font-size: .93rem; break-inside: avoid; margin-bottom: 10px; }
+  .detail__list li::marker { color: var(--accent); font-weight: 600; }
+  .detail__list b { color: var(--ink); font-weight: 600; }
+
+  @media (min-width: 900px) { .methods { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .methods .card { padding: 26px 26px 30px; }
+  .methods__note { margin: 0 0 18px; color: var(--muted); font-size: .92rem; }
+  .methods__note .tbc { margin-left: 8px; }
+
+  .handover { display: grid; gap: clamp(48px, 6vw, 96px); }
+  @media (min-width: 1000px) { .handover { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); } }
+  .handover h2 { font-size: clamp(1.7rem, 2.8vw, 2.4rem); }
+  .safety { list-style: none; margin: 28px 0 22px; padding: 0; border-top: 1px solid var(--line-strong); }
+  .safety li { display: grid; grid-template-columns: 24px 1fr; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line-strong); color: var(--ink); font-size: .94rem; }
+  .safety :global(svg) { width: 18px; height: 18px; color: var(--accent); margin-top: 4px; }
+  .handover__list { list-style: none; margin: 28px 0 0; padding: 0; display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .handover__list li { display: grid; grid-template-columns: 44px 1fr; gap: 18px; padding: 22px 24px; background: #fff; }
+  .handover__list :global(.icon) { width: 40px; height: 40px; }
+  .handover__list h3 { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
+  .handover__list p { margin: 0; font-size: .9rem; color: var(--muted); }
+  .handover .tbc { margin-left: 6px; }
+
+  #inne-produkty .related { margin-top: 28px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+</style>

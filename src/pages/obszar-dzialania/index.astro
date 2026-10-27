@@ -1,0 +1,266 @@
+---
+// /obszar-dzialania/ – local hub (docs/seo-plan.md §3.3, §4.2–4.3). Towns are listed as text only:
+// no doorway pages, no per-town pages until a town meets the §3.3 criteria.
+// Drive times come from the plan and are approximate. Travel costs, max range and measurement lead
+// times are not confirmed – not stated (docs/do-uzupelnienia.md, "Podstrony SEO i poradnik").
+import { url } from '../../lib/url';
+import { service } from '../../lib/schema';
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import PageHero from '../../components/PageHero.astro';
+import MapLink from '../../components/MapLink.astro';
+import PhotoStrip from '../../components/PhotoStrip.astro';
+import Faq from '../../components/Faq.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import QuoteForm from '../../components/QuoteForm.astro';
+import { site } from '../../data/site';
+import { towns, bands, reviewTowns, OFFICE_TOWN } from '../../data/obszar';
+
+const path = '/obszar-dzialania/';
+const seo = {
+  title: 'Obszar działania – Płock i okolice | Inter Windows',
+  description:
+    'Montujemy okna i drzwi w Płocku oraz w gminach powiatu płockiego, gostynińskiego i sierpeckiego. Sprawdź czasy dojazdu i realizacje w okolicy.',
+  h1: 'Gdzie pracujemy – Płock i okolice',
+};
+const TBC = 'Treść czeka na potwierdzenie przez Inter Windows';
+
+const same: { icon: string; title: string; text: string; tbc?: boolean }[] = [
+  { icon: 'ekipa', title: 'Ta sama ekipa', text: 'W Płocku i poza nim montują wyłącznie nasi monterzy. Nie zlecamy pracy lokalnym podwykonawcom.' },
+  { icon: 'pomiar', title: 'Bezpłatny pomiar i wycena', text: 'Przyjeżdżamy na pomiar, oglądamy otwory i przygotowujemy niezobowiązującą wycenę.', tbc: true },
+  { icon: 'odbior', title: 'Ten sam proces', text: 'Pomiar, montaż i odbiór wyglądają tak samo w mieście i w gminach wokół Płocka.' },
+];
+
+const faq = [
+  {
+    q: 'Czy przyjedziecie na pomiar do mojej miejscowości?',
+    a: 'Jeśli mieszkasz w Płocku albo w jednej z gmin z tabeli na tej stronie, tak. Pracujemy w powiecie płockim, gostynińskim i sierpeckim. Jeśli Twojej miejscowości nie ma na liście, zadzwoń: ustalimy, czy i kiedy możemy przyjechać.',
+  },
+  {
+    q: 'Czy poza Płockiem montuje ta sama ekipa?',
+    a: 'Tak. Niezależnie od miejscowości okna, drzwi, rolety i bramy montują wyłącznie monterzy Inter Windows. Nie zlecamy pracy lokalnym podwykonawcom.',
+  },
+  {
+    q: 'Czy mogę przyjechać do biura w Płocku?',
+    a: `Tak. Biuro sprzedaży jest przy ul. Przemysłowej 22 w Płocku. Najlepiej wcześniej zadzwonić pod numer ${site.phone} i umówić spotkanie z doradcą.`,
+  },
+  {
+    q: 'Skąd pochodzą czasy dojazdu w tabeli?',
+    a: 'To orientacyjne czasy przejazdu samochodem z naszego biura przy ul. Przemysłowej, wyznaczone na podstawie map. Rzeczywisty czas zależy od pory dnia i ruchu.',
+  },
+];
+
+const schema = service({
+  name: 'Montaż okien i drzwi – Płock i okolice',
+  serviceType: 'Sprzedaż i montaż okien i drzwi',
+  path,
+  description: seo.description,
+  areaServed: [
+    ...site.areaServed,
+    ...towns.map((t) => ({ type: 'City', name: t.name })),
+  ],
+});
+---
+
+<Base title={seo.title} description={seo.description} updated="2026-10-27" schema={schema}>
+  <PageHero
+    title={seo.h1.replace(' – ', ' – ')}
+    eyebrow="Obszar działania"
+    lead={`Biuro mamy w Płocku przy ul. Przemysłowej 22. Mierzymy i montujemy okna, drzwi, rolety i bramy w mieście i w okolicznych gminach powiatu płockiego, a także w powiatach gostynińskim i sierpeckim. Wszędzie montuje ta sama, nasza ekipa.`}
+    breadcrumbs={[{ name: 'Obszar działania' }]}
+    media={false}
+    highlights={['Płock i powiat płocki', 'Powiat gostyniński i sierpecki', 'Montaż wyłącznie własną ekipą', 'Dojazd z Płocka zwykle do 45 minut']}
+  >
+    <a class="btn" href="#wycena"><Icon name="arrow" class="arrow" /> Sprawdź termin pomiaru</a>
+    <a class="btn btn--ghost" href={site.phoneHref}>Zadzwoń: {site.phone}</a>
+  </PageHero>
+
+  <!-- MAPA I CZASY DOJAZDU -->
+  <section class="section" id="dojazd">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">Dojazd</span>
+          <h2>Mapa i czasy dojazdu z Płocka</h2>
+        </div>
+        <p class="muted">Orientacyjne czasy przejazdu samochodem z biura przy ul. Przemysłowej 22. Rzeczywisty czas zależy od pory dnia i ruchu.</p>
+      </div>
+      <div class="reach">
+        <div class="reach__map reveal">
+          <MapLink />
+        </div>
+        <div class="reach__bands reveal">
+          <div class="band-row band-row--home">
+            <span class="band-row__label">Siedziba</span>
+            <strong>{OFFICE_TOWN}</strong>
+            <span class="band-row__towns">wszystkie dzielnice i osiedla</span>
+          </div>
+          {bands.map((b) => (
+            <div class="band-row">
+              <span class="band-row__label">{b.label}</span>
+              <ul class="band-row__list" role="list">
+                {b.towns.map((t) => <li>{t.name}</li>)}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TABELA -->
+  <section class="section section--soft" id="miejscowosci">
+    <div class="container split" style="align-items:start">
+      <div class="reveal">
+        <span class="eyebrow">Gminy i miasta</span>
+        <h2>Miejscowości, w&nbsp;których pracujemy</h2>
+        <p class="lead" style="margin-top:20px">
+          W tabeli są miejscowości wokół Płocka z orientacyjną odległością i czasem dojazdu. To nie jest zamknięta lista: jeśli Twoja miejscowość leży w okolicy, zadzwoń i zapytaj.
+        </p>
+        <p class="muted">
+          Opinie, które publikujemy na stronie, pochodzą m.in. od klientów z miejscowości: {reviewTowns.join(', ')}.{' '}
+          <a href={url('/o-firmie/#opinie')}>Zobacz opinie</a>.
+        </p>
+      </div>
+      <div class="table-wrap reveal">
+        <table>
+          <caption>Odległość i czas dojazdu z Płocka (orientacyjnie, według map)</caption>
+          <thead>
+            <tr><th scope="col">Miejscowość</th><th scope="col">Powiat</th><th scope="col">Odległość</th><th scope="col">Dojazd</th></tr>
+          </thead>
+          <tbody>
+            {towns.map((t) => (
+              <tr>
+                <th scope="row">{t.name}{t.review && <span class="review-mark">opinia klienta</span>}</th>
+                <td>{t.powiat}</td>
+                <td class="num">ok. {t.km} km</td>
+                <td class="num">ok. {t.min} min</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- JAK PRACUJEMY POZA PŁOCKIEM -->
+  <section class="section" id="jak-pracujemy">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">Poza Płockiem</span>
+          <h2>Jak pracujemy poza Płockiem</h2>
+        </div>
+        <p class="muted">Miejscowość nie zmienia standardu. Do Gąbina czy Sierpca przyjeżdża ta sama ekipa, z tym samym sprzętem, co na Podolszyce.</p>
+      </div>
+      <ul class="values same" role="list">
+        {same.map((s) => (
+          <li class="value reveal">
+            <Icon name={s.icon} />
+            <h3>{s.title}{s.tbc && <> <span class="tbc" title="Czy pomiar jest bezpłatny także poza Płockiem – czeka na potwierdzenie przez Inter Windows">do potwierdzenia</span></>}</h3>
+            <p>{s.text}</p>
+          </li>
+        ))}
+      </ul>
+      <div class="plan reveal">
+        <h3>Co warto wiedzieć przed pomiarem</h3>
+        <ul class="bullets">
+          <li>Przy domu w budowie dobrze umówić pomiar, gdy otwory są gotowe, a jeszcze przed tynkami i wylewkami.</li>
+          <li>Jeśli masz projekt domu lub rzut z wymiarami okien, wyślij go wcześniej. Przygotujemy się do pomiaru i wstępnej wyceny.</li>
+          <li>W formularzu wpisz miejscowość. Łatwiej wtedy zaproponować termin pomiaru.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- REALIZACJE -->
+  <section class="section section--soft section--tight" id="realizacje">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">Z naszych montaży</span>
+          <h2>Realizacje w Płocku i okolicach</h2>
+        </div>
+        <a class="link-arrow" href={url('/realizacje/')}>Wszystkie realizacje <Icon name="arrow" class="" /></a>
+      </div>
+      <PhotoStrip tags={['elewacja', 'przeszklenia']} />
+      <p class="source-note">Zdjęcia z montaży wykonanych przez nasze ekipy w Płocku i okolicznych gminach.</p>
+    </div>
+  </section>
+
+  <Faq items={faq} title="Pytania o dojazd i obszar działania" eyebrow="FAQ" />
+
+  <CtaBand
+    title="Sprawdź termin pomiaru w Twojej okolicy"
+    text="Zostaw numer telefonu albo zadzwoń. Ustalimy termin pomiaru i przygotujemy bezpłatną wycenę."
+    primary={{ label: 'Umów pomiar', href: '#wycena' }}
+    secondary={{ label: `Zadzwoń: ${site.phone}`, href: site.phoneHref }}
+  />
+
+  <QuoteForm title="Umów pomiar w swojej miejscowości" lead="Napisz, skąd jesteś i czego potrzebujesz. Oddzwonimy, ustalimy termin pomiaru i przygotujemy wycenę. Pomiar i wycena są niezobowiązujące." />
+
+  <section class="section section--tight">
+    <div class="container">
+      <div class="section-head"><span class="eyebrow">Zobacz też</span><h2>Powiązane strony</h2></div>
+      <div class="related">
+        <a href={url('/montaz-okien/')}><Icon name="montaz" class="icon" />Montaż okien</a>
+        <a href={url('/wymiana-okien/')}><Icon name="demontaz" class="icon" />Wymiana okien</a>
+        <a href={url('/kontakt/')}><Icon name="doradztwo" class="icon" />Kontakt i pomiar</a>
+        <a href={url('/o-firmie/')}><Icon name="partner" class="icon" />O firmie</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .reach { display: grid; gap: 24px; }
+  @media (min-width: 960px) { .reach { grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); align-items: stretch; } }
+  .reach__map { min-height: 380px; display: grid; }
+  .reach__bands { display: grid; align-content: start; border-top: 1px solid var(--line-strong); }
+  .band-row {
+    display: grid; gap: 8px 24px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  @media (min-width: 560px) { .band-row { grid-template-columns: 130px 1fr; align-items: baseline; } }
+  .band-row__label { font-size: .78rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-600); }
+  .band-row strong { font-weight: 500; font-size: 1.3rem; color: var(--ink); letter-spacing: -0.02em; }
+  .band-row--home { grid-template-columns: 130px auto 1fr; }
+  @media (max-width: 559px) { .band-row--home { grid-template-columns: 1fr; } }
+  .band-row__towns { font-size: .86rem; color: var(--muted); }
+  .band-row__list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 8px; }
+  .band-row__list li {
+    padding: 5px 13px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: #fff;
+    font-size: .86rem; font-weight: 500; color: var(--ink);
+  }
+
+  .table-wrap table { min-width: 0; }
+  .review-mark {
+    display: inline-block; margin-left: 10px;
+    font-size: .68rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+    color: var(--navy);
+    border: 1px solid color-mix(in srgb, var(--navy) 35%, transparent);
+    border-radius: 999px;
+    padding: 2px 8px;
+    vertical-align: 1px;
+  }
+  .table-wrap .num { white-space: nowrap; }
+  @media (max-width: 559px) {
+    .table-wrap th, .table-wrap td { padding: 12px 10px; }
+    /* county column hidden on phones – the caption and the hero name the counties */
+    .table-wrap th:nth-child(2), .table-wrap td:nth-child(2) { display: none; }
+    .review-mark { display: block; width: max-content; margin: 6px 0 0; }
+  }
+
+  .same { list-style: none; margin: 0; padding: 0; }
+  .same .tbc { margin-left: 6px; }
+  :global(.page-hero--plain .highlights) { max-width: 820px; }
+  .plan { margin-top: clamp(40px, 5vw, 56px); max-width: 760px; }
+  .plan h3 { font-size: 1.15rem; font-weight: 600; margin-bottom: 14px; }
+  .plan .bullets { margin: 0; padding-left: 1.1em; }
+  .plan .bullets li { margin-bottom: .5em; }
+  .plan .bullets li::marker { color: var(--accent); }
+</style>

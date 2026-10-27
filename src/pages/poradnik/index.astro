@@ -1,0 +1,121 @@
+---
+// /poradnik/ – guide hub (docs/seo-plan.md §4.2–4.3). Articles come from src/data/poradnik.ts.
+import { url } from '../../lib/url';
+import { rich } from '../../lib/rich';
+import { abs, WEBSITE_ID } from '../../lib/schema';
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import PageHero from '../../components/PageHero.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { aiImage, aiSrc, aiSrcSmall } from '../../data/ai-zdjecia';
+import { articles, readingTime, formatDate, nbDash } from '../../data/poradnik';
+
+const path = '/poradnik/';
+const seo = {
+  title: 'Poradnik – okna, drzwi i montaż od praktyków | Inter Windows',
+  description:
+    'Ceny, porównania i wskazówki montażowe od ludzi, którzy od 20 lat dobierają i montują okna. Konkretnie, na przykładach z naszych realizacji.',
+  h1: 'Poradnik Inter Windows',
+};
+
+const list = articles.map((a) => ({ ...a, img: aiImage(a.image), minutes: readingTime(a) }));
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: seo.h1,
+  url: abs(path),
+  description: seo.description,
+  isPartOf: { '@id': WEBSITE_ID },
+  inLanguage: 'pl-PL',
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: articles.map((a, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: abs(`/poradnik/${a.slug}/`),
+      name: a.h1,
+    })),
+  },
+};
+---
+
+<Base title={seo.title} description={seo.description} updated="2026-10-27" schema={schema}>
+  <PageHero
+    title={seo.h1}
+    eyebrow="Poradnik"
+    lead="Koszty, porównania i wskazówki montażowe od ludzi, którzy od lat dobierają i montują okna, drzwi i osłony. Piszemy o tym, o co klienci pytają nas na pomiarach: ile to kosztuje, co wybrać i co zaplanować wcześniej."
+    breadcrumbs={[{ name: 'Poradnik' }]}
+    media={false}
+  />
+
+  <section class="section section--tight pt-0">
+    <div class="container">
+      <ul class="articles" role="list">
+        {list.map((a, i) => (
+          <li class:list={['article-card', 'reveal', { 'article-card--wide': i === 0 }]}>
+            <a href={url(`/poradnik/${a.slug}/`)} class="article-card__link">
+              <div class="photo article-card__img">
+                <img
+                  src={url(aiSrcSmall(a.img))}
+                  srcset={`${url(aiSrcSmall(a.img))} 800w, ${url(aiSrc(a.img))} 1600w`}
+                  sizes={i === 0 ? '(min-width: 960px) 55vw, 100vw' : '(min-width: 960px) 33vw, 100vw'}
+                  alt={a.img.alt}
+                  width={a.img.width}
+                  height={a.img.height}
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                />
+              </div>
+              <div class="article-card__body">
+                <div class="article-card__meta">
+                  <span class="card__tag">{a.tag}</span>
+                  <span>{a.minutes} min czytania</span>
+                </div>
+                <h2>{nbDash(a.h1)}</h2>
+                <p set:html={rich(a.lead)} />
+                <span class="link-arrow">Czytaj artykuł <Icon name="arrow" class="" /></span>
+                <time class="article-card__date" datetime={a.published}>{formatDate(a.published)}</time>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="source-note">Ilustracje w nagłówkach artykułów mają charakter poglądowy. Zdjęcia w treści pochodzą z naszych montaży.</p>
+    </div>
+  </section>
+
+  <CtaBand
+    eyebrow="Pomiar i wycena"
+    title="Masz pytanie, na które nie ma tu odpowiedzi?"
+    text="Zadzwoń albo umów bezpłatny pomiar. Doradzimy na miejscu, przy Twoich oknach."
+    primary={{ label: 'Umów bezpłatny pomiar', href: '/kontakt/#wycena' }}
+    secondary={{ label: 'Otwórz konfigurator', href: '/konfigurator/' }}
+  />
+</Base>
+
+<style>
+  .articles { list-style: none; margin: 0; padding: 0; display: grid; gap: 24px; }
+  @media (min-width: 760px) { .articles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1100px) {
+    .articles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .article-card--wide { grid-column: 1 / -1; }
+    .article-card--wide .article-card__link { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); grid-template-rows: 1fr; }
+    .article-card--wide .article-card__img { aspect-ratio: 16 / 9; height: 100%; }
+    .article-card--wide h2 { font-size: clamp(1.6rem, 2.4vw, 2.2rem); }
+  }
+  .article-card__link {
+    display: grid; height: 100%;
+    grid-template-rows: auto 1fr;
+    background: #fff;
+    border: 1px solid var(--line);
+    transition: border-color .25s, box-shadow .25s;
+  }
+  .article-card__link:hover { border-color: var(--line-strong); box-shadow: var(--shadow-sm); }
+  .article-card__link:hover :global(.link-arrow svg) { transform: translateX(4px); }
+  .article-card__img { aspect-ratio: 16 / 10; }
+  .article-card__body { display: flex; flex-direction: column; gap: 12px; padding: clamp(22px, 2.5vw, 32px); }
+  .article-card__meta { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: .8rem; color: var(--muted); }
+  .article-card h2 { font-size: 1.35rem; line-height: 1.25; letter-spacing: -0.025em; font-weight: 500; }
+  .article-card p { margin: 0; font-size: .92rem; color: var(--muted); flex: 1; }
+  .article-card__date { font-size: .78rem; color: var(--muted); }
+</style>
